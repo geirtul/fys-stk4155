@@ -25,6 +25,7 @@ z = FrankeFunction(x, y)
 # Setting up the matrix X in the matrix equation y = X*Beta + Eps
 
 X = np.random.uniform(0, 1, (20,2))
+X = np.sort(X, axis=0) # Sort the x-values
 poly = PolynomialFeatures(5)
 X_vals = poly.fit_transform(X)
 
