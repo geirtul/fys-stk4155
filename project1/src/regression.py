@@ -1,4 +1,5 @@
 import numpy as np
+from franke_function import FrankeFunction 
 from sklearn.preprocessing import PolynomialFeatures
 from matplotlib import cm
 from random import random, seed
