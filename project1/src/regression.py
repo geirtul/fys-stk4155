@@ -22,9 +22,9 @@ def FrankeFunction(x,y):
 z = FrankeFunction(x, y)
 
 # Function definitions
-def ordinary_least_squares(y, m):
+def ordinary_least_squares(y, m, predictors):
     """
-    Perform linear regression using th ordinary least squares method
+    Perform linear regression using the Ordinary Least Squares method
     on a dataset y, with a polynomial of degree m.
     The PolynomialFeatures module from scikit learn sets up the vandermonde
     matrix such that in the matrix equation X*beta = y, beta is the coefficient vector,
@@ -37,8 +37,8 @@ def ordinary_least_squares(y, m):
     """
 
     # Setup
-    N = y.shape[0]
-    X_vals = np.random.uniform(0, 1, (N,2))
+    num_datapoints = y.shape[0]
+    X_vals = np.random.uniform(0, 1, (num_datapoints, predictors))
     X_vals = np.sort(X_vals, axis=0) # Sort the x-values
     poly = PolynomialFeatures(m)
 
@@ -52,4 +52,4 @@ def ordinary_least_squares(y, m):
     return [X_plot, Y_plot, y_predicted]
 
 
-output = ordinary_least_squares(z,5)
+output = ordinary_least_squares(z,5,2)
