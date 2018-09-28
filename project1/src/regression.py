@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 
+from analysis import plotting_3d
+
 # Data from FrankeFunction
 x = np.arange(0, 1, 0.05)
 y = np.arange(0, 1, 0.05)
@@ -43,7 +45,7 @@ def ordinary_least_squares(y, m, predictors):
     poly = PolynomialFeatures(m)
 
     # Regression
-    X = poly.fit_transform(X_vals)
+    X = poly.fit_transform(X_vals) # Input values to design matrix
     beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(y)
     y_predicted = X.dot(beta)
 
@@ -51,5 +53,6 @@ def ordinary_least_squares(y, m, predictors):
     X_plot, Y_plot = np.meshgrid(X_vals[:,0], X_vals[:,1])
     return [X_plot, Y_plot, y_predicted]
 
-
+data = [x,y,z]
 output = ordinary_least_squares(z,5,2)
+plotting_3d(data, output, True)

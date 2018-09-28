@@ -14,8 +14,8 @@ def mean_squared_error(y, y_predicted):
     y_predicted : the data the model spits out after regression
     """
 
-    N = y.shape[0]
-    mse = np.sum(np.square(y - y_predicted))/N
+    num_datapoints = y.shape[0]
+    mse = np.sum(np.square(y - y_predicted))/num_datapoints
     return mse
 
 def r2_score(y, y_predicted):
@@ -33,7 +33,7 @@ def r2_score(y, y_predicted):
     r2score = 1 - upper_sum/lower_sum
 
 
-def plotting_3d(data, output):
+def plotting_3d(data, output, save=False):
     """
     Plots the modeled data side-by-side with the original dataset
     for comparison.
@@ -53,7 +53,7 @@ def plotting_3d(data, output):
 
     # Second subplot
     ax = fig.add_subplot(1,2,2, projection='3d')
-    surf2 = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
+    surf2 = ax.plot_surface(data[0], data[1], data[2], cmap=cm.coolwarm,
                            linewidth=0, antialiased=False)
     ax.set_zlim(-0.10, 1.40)
     ax.zaxis.set_major_locator(LinearLocator(10))
@@ -61,4 +61,6 @@ def plotting_3d(data, output):
 
     fig.colorbar(surf2, shrink=0.5, aspect=5)
 
+    if save:
+        plt.savefig("../report/figures/comparison.pdf", format='pdf')
     plt.show()
