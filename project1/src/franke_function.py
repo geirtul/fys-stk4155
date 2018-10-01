@@ -5,13 +5,6 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-
-# Make data.
-x = np.arange(0, 1, 0.05)
-y = np.arange(0, 1, 0.05)
-x, y = np.meshgrid(x,y)
 
 
 def FrankeFunction(x,y):
@@ -22,18 +15,28 @@ def FrankeFunction(x,y):
     return term1 + term2 + term3 + term4
 
 
-z = FrankeFunction(x, y)
+if __name__ == "__main__":
 
-# Plot the surface.
-surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
-                       linewidth=0, antialiased=False)
+    fig = plt.figure() 
+    ax = fig.gca(projection='3d')
 
-# Customize the z axis.
-ax.set_zlim(-0.10, 1.40)
-ax.zaxis.set_major_locator(LinearLocator(10))
-ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    # Make data.
+    x = np.arange(0, 1, 0.05)
+    y = np.arange(0, 1, 0.05)
+    x, y = np.meshgrid(x,y)
 
-# Add a color bar which maps values to colors.
-fig.colorbar(surf, shrink=0.5, aspect=5)
+    z = FrankeFunction(x, y)
 
-#plt.show()
+    # Plot the surface.
+    surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
+                           linewidth=0, antialiased=False)
+
+    # Customize the z axis.
+    ax.set_zlim(-0.10, 1.40)
+    ax.zaxis.set_major_locator(LinearLocator(10))
+    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
+    #plt.show()
