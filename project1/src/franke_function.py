@@ -6,7 +6,6 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 
 
-
 def FrankeFunction(x,y):
     term1 = 0.75*np.exp(-(0.25*(9*x-2)**2) - 0.25*((9*y-2)**2))
     term2 = 0.75*np.exp(-((9*x+1)**2)/49.0 - 0.1*(9*y+1))
@@ -27,9 +26,16 @@ if __name__ == "__main__":
 
     z = FrankeFunction(x, y)
 
+
+
+if __name__ == "__main__":
+    
     # Plot the surface.
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
     surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
                            linewidth=0, antialiased=False)
+
 
     # Customize the z axis.
     ax.set_zlim(-0.10, 1.40)
@@ -39,4 +45,5 @@ if __name__ == "__main__":
     # Add a color bar which maps values to colors.
     fig.colorbar(surf, shrink=0.5, aspect=5)
 
-    #plt.show()
+    plt.show()
+
