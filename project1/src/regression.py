@@ -1,9 +1,9 @@
 import numpy as np
-from franke_function import FrankeFunction 
+from franke_function import FrankeFunction
 from sklearn.preprocessing import PolynomialFeatures
 from matplotlib import cm
 from random import random, seed
-from analysis import Analysis 
+from analysis import Analysis
 #import matplotlib.pyplot as plt
 #from matplotlib.ticker import LinearLocator, FormatStrFormatter
 #from mpl_toolkits.mplot3d import Axes3D
@@ -15,11 +15,11 @@ class OrdinaryLeastSquares(Analysis):
 
 
     def __init__(self):
-        
+
         """Perform linear regression using the Ordinary Least Squares method
         on a dataset y, with a polynomial of degree m.
-        The PolynomialFeatures module from scikit learn sets up the 
-        vandermonde matrix such that in the matrix equation X*beta = y, 
+        The PolynomialFeatures module from scikit learn sets up the
+        vandermonde matrix such that in the matrix equation X*beta = y,
         beta is the coefficient vector,
         and X contains the polynomial expressions.
         returns x and y values for plotting along with the predicted y values
@@ -29,18 +29,18 @@ class OrdinaryLeastSquares(Analysis):
         and performs regression
         """
 
-        self.beta = None 
+        self.beta = None
 
     def fitCoefficients(self, m, numOfPredictors, z):
-        
+
         """ fits beta to model
 
         n - int, degree of polynomial you want to fit
-        numOfPredictors - int, number of predictors  
+        numOfPredictors - int, number of predictors
         z - vector, target data
         """
         self.m = m
-        self.predictors = numOfPredictors 
+        self.predictors = numOfPredictors
         self.z = z
 
        # Setup
@@ -53,22 +53,23 @@ class OrdinaryLeastSquares(Analysis):
         self.X = poly.fit_transform(X_vals) # Input values to design matrix
         #beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(z)
         #z_predicted = X.dot(beta)
-        
+
         self.beta = np.linalg.inv( self.X.T @ self.X ) @ self.X.T @ self.z
 
 
     def makePrediction(self):
 
         """Makes a model prediction
-        Returns prediction together with x and y values for plotting. 
+        Returns prediction together with x and y values for plotting.
         """
-        
-        self.z_predicted = self.X @ self.beta 
+
+        self.z_predicted = self.X @ self.beta
 
 
         # Output
         X_plot, Y_plot = np.meshgrid(self.X_vals[:,0], self.X_vals[:,1])
         return [X_plot, Y_plot, self.z_predicted]
+
 
 
 if __name__ == "__main__":
@@ -79,15 +80,14 @@ if __name__ == "__main__":
 
     z = FrankeFunction(x, y)
 
-    data = [x, y, z] 
+    data = [x, y, z]
 
-    ols = OrdinaryLeastSquares() 
+    ols = OrdinaryLeastSquares()
     ols.fitCoefficients(5, 2, z)
 
     output = ols.makePrediction()
 
-    r2 = ols.r2_score 
+    r2 = ols.r2_score
 
 
     ols.plotting_3d(data, output)
-
