@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import mean
 from franke_function import FrankeFunction 
 from sklearn.preprocessing import PolynomialFeatures
 from matplotlib import cm
@@ -8,15 +9,16 @@ from analysis import Analysis
 #from matplotlib.ticker import LinearLocator, FormatStrFormatter
 #from mpl_toolkits.mplot3d import Axes3D
 #from analysis import plotting_3d
+#include <.h>
 
 
 
-class OrdinaryLeastSquares(Analysis):
+class RidgeRegression(Analysis):
 
 
     def __init__(self):
         
-        """Perform linear regression using the Ordinary Least Squares method
+        """Perform regression using the ridge method
         on a dataset y, with a polynomial of degree m.
         The PolynomialFeatures module from scikit learn sets up the 
         vandermonde matrix such that in the matrix equation X*beta = y, 
@@ -51,10 +53,26 @@ class OrdinaryLeastSquares(Analysis):
 
         # Regression
         self.X = poly.fit_transform(X_vals) # Input values to design matrix
-        #beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(z)
-        #z_predicted = X.dot(beta)
+
+        #centering X?
+        meanX = self.X.mean(1)
+        centeredX = self.X - meanX[:, np.newaxis]
+        self.centeredX = centeredX[:, 1:] #without intercept
         
-        self.beta = np.linalg.inv( self.X.T @ self.X ) @ self.X.T @ self.z
+        print (self.centeredX.shape)
+        
+        p = len(centeredX) 
+
+        self.beta0 = self.z.mean(1) 
+        #lmb_values = [1E-4, 1E-3, 1E-2, 10, 1E2, 1E4] #from lecture notes 
+        #numValues = len(lmb_values)
+        I = np.eye(p)
+
+        #self.beta = np.zeros((p+1, numValues))
+
+        
+        #for i, lmb in enumerate(lmb_values):
+        self.beta = (np.linalg.inv(self.centeredX.T @ self.centeredX + 1E-2*I) @ self.centeredX.T @ self.z)
 
 
     def makePrediction(self):
@@ -63,7 +81,7 @@ class OrdinaryLeastSquares(Analysis):
         Returns prediction together with x and y values for plotting. 
         """
         
-        self.z_predicted = self.X @ self.beta 
+        self.z_predicted = self.centeredX @ self.beta + self.beta0
 
 
         # Output
@@ -81,13 +99,13 @@ if __name__ == "__main__":
 
     data = [x, y, z] 
 
-    ols = OrdinaryLeastSquares() 
-    ols.fitCoefficients(5, 2, z)
+    ridge = RidgeRegression() 
+    ridge.fitCoefficients(5, 2, z)
 
-    output = ols.makePrediction()
+    output = ridge.makePrediction()
 
-    r2 = ols.r2_score 
+    #r2 = ridge.r2_score 
 
 
-    ols.plotting_3d(data, output)
+    ridge.plotting_3d(data, output)
 
