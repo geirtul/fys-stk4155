@@ -17,7 +17,6 @@ class RidgeRegression(Analysis):
 
 
     def __init__(self):
-        "hei Geir"
         
         """Perform regression using the ridge method
         on a dataset y, with a polynomial of degree m.
@@ -34,13 +33,15 @@ class RidgeRegression(Analysis):
 
         self.beta = None 
 
-    def fitCoefficients(self, m, numOfPredictors, z):
+    def fitCoefficients(self, m, numOfPredictors, z, lmb=0):
         
         """ fits beta to model
 
         n - int, degree of polynomial you want to fit
         numOfPredictors - int, number of predictors  
         z - vector, target data
+        lmb - float, shrinkage lmb=0 makes the model equal to ols  
+
         """
         self.m = m
         self.predictors = numOfPredictors 
@@ -67,13 +68,12 @@ class RidgeRegression(Analysis):
         #self.beta0 = self.z.mean(1)
         #lmb_values = [1E-4, 1E-3, 1E-2, 10, 1E2, 1E4] #from lecture notes 
         #numValues = len(lmb_values)
-        I = np.eye(len(self.X)+1)
-        print(I.shape)
+        I = np.eye(len(self.X[1]))
 
         #self.beta = np.zeros((p+1, numValues))
 
         #for i, lmb in enumerate(lmb_values):
-        self.beta = (np.linalg.inv(self.X.T @ self.X + 10*I) 
+        self.beta = (np.linalg.inv(self.X.T @ self.X + lmb*I) 
                     @ self.X.T @ self.z)
 
 
@@ -83,7 +83,7 @@ class RidgeRegression(Analysis):
         Returns prediction together with x and y values for plotting. 
         """
         
-        self.z_predicted = self.X @ self.beta #+ self.beta0
+        self.z_predicted = self.X @ self.beta 
         
         # Output
         X_plot, Y_plot = np.meshgrid(self.X_vals[:,0], self.X_vals[:,1])
@@ -97,18 +97,24 @@ if __name__ == "__main__":
     x, y = np.meshgrid(x,y)
 
     z = FrankeFunction(x, y)
-    #z  = z - z.mean(1)[:, np.newaxis] 
+    noiseRange = 1
+    noise = noiseRange*np.random.uniform(-0.5, 0.5, size = z.shape)
+    #z  = z - z.mean(1)[:, np.newaxis]
+    z = z + noise
 
     data = [x, y, z] 
+    
+    lmb_values = [0, 1e-4, 1e-3, 1e-2, 10, 1e2, 1e4]
+    
+    for lmb in lmb_values:
+        ridge = RidgeRegression() 
+        ridge.fitCoefficients(5, 2, z, lmb)
 
-    ridge = RidgeRegression() 
-    ridge.fitCoefficients(5, 2, z)
+        output = ridge.makePrediction()
 
-    output = ridge.makePrediction()
-
-    r2 = ridge.r2_score() 
-    print(r2)
+        r2 = ridge.r2_score() 
+        print("R2 = {:f} for lmd = {:f}".format(r2, lmb))
 
 
-    ridge.plotting_3d(data, output)
+    #ridge.plotting_3d(data, output)
 
