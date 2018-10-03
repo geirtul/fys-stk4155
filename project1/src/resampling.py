@@ -1,38 +1,34 @@
 import numpy as np
+from numpy.random import randint, randn
 from time import time
 
-# Bootstrap algorithm
 def bootstrap(data, num_draws):
     """
-    Resample the data using the bootstrap algorithm.
-    Based on the example found in lecture notes.
-
-    param: data         - the data to perform resampling on
-    param: num_draws    - how many times to draw sample datasets
-
+    Perform bootstrapping on a dataset.
     """
-    drawn_samples = []
+    t = np.zeros(num_draws)
     N = len(data)
-    time_start = time()
+    t0 = time()
 
-    # non-parametric bootstrap
+
+    # Non-parametric bootstrap
     for i in range(num_draws):
-        # Sample datasets are drawn by generating N sets of N indices.
-        # Data on those indices are then extracted using data[indices]
-        # because arrays are amazing that way.
+        t[i] = np.mean(data[randint(0,N,N)])
+    t1 = time()
+    # Analysis
 
-        indices = np.random.randint(0,N,N)
-        drawn_samples.append(np.array(data[indices]))
+    print("Runtime: {:f} sec".format(t1-t0))
+    print("Bootstrap statistics:")
+    print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean", "std.err"))
+    print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(data),
+                                            np.std(data),
+                                            np.mean(t),
+                                            np.std(t)))
 
-    # analysis
-    print("Runtime: %g sec" % (time()-time_start));
-    print("Bootstrap Statistics :")
-    print("mean(data) | std(data)'bias' | mean(mean_values) | std(mean_values)")
-    print("%8g | %8g | %14g | %15g" % (np.mean(data),
-                                np.std(data),
-                                np.mean(drawn_samples),
-                                np.std(drawn_samples)))
-    return drawn_samples
+    return t
 
-data = np.array([1,2,3,4,5,6,7,8,9,10])
-bootstrap(data, 100)
+if __name__ == "__main__":
+    mu, sigma = 10, 2
+    datapoints = 10000
+    x = mu + sigma*randn(datapoints)
+    t = bootstrap(x, datapoints)

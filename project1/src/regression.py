@@ -88,6 +88,7 @@ if __name__ == "__main__":
     output = ols.makePrediction()
 
     r2 = ols.r2_score
+    ols.bootstrap()
 
 
     ols.plotting_3d(data, output)
