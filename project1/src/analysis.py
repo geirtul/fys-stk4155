@@ -34,6 +34,7 @@ class Analysis:
         """
 
         N = self.z.shape[0]
+        print(self.z_predicted)
         z_mean = np.sum(self.z)/N
         upper_sum = np.sum(np.square(self.z - self.z_predicted))
         lower_sum = np.sum(np.square(self.z - z_mean))
@@ -42,29 +43,46 @@ class Analysis:
 
     def bootstrap(self):
         """
-        Perform bootstrapping on a given dataset.
-        Arbitrary change.
+        Perform the chosen regression using bootstrapping.
         """
         N = len(self.z)
-        t = np.zeros(N)
-        t0 = time()
+        n_bootstraps = 100
 
+        # Split into training and test sets
+        test_size = 0.2
+        stop = int(np.floor(test_size*N))
+        x_test = self.X_vals[0:stop, :]
+        data_test = self.z[0:stop, :]
+        #x_train = self.X_vals[test_size*N:,:]
+        data_train = self.z[stop:,:]
 
-        # Non-parametric bootstrap
-        for i in range(N):
-            t[i] = np.mean(self.z[randint(0,N,N)])
-        t1 = time()
-        # Analysis
+        def resample(data):
+            points = len(data)
+            #x_indices = randint(0, points, x.shape)
+            data_indices = randint(0,points,data.shape)
+            return data[data_indices]
 
-        print("Runtime: {:f} sec".format(t1-t0))
+        
+        y_fits = np.empty((len(data_train), n_bootstraps))
+        for i in range(n_bootstraps):
+            
+            data_re = resample(data_train)
+            self.fitCoefficients(5, 2, data_re)
+            y_fits[i] = self.makePrediction()
+
+        
+        
+        print("Mean y_fit = {}".format(np.mean(y_fits)))
+        """
+        #Some pretty printing we probably don't need.
         print("Bootstrap statistics:")
         print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean", "std.err"))
         print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(self.z),
                                                 np.std(self.z),
                                                 np.mean(t),
                                                 np.std(t)))
-
-        return t
+        """
+        return y_fits
 
 
     def plotting_3d(self, data, output, save=False):
