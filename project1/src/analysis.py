@@ -32,7 +32,7 @@ class Analysis:
         """
         
         N = self.z.shape[0]
-        z_mean = np.sum(y)/N
+        z_mean = np.sum(self.z)/N
         upper_sum = np.sum(np.square(self.z - self.z_predicted))
         lower_sum = np.sum(np.square(self.z - z_mean))
         r2score = 1 - upper_sum/lower_sum
