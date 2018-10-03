@@ -43,6 +43,7 @@ class Analysis:
     def bootstrap(self):
         """
         Perform bootstrapping on a given dataset.
+        Arbitrary change.
         """
         N = len(self.z)
         t = np.zeros(N)
