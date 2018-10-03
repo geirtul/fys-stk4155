@@ -17,6 +17,7 @@ class RidgeRegression(Analysis):
 
 
     def __init__(self):
+        "hei Geir"
         
         """Perform regression using the ridge method
         on a dataset y, with a polynomial of degree m.
