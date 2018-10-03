@@ -44,6 +44,7 @@ class RidgeRegression(Analysis):
         self.m = m
         self.predictors = numOfPredictors 
         self.z = z
+        
 
        # Setup
         num_datapoints = z.shape[0]
@@ -63,7 +64,7 @@ class RidgeRegression(Analysis):
         
         p = len(centeredX) 
 
-        self.beta0 = self.z.mean(1) 
+        self.beta0 = self.z.mean(1)
         #lmb_values = [1E-4, 1E-3, 1E-2, 10, 1E2, 1E4] #from lecture notes 
         #numValues = len(lmb_values)
         I = np.eye(p)
@@ -72,7 +73,8 @@ class RidgeRegression(Analysis):
 
         
         #for i, lmb in enumerate(lmb_values):
-        self.beta = (np.linalg.inv(self.centeredX.T @ self.centeredX + 1E-2*I) @ self.centeredX.T @ self.z)
+        self.beta = (np.linalg.inv(self.centeredX.T @ self.centeredX + 1E-2*I) 
+                    @ self.centeredX.T @ self.z)
 
 
     def makePrediction(self):
@@ -81,8 +83,8 @@ class RidgeRegression(Analysis):
         Returns prediction together with x and y values for plotting. 
         """
         
-        self.z_predicted = self.centeredX @ self.beta + self.beta0
-
+        self.z_predicted = self.centeredX @ self.beta #+ self.beta0
+        
 
         # Output
         X_plot, Y_plot = np.meshgrid(self.X_vals[:,0], self.X_vals[:,1])
@@ -96,6 +98,7 @@ if __name__ == "__main__":
     x, y = np.meshgrid(x,y)
 
     z = FrankeFunction(x, y)
+    #z  = z - z.mean(1)[:, np.newaxis] 
 
     data = [x, y, z] 
 
