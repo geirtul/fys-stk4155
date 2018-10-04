@@ -87,32 +87,31 @@ if __name__ == "__main__":
     x, y = np.meshgrid(x,y)
 
     z = FrankeFunction(x, y)
-    noiseRange = 1
+    noiseRange = 10
     noise = noiseRange*np.random.uniform(-0.5, 0.5, size = z.shape)
     #z  = z - z.mean(1)[:, np.newaxis]
     z = z + noise
 
     data = [x, y, z] 
     
-    lmb_values = [0, 1e-4, 1e-3, 1e-2, 10, 1e2, 1e4]
+    lmb_values = [1e-2, 1, 10]
 
-    lasso = LassoRegression()
-    lasso.fitCoefficients(5, 2, z, 0.1)
+    #lasso = LassoRegression()
+    #lasso.fitCoefficients(5, 2, z, 0.1)
 
-    output = lasso.makePrediction() 
+    #output = lasso.makePrediction() 
+    #r2 = lasso.r2_score()
 
-    r2 = lasso.r2_score()
-    print(r2)
-    """
+    #print(r2)
+
     for lmb in lmb_values:
-        ridge = RidgeRegression() 
-        ridge.fitCoefficients(5, 2, z, lmb)
+        lasso = LassoRegression() 
+        lasso.fitCoefficients(5, 2, z, lmb)
 
-        output = ridge.makePrediction()
+        output = lasso.makePrediction()
 
-        r2 = ridge.r2_score() 
+        r2 = lasso.r2_score() 
         print("R2 = {:f} for lmd = {:f}".format(r2, lmb))
-    """
 
     #ridge.plotting_3d(data, output)
 
