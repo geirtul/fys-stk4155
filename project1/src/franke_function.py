@@ -16,7 +16,7 @@ def FrankeFunction(x,y):
 
 if __name__ == "__main__":
 
-    fig = plt.figure() 
+    fig = plt.figure()
     ax = fig.gca(projection='3d')
 
     # Make data.
@@ -26,24 +26,7 @@ if __name__ == "__main__":
 
     z = FrankeFunction(x, y)
 
-
-
-if __name__ == "__main__":
-    
-    # Plot the surface.
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    surf = ax.plot_surface(x, y, z, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
-
-
-    # Customize the z axis.
-    ax.set_zlim(-0.10, 1.40)
-    ax.zaxis.set_major_locator(LinearLocator(10))
-    ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-
-    # Add a color bar which maps values to colors.
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-
-    plt.show()
-
+    print("Shape x, y, z")
+    print(x.shape)
+    print(y.shape)
+    print(z.shape)

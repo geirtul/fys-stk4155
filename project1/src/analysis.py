@@ -2,6 +2,7 @@ import numpy as np
 from time import time
 from numpy.random import randint
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.model_selection import train_test_split
 from matplotlib import cm
 from random import random, seed
 import matplotlib.pyplot as plt
@@ -49,29 +50,27 @@ class Analysis:
         n_bootstraps = 100
 
         # Split into training and test sets
-        test_size = 0.2
-        stop = int(np.floor(test_size*N))
-        x_test = self.X_vals[0:stop, :]
-        data_test = self.z[0:stop, :]
-        #x_train = self.X_vals[test_size*N:,:]
-        data_train = self.z[stop:,:]
+        x_test, data_test, x_train, data_train = train_test_split(self.X_vals, self.z)
 
         def resample(data):
-            points = len(data)
-            #x_indices = randint(0, points, x.shape)
-            data_indices = randint(0,points,data.shape)
-            return data[data_indices]
+            """
+            Pick random values from data, with replacement, to make a new dataset.
+            """
+            new_data = np.empty((data.shape))
+            for i in range(data.shape[0]):
+                new_data[i] = np.random.choice(data[i], len(data[i]), replace=True)
+            return new_data
 
-        
-        y_fits = np.empty((len(data_train), n_bootstraps))
+        y_fits = np.empty((n_bootstraps, len(data_train)))
         for i in range(n_bootstraps):
-            
             data_re = resample(data_train)
             self.fitCoefficients(5, 2, data_re)
-            y_fits[i] = self.makePrediction()
+            y_fits[i] = self.makePrediction()[2]
 
-        
-        
+
+
+
+
         print("Mean y_fit = {}".format(np.mean(y_fits)))
         """
         #Some pretty printing we probably don't need.

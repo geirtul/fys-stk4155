@@ -4,11 +4,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from matplotlib import cm
 from random import random, seed
 from analysis import Analysis
-#import matplotlib.pyplot as plt
-#from matplotlib.ticker import LinearLocator, FormatStrFormatter
-#from mpl_toolkits.mplot3d import Axes3D
-#from analysis import plotting_3d
-
 
 
 class OrdinaryLeastSquares(Analysis):
