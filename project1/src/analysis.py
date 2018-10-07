@@ -19,7 +19,7 @@ class Analysis:
         """
 
         num_datapoints = self.z.shape[0]
-        mse = np.sum(np.square(self.z - self.z_predicted))/num_datapoints
+        mse = np.sum(np.square(self.z - self.z_predicted)) / num_datapoints
         return mse
 
     def r2_score(self):
@@ -35,10 +35,10 @@ class Analysis:
 
         N = self.z.shape[0]
         print(self.z_predicted)
-        z_mean = np.sum(self.z)/N
+        z_mean = np.sum(self.z) / N
         upper_sum = np.sum(np.square(self.z - self.z_predicted))
         lower_sum = np.sum(np.square(self.z - z_mean))
-        r2score = 1 - upper_sum/lower_sum
+        r2score = 1 - upper_sum / lower_sum
         return r2score
 
     def bootstrap(self):
@@ -110,7 +110,7 @@ class Analysis:
         fig.colorbar(surf1, shrink=0.5, aspect=5)
 
         # Second subplot
-        ax = fig.add_subplot(1,2,2, projection='3d')
+        ax = fig.add_subplot(1, 2, 2, projection='3d')
         surf2 = ax.plot_surface(self.data[0], self.data[1],
                                 self.data[2], cmap=cm.coolwarm,
                                 linewidth=0, antialiased=False)
