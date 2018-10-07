@@ -1,19 +1,17 @@
 import numpy as np
-from time import time
-from numpy.random import randint
-from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split
 from matplotlib import cm
-from random import random, seed
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
+
 
 class Analysis:
 
     def mean_squared_error(self):
 
-        """Evaluate the mean squared error of the output generated
+        """
+        Evaluate the mean squared error of the output generated
         by Ordinary Least Squares regressions.
 
         y               - the data on which OLS was performed on
@@ -26,7 +24,8 @@ class Analysis:
 
     def r2_score(self):
 
-        """ Evaluate the R2 score function.
+        """
+        Evaluate the R2 score function.
 
         y               - the data on which OLS was performed on
         y_predicted     - the data the model spits out after regression
@@ -50,30 +49,27 @@ class Analysis:
         n_bootstraps = 100
 
         # Split into training and test sets
-        x_test, data_test, x_train, data_train = train_test_split(self.X_vals, self.z)
+        x_train, x_test, data_train, data_test = train_test_split(self.X_vals, self.z, test_size=0.2)
 
         def resample(data):
             """
             Pick random values from data, with replacement, to make a new dataset.
             """
-            new_data = np.empty((data.shape))
-            for i in range(data.shape[0]):
-                new_data[i] = np.random.choice(data[i], len(data[i]), replace=True)
-            return new_data
+            new_data = np.copy(data).reshape(data.size)
+            print(new_data.shape)
+            new_data = np.random.choice(new_data, data.size, replace=True)
+            return new_data.reshape(data.shape)
 
         y_fits = np.empty((n_bootstraps, len(data_train)))
         for i in range(n_bootstraps):
             data_re = resample(data_train)
             self.fitCoefficients(5, 2, data_re)
-            y_fits[i] = self.makePrediction()[2]
-
-
-
-
+            newfit = self.makePrediction()[2]
+            y_fits[i] = np.sum(newfit, axis=1)
 
         print("Mean y_fit = {}".format(np.mean(y_fits)))
         """
-        #Some pretty printing we probably don't need.
+        Some pretty printing we probably don't need.
         print("Bootstrap statistics:")
         print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean", "std.err"))
         print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(self.z),
@@ -83,10 +79,10 @@ class Analysis:
         """
         return y_fits
 
-
     def plotting_3d(self, data, output, save=False):
 
-        """ Plots the modeled data side-by-side with the original dataset
+        """
+        Plots the modeled data side-by-side with the original dataset
         for comparison.
 
         data    - list[x, y, z]
