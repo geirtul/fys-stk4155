@@ -44,6 +44,19 @@ class Analysis:
         """
         Perform the chosen regression using bootstrapping.
         """
+
+        def statistics(testdata, predicted_data):
+            """
+            Calculates useful statistics
+
+            :param testdata: Data to compare the fitted data with
+            :param predicted_data: Data predicted by the model
+            :return: mean square error, bias, variance
+            """
+            MSE = np.mean(np.mean((testdata - predicted_data)**2, axis 1, keepdims=True))
+            bias = np.mean(testdata)
+            return MSE, bias, variance
+
         n_bootstraps = 100
 
         # Split into training and test sets
@@ -51,10 +64,11 @@ class Analysis:
 
         y_fits = np.empty((n_bootstraps, len(data_train)))
         for i in range(n_bootstraps):
-            data_re = resample(x_train, data_train)
-            self.fitCoefficients(5, 2, data_re)
-            newfit = self.makePrediction()[2]
+            x_resampled, data_resampled = resample(x_train, data_train, replace=True)
+            self.fitCoefficients(5, 2, data_resampled)
+            newfit = self.makePrediction(x_test)
             y_fits[i] = np.sum(newfit, axis=1)
+            # TODO: make this business right here function as it should.
 
         print("Bootstrap statistics:")
         print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean_fit", "std.err"))

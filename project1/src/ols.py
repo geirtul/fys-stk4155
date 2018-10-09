@@ -45,16 +45,17 @@ class OrdinaryLeastSquares(Analysis):
         self.X = poly.fit_transform(X_vals)  # Input values to design matrix
         self.beta = np.linalg.inv(self.X.T @ self.X) @ self.X.T @ self.z
 
-    def makePrediction(self):
+    def makePrediction(self, x_in):
+        # TODO: figure out how to deal with changing x-input.
         """
         Makes a model prediction
         Returns prediction together with x and y values for plotting.
         """
-        self.z_predicted = self.X @ self.beta
+        self.z_predicted = x_in @ self.beta
 
         # Output
-        X_plot, Y_plot = np.meshgrid(self.X_vals[:, 0], self.X_vals[:, 1])
-        return [X_plot, Y_plot, self.z_predicted]
+        # X_plot, Y_plot = np.meshgrid(self.x_in[:, 0], self.X_vals[:, 1])
+        return self.z_predicted
 
 
 if __name__ == "__main__":
