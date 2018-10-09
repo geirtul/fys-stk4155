@@ -36,6 +36,7 @@ parso==0.3.1
 pexpect==4.6.0
 pickleshare==0.7.4
 Pillow==5.2.0
+pkg-resources==0.0.0
 prometheus-client==0.3.1
 prompt-toolkit==1.0.15
 protobuf==3.6.1
@@ -46,14 +47,13 @@ python-dateutil==2.7.3
 pytz==2018.5
 pyzmq==17.1.2
 qtconsole==4.4.1
-scikit-learn==0.19.2
+scikit-learn==0.20.0
 scipy==1.1.0
 Send2Trash==1.5.0
 simplegeneric==0.8.1
 six==1.11.0
 sympy==1.2
 tensorboard==1.10.0
-tensorflow==1.10.1
 termcolor==1.1.0
 terminado==0.8.1
 testpath==0.3.1

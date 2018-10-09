@@ -7,7 +7,8 @@ from analysis import Analysis
 class OrdinaryLeastSquares(Analysis):
 
     def __init__(self):
-        """Perform linear regression using the Ordinary Least Squares method
+        """
+        Perform linear regression using the Ordinary Least Squares method
         on a dataset y, with a polynomial of degree m.
         The PolynomialFeatures module from scikit learn sets up the
         vandermonde matrix such that in the matrix equation X*beta = y,
@@ -23,9 +24,10 @@ class OrdinaryLeastSquares(Analysis):
         self.beta = None
 
     def fitCoefficients(self, m, numOfPredictors, z):
-        """ fits beta to model
+        """ 
+        Fits polynomial coefficients beta for the model to the data.
 
-        n - int, degree of polynomial you want to fit
+        m - int, degree of polynomial you want to fit
         numOfPredictors - int, number of predictors
         z - vector, target data
         """
@@ -44,7 +46,8 @@ class OrdinaryLeastSquares(Analysis):
         self.beta = np.linalg.inv(self.X.T @ self.X) @ self.X.T @ self.z
 
     def makePrediction(self):
-        """Makes a model prediction
+        """
+        Makes a model prediction
         Returns prediction together with x and y values for plotting.
         """
         self.z_predicted = self.X @ self.beta

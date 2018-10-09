@@ -35,7 +35,7 @@ class Analysis:
 
         N = self.z.shape[0]
         print(self.z_predicted)
-        z_mean = np.sum(self.z) / N
+        z_mean = np.mean(self.z)
         upper_sum = np.sum(np.square(self.z - self.z_predicted))
         lower_sum = np.sum(np.square(self.z - z_mean))
         r2score = 1 - upper_sum / lower_sum
@@ -51,12 +51,12 @@ class Analysis:
         # Split into training and test sets
         x_train, x_test, data_train, data_test = train_test_split(self.X_vals, self.z, test_size=0.2)
 
-        def resample(data):
+        def resample(points, data):
             """
             Pick random values from data, with replacement, to make a new dataset.
             """
+            indices = np.random.choice
             new_data = np.copy(data).reshape(data.size)
-            print(new_data.shape)
             new_data = np.random.choice(new_data, data.size, replace=True)
             return new_data.reshape(data.shape)
 
@@ -67,20 +67,18 @@ class Analysis:
             newfit = self.makePrediction()[2]
             y_fits[i] = np.sum(newfit, axis=1)
 
-        print("Mean y_fit = {}".format(np.mean(y_fits)))
-        """
-        Some pretty printing we probably don't need.
         print("Bootstrap statistics:")
-        print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean", "std.err"))
+        print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean_fit", "std.err"))
         print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(self.z),
                                                 np.std(self.z),
-                                                np.mean(t),
-                                                np.std(t)))
-        """
+                                                np.mean(y_fits),
+                                                np.std(y_fits)))
+
+        print("\nBootstrap with scikit-learn:")
+
         return y_fits
 
     def plotting_3d(self, data, output, save=False):
-
         """
         Plots the modeled data side-by-side with the original dataset
         for comparison.
