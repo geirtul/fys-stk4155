@@ -1,9 +1,5 @@
 import numpy as np
-from matplotlib import cm
-from random import random, seed
 import matplotlib.pyplot as plt
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def FrankeFunction(x,y):

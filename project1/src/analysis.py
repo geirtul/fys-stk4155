@@ -1,9 +1,9 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.utils import resample
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
-from mpl_toolkits.mplot3d import Axes3D
 
 
 class Analysis:
@@ -33,7 +33,6 @@ class Analysis:
         upper/lower_sum - numerator/denominator in R2 definition.
         """
 
-        N = self.z.shape[0]
         print(self.z_predicted)
         z_mean = np.mean(self.z)
         upper_sum = np.sum(np.square(self.z - self.z_predicted))
@@ -45,24 +44,14 @@ class Analysis:
         """
         Perform the chosen regression using bootstrapping.
         """
-        N = len(self.z)
         n_bootstraps = 100
 
         # Split into training and test sets
         x_train, x_test, data_train, data_test = train_test_split(self.X_vals, self.z, test_size=0.2)
 
-        def resample(points, data):
-            """
-            Pick random values from data, with replacement, to make a new dataset.
-            """
-            indices = np.random.choice
-            new_data = np.copy(data).reshape(data.size)
-            new_data = np.random.choice(new_data, data.size, replace=True)
-            return new_data.reshape(data.shape)
-
         y_fits = np.empty((n_bootstraps, len(data_train)))
         for i in range(n_bootstraps):
-            data_re = resample(data_train)
+            data_re = resample(x_train, data_train)
             self.fitCoefficients(5, 2, data_re)
             newfit = self.makePrediction()[2]
             y_fits[i] = np.sum(newfit, axis=1)
