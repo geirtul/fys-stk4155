@@ -47,7 +47,7 @@ class RidgeRegression(Analysis):
         self.lmb = lmb
 
         # Regression
-        X = self.poly.fit_transform(self.predictors) # Input values to design matrix
+        X = self.poly.fit_transform(self.predictors)  # Input values to design matrix
 
         I = np.eye(len(X[1]))
 
