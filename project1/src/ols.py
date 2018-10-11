@@ -1,22 +1,14 @@
 import numpy as np
 from franke_function import FrankeFunction
 from sklearn.preprocessing import PolynomialFeatures
-from matplotlib import cm
-from random import random, seed
 from analysis import Analysis
-#import matplotlib.pyplot as plt
-#from matplotlib.ticker import LinearLocator, FormatStrFormatter
-#from mpl_toolkits.mplot3d import Axes3D
-#from analysis import plotting_3d
-
 
 
 class OrdinaryLeastSquares(Analysis):
 
-
     def __init__(self):
-
-        """Perform linear regression using the Ordinary Least Squares method
+        """
+        Perform linear regression using the Ordinary Least Squares method
         on a dataset y, with a polynomial of degree m.
         The PolynomialFeatures module from scikit learn sets up the
         vandermonde matrix such that in the matrix equation X*beta = y,
@@ -29,66 +21,62 @@ class OrdinaryLeastSquares(Analysis):
         and performs regression
         """
 
+        self.predictors = None
+        self.poly_degree = None
+        self.outcome = None
         self.beta = None
+        self.poly = None
+        self.predicted_outcome = None
 
-    def fitCoefficients(self, m, numOfPredictors, z):
-
-        """ fits beta to model
-
-        n - int, degree of polynomial you want to fit
-        numOfPredictors - int, number of predictors
-        z - vector, target data
+    def fit_coefficients(self, predictors, outcome, poly_degree):
         """
-        self.m = m
-        self.predictors = numOfPredictors
-        self.z = z
+        Fits the polynomial coefficients beta to the matrix
+        of polynomial features.
 
-       # Setup
-        num_datapoints = z.shape[0]
-        X_vals = np.random.uniform(0, 1, (num_datapoints, self.predictors))
-        self.X_vals = np.sort(X_vals, axis=0) # Sort the x-values
-        poly = PolynomialFeatures(m)
+        :param predictors: x,y, ... values that generated the outcome
+        :param outcome: the dataset we will fit
+        :param poly_degree: Degree of the polynomial to fit
+        """
+        self.predictors = predictors
+        self.poly_degree = poly_degree
+        self.poly = PolynomialFeatures(poly_degree)
+        self.outcome = outcome
+
 
         # Regression
-        self.X = poly.fit_transform(X_vals) # Input values to design matrix
-        #beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(z)
-        #z_predicted = X.dot(beta)
+        X = self.poly.fit_transform(self.predictors)  # predictors values to design matrix
+        self.beta = np.linalg.inv(X.T @ X) @ X.T @ outcome
 
-        self.beta = np.linalg.inv( self.X.T @ self.X ) @ self.X.T @ self.z
-
-
-    def makePrediction(self):
-
-        """Makes a model prediction
-        Returns prediction together with x and y values for plotting.
+    def make_prediction(self, x_in):
         """
+        Makes a model prediction
+        Returns prediction together with x and y values for plotting.
 
-        self.z_predicted = self.X @ self.beta
-
-
-        # Output
-        X_plot, Y_plot = np.meshgrid(self.X_vals[:,0], self.X_vals[:,1])
-        return [X_plot, Y_plot, self.z_predicted]
-
+        :param x_in: predictors to generate an outcome with
+        """
+        X = self.poly.fit_transform(x_in)
+        self.predicted_outcome = X @ self.beta
+        return self.predicted_outcome
 
 
 if __name__ == "__main__":
     # Data from FrankeFunction
     x = np.arange(0, 1, 0.05)
     y = np.arange(0, 1, 0.05)
-    x, y = np.meshgrid(x,y)
+    x, y = np.meshgrid(x, y)
 
-    z = FrankeFunction(x, y)
+    # Make predictor values a matrix with number of columns = number of predictors.
+    # TODO: Need better input handling. Number of predictors shouldn't matter.
+    predictors_input = np.c_[x.ravel(), y.ravel()]
 
-    data = [x, y, z]
+    z = FrankeFunction(x, y).ravel()
 
+    # Initialize the regression object and perform a fit
     ols = OrdinaryLeastSquares()
-    ols.fitCoefficients(5, 2, z)
+    ols.fit_coefficients(predictors_input, z, 5)
+    z_predict = ols.make_prediction(predictors_input)
 
-    output = ols.makePrediction()
+    print("MSE = ", ols.mean_squared_error())
+    print("R2 score = ", ols.r2_score())
 
-    r2 = ols.r2_score
     ols.bootstrap()
-
-
-    ols.plotting_3d(data, output)
