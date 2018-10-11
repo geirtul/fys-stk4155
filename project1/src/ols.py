@@ -22,6 +22,7 @@ class OrdinaryLeastSquares(Analysis):
         """
 
         self.predictors = None
+        self.poly_degree = None
         self.outcome = None
         self.beta = None
         self.poly = None
@@ -37,8 +38,10 @@ class OrdinaryLeastSquares(Analysis):
         :param poly_degree: Degree of the polynomial to fit
         """
         self.predictors = predictors
+        self.poly_degree = poly_degree
         self.poly = PolynomialFeatures(poly_degree)
         self.outcome = outcome
+
 
         # Regression
         X = self.poly.fit_transform(self.predictors)  # predictors values to design matrix
@@ -63,18 +66,17 @@ if __name__ == "__main__":
     x, y = np.meshgrid(x, y)
 
     # Make predictor values a matrix with number of columns = number of predictors.
+    # TODO: Need better input handling. Number of predictors shouldn't matter.
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
     z = FrankeFunction(x, y).ravel()
 
+    # Initialize the regression object and perform a fit
     ols = OrdinaryLeastSquares()
     ols.fit_coefficients(predictors_input, z, 5)
-
     z_predict = ols.make_prediction(predictors_input)
 
-    mse = ols.mean_squared_error()
-    r2 = ols.r2_score()
-    print("MSE = ", mse)
-    print("R2-score = ", r2)
+    print("MSE = ", ols.mean_squared_error())
+    print("R2 score = ", ols.r2_score())
 
-    ols.plotting_3d()
+    ols.bootstrap()

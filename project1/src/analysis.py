@@ -39,42 +39,47 @@ class Analysis:
 
     def bootstrap(self):
         """
-        Perform the chosen regression using bootstrapping.
+        Perform the chosen regression using bootstrap algorithm.
         """
 
         def statistics(testdata, predicted_data):
             """
-            Calculates useful statistics
+            Calculates useful statistics.
 
             :param testdata: Data to compare the fitted data with
             :param predicted_data: Data predicted by the model
             :return: mean square error, bias, variance
             """
-            # MSE = np.mean(np.mean((testdata - predicted_data)**2, axis 1, keepdims=True))
-            # bias = np.mean(testdata)
-            raise NotImplemented
+            mse = np.mean(np.mean(np.square(testdata - predicted_data)))
+            bias = np.mean(np.square(testdata - np.mean(predicted_data)))
+            variance = np.mean(np.var(predicted_data))
+            return mse, bias, variance
 
-        n_bootstraps = 100
+        n_bootstraps = 1000
 
         # Split into training and test sets
-        x_train, x_test, data_train, data_test = train_test_split(self.X_vals, self.z, test_size=0.2)
+        x_train, x_test, data_train, data_test = train_test_split(self.predictors, self.outcome, test_size=0.2)
 
-        y_fits = np.empty((n_bootstraps, len(data_train)))
+        y_fits = np.empty((n_bootstraps, len(data_test.ravel())))
         for i in range(n_bootstraps):
-            x_resampled, data_resampled = resample(x_train, data_train, replace=True)
-            self.fitCoefficients(5, 2, data_resampled)
-            newfit = self.makePrediction(x_test)
-            y_fits[i] = np.sum(newfit, axis=1)
-            # TODO: make this business right here function as it should.
+            x_re, data_re = resample(x_train, data_train, replace=True)
+            self.fit_coefficients(x_re, data_re, self.poly_degree)
+            newfit = self.make_prediction(x_test)
+            y_fits[i] = newfit.ravel()
+
+        mse, bias, variance = statistics(data_test, y_fits)
 
         print("Bootstrap statistics:")
         print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean_fit", "std.err"))
-        print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(self.z),
-                                                np.std(self.z),
+        print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(self.outcome),
+                                                np.std(self.outcome),
                                                 np.mean(y_fits),
                                                 np.std(y_fits)))
 
-        print("\nBootstrap with scikit-learn:")
+        print("MSE = ", mse)
+        print("Bias = ", bias)
+        print("Var = ", variance)
+        print("{} >= {} + {} = {}".format(mse, bias, variance, bias+variance))
 
         return y_fits
 
