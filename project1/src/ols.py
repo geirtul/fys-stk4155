@@ -21,41 +21,39 @@ class OrdinaryLeastSquares(Analysis):
         and performs regression
         """
 
+        self.predictors = None
+        self.outcome = None
         self.beta = None
+        self.poly = None
+        self.predicted_outcome = None
 
-    def fitCoefficients(self, m, numOfPredictors, z):
-        """ 
-        Fits polynomial coefficients beta for the model to the data.
-
-        m - int, degree of polynomial you want to fit
-        numOfPredictors - int, number of predictors
-        z - vector, target data
+    def fit_coefficients(self, predictors, outcome, poly_degree):
         """
-        self.m = m
-        self.predictors = numOfPredictors
-        self.z = z
+        Fits the polynomial coefficients beta to the matrix
+        of polynomial features.
 
-        # Setup
-        num_datapoints = z.shape[0]
-        X_vals = np.random.uniform(0, 1, (num_datapoints, self.predictors))
-        self.X_vals = np.sort(X_vals, axis=0)  # Sort the x-values
-        poly = PolynomialFeatures(m)
+        :param predictors: x,y, ... values that generated the outcome
+        :param outcome: the dataset we will fit
+        :param poly_degree: Degree of the polynomial to fit
+        """
+        self.predictors = predictors
+        self.poly = PolynomialFeatures(poly_degree)
+        self.outcome = outcome
 
         # Regression
-        self.X = poly.fit_transform(X_vals)  # Input values to design matrix
-        self.beta = np.linalg.inv(self.X.T @ self.X) @ self.X.T @ self.z
+        X = self.poly.fit_transform(self.predictors)  # predictors values to design matrix
+        self.beta = np.linalg.inv(X.T @ X) @ X.T @ outcome
 
-    def makePrediction(self, x_in):
-        # TODO: figure out how to deal with changing x-input.
+    def make_prediction(self, x_in):
         """
         Makes a model prediction
         Returns prediction together with x and y values for plotting.
-        """
-        self.z_predicted = x_in @ self.beta
 
-        # Output
-        # X_plot, Y_plot = np.meshgrid(self.x_in[:, 0], self.X_vals[:, 1])
-        return self.z_predicted
+        :param x_in: predictors to generate an outcome with
+        """
+        X = self.poly.fit_transform(x_in)
+        self.predicted_outcome = X @ self.beta
+        return self.predicted_outcome
 
 
 if __name__ == "__main__":
@@ -64,16 +62,19 @@ if __name__ == "__main__":
     y = np.arange(0, 1, 0.05)
     x, y = np.meshgrid(x, y)
 
-    z = FrankeFunction(x, y)
+    # Make predictor values a matrix with number of columns = number of predictors.
+    predictors_input = np.c_[x.ravel(), y.ravel()]
 
-    data = [x, y, z]
+    z = FrankeFunction(x, y).ravel()
 
     ols = OrdinaryLeastSquares()
-    ols.fitCoefficients(5, 2, z)
+    ols.fit_coefficients(predictors_input, z, 5)
 
-    output = ols.makePrediction()
+    z_predict = ols.make_prediction(predictors_input)
 
-    r2 = ols.r2_score
-    ols.bootstrap()
+    mse = ols.mean_squared_error()
+    r2 = ols.r2_score()
+    print("MSE = ", mse)
+    print("R2-score = ", r2)
 
-    # ols.plotting_3d(data, output)
+    ols.plotting_3d()
