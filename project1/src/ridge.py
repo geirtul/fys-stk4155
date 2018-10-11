@@ -1,24 +1,15 @@
 import numpy as np
-from numpy import mean
-from franke_function import FrankeFunction 
+from franke_function import FrankeFunction
 from sklearn.preprocessing import PolynomialFeatures
-from matplotlib import cm
-from random import random, seed
-from analysis import Analysis 
-#import matplotlib.pyplot as plt
-#from matplotlib.ticker import LinearLocator, FormatStrFormatter
-#from mpl_toolkits.mplot3d import Axes3D
-#from analysis import plotting_3d
-#include <.h>
-
+from analysis import Analysis
 
 
 class RidgeRegression(Analysis):
 
-
     def __init__(self):
         
-        """Perform regression using the ridge method
+        """
+        Perform regression using the ridge method
         on a dataset y, with a polynomial of degree m.
         The PolynomialFeatures module from scikit learn sets up the 
         vandermonde matrix such that in the matrix equation X*beta = y, 
@@ -31,90 +22,77 @@ class RidgeRegression(Analysis):
         and performs regression
         """
 
-        self.beta = None 
+        self.predictors = None
+        self.poly_degree = None
+        self.outcome = None
+        self.beta = None
+        self.poly = None
+        self.predicted_outcome = None
+        self.lmb = None
 
-    def fitCoefficients(self, m, numOfPredictors, z, lmb=0):
-        
-        """ fits beta to model
-
-        n - int, degree of polynomial you want to fit
-        numOfPredictors - int, number of predictors  
-        z - vector, target data
-        lmb - float, shrinkage lmb=0 makes the model equal to ols  
-
+    def fit_coefficients(self, predictors, outcome, poly_degree, lmb=0):
         """
-        self.m = m
-        self.predictors = numOfPredictors 
-        self.z = z
+        Fits the polynomial coefficients beta to the matrix
+        of polynomial features.
 
-       # Setup
-        num_datapoints = z.shape[0]
-        X_vals = np.random.uniform(0, 1, (num_datapoints, self.predictors))
-        self.X_vals = np.sort(X_vals, axis=0) # Sort the x-values
-        poly = PolynomialFeatures(m)
+        :param predictors: x,y, ... values that generated the outcome
+        :param outcome: the dataset we will fit
+        :param poly_degree: Degree of the polynomial to fit
+        :param lmb: float, shrinkage lmb=0 makes the model equal to ols
+        """
+        self.predictors = predictors
+        self.poly_degree = poly_degree
+        self.poly = PolynomialFeatures(poly_degree)
+        self.outcome = outcome
+        self.lmb = lmb
 
         # Regression
-        self.X = poly.fit_transform(X_vals) # Input values to design matrix
+        X = self.poly.fit_transform(self.predictors) # Input values to design matrix
 
-        #centering X?
-        #meanX = self.X.mean(1)
-        #centeredX = self.X - meanX[:, np.newaxis]
-        #self.centeredX = centeredX[:, 1:] #without intercept
-        
-        #print (self.centeredX.shape)
-        
-        #p = len(centeredX) 
+        I = np.eye(len(X[1]))
 
-        #self.beta0 = self.z.mean(1)
-        #lmb_values = [1E-4, 1E-3, 1E-2, 10, 1E2, 1E4] #from lecture notes 
-        #numValues = len(lmb_values)
-        I = np.eye(len(self.X[1]))
+        self.beta = (np.linalg.inv(X.T @ X + lmb * I) @ X.T @ outcome)
 
-        #self.beta = np.zeros((p+1, numValues))
-
-        #for i, lmb in enumerate(lmb_values):
-        self.beta = (np.linalg.inv(self.X.T @ self.X + lmb*I) 
-                    @ self.X.T @ self.z)
-
-
-    def makePrediction(self):
-
-        """Makes a model prediction
+    def make_prediction(self, x_in):
+        """
+        Makes a model prediction
         Returns prediction together with x and y values for plotting. 
         """
-        
-        self.z_predicted = self.X @ self.beta 
-        
-        # Output
-        X_plot, Y_plot = np.meshgrid(self.X_vals[:,0], self.X_vals[:,1])
-        return [X_plot, Y_plot, self.z_predicted]
+        X = self.poly.fit_transform(x_in)
+        self.predicted_outcome = X @ self.beta
+
+        return self.predicted_outcome
 
 
 if __name__ == "__main__":
     # Data from FrankeFunction
     x = np.arange(0, 1, 0.05)
     y = np.arange(0, 1, 0.05)
-    x, y = np.meshgrid(x,y)
+    x, y = np.meshgrid(x, y)
 
-    z = FrankeFunction(x, y)
+    z = FrankeFunction(x, y).ravel()
+
+    # Make predictor values a matrix with number of columns = number of predictors.
+    # TODO: Need better input handling. Number of predictors shouldn't matter.
+    predictors_input = np.c_[x.ravel(), y.ravel()]
+
+    """
     noiseRange = 1
     noise = noiseRange*np.random.uniform(-0.5, 0.5, size = z.shape)
-    #z  = z - z.mean(1)[:, np.newaxis]
     z = z + noise
-
-    data = [x, y, z] 
-    
+    """
     lmb_values = [0, 1e-4, 1e-3, 1e-2, 10, 1e2, 1e4]
     
     for lmb in lmb_values:
+        print("Running Ridge Regression with lambda = {}\n".format(lmb))
         ridge = RidgeRegression() 
-        ridge.fitCoefficients(5, 2, z, lmb)
+        ridge.fit_coefficients(predictors_input, z, 5, lmb)
 
-        output = ridge.makePrediction()
-
-        r2 = ridge.r2_score() 
+        ridge.make_prediction(predictors_input)
+        # ridge.bootstrap()
+        # ridge.plotting_3d()
+        mse = ridge.mean_squared_error()
+        r2 = ridge.r2_score()
+        print("MSE = {:f} for lmd = {:f}".format(mse, lmb))
         print("R2 = {:f} for lmd = {:f}".format(r2, lmb))
-
-
-    #ridge.plotting_3d(data, output)
-
+        print("===================================\n")

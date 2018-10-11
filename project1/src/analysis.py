@@ -10,14 +10,15 @@ from mpl_toolkits.mplot3d import Axes3D
 class Analysis:
 
     def mean_squared_error(self):
-
         """
         Evaluate the mean squared error of the output generated
         by Ordinary Least Squares regressions.
 
-        y               - the data on which OLS was performed on
-        y_predicted     - the data the model spits out after regression
+        outcome               - the data on which regression was performed on
+        predicted_outcome     - the data the model spits out after regression
         """
+        # TODO: This method only works when bootstrap is not being performs.
+        # TODO: Concider generalizing so that this method can be called inside bootstrap?
 
         N = self.outcome.size
         mse = np.sum(np.square(self.outcome - self.predicted_outcome)) / N
@@ -69,13 +70,13 @@ class Analysis:
 
         mse, bias, variance = statistics(data_test, y_fits)
 
+        # Output
         print("Bootstrap statistics:")
         print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean_fit", "std.err"))
-        print("{:8f} | {:8f} | {:8f} | {:8f}".format( np.mean(self.outcome),
-                                                np.std(self.outcome),
-                                                np.mean(y_fits),
-                                                np.std(y_fits)))
-
+        print("{:8f} | {:8f} | {:8f} | {:8f}".format(np.mean(self.outcome),
+                                                     np.std(self.outcome),
+                                                     np.mean(y_fits),
+                                                     np.std(y_fits)))
         print("MSE = ", mse)
         print("Bias = ", bias)
         print("Var = ", variance)

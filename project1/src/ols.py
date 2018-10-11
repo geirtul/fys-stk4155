@@ -42,7 +42,6 @@ class OrdinaryLeastSquares(Analysis):
         self.poly = PolynomialFeatures(poly_degree)
         self.outcome = outcome
 
-
         # Regression
         X = self.poly.fit_transform(self.predictors)  # predictors values to design matrix
         self.beta = np.linalg.inv(X.T @ X) @ X.T @ outcome
