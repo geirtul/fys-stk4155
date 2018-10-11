@@ -68,47 +68,34 @@ if __name__ == "__main__":
     x = np.arange(0, 1, 0.05)
     y = np.arange(0, 1, 0.05)
     x, y = np.meshgrid(x, y)
+    z = FrankeFunction(x, y)
 
-    z = FrankeFunction(x, y).ravel()
-    # Make predictor values a matrix with number of columns = number of predictors.
+    # Make predictor values and data a matrix with number of columns = number of predictors.
     # TODO: Need better input handling. Number of predictors shouldn't matter.
     predictors_input = np.c_[x.ravel(), y.ravel()]
+    z = z.ravel()
 
-    x_train, x_test, data_train, data_test = train_test_split(predictors_input, z, test_size=0.2)
+    X = PolynomialFeatures(5).fit_transform(predictors_input)
 
-    lasso = linear_model.Lasso(alpha=1.0)
-    lasso.fit(x_train, data_train)
-    pred1 = lasso.predict(x_test)
+    x_train, x_test, data_train, data_test = train_test_split(X, z, test_size=0.2)
 
-    print("MSE = ", np.mean(np.square(data_test - pred1) / len(data_test)))
-    print("R2: ", lasso.score(pred1, data_test))
+    alpha_vals = [1e-5, 1e-4, 1e-3, 1e-2]
+
+    for alpha in alpha_vals:
+        print("Running Lasso Regression with alpha = {}\n".format(alpha))
+        lasso = linear_model.Lasso(alpha=alpha)
+        lasso.fit(x_train, data_train)
+        pred1 = lasso.predict(x_test)
+
+        print("MSE = ", np.mean(np.square(data_test - pred1) / len(data_test)))
+        print("R2: ", lasso.score(x_test, data_test))
+        print("===================================\n")
 
     """
     noiseRange = 10
     noise = noiseRange*np.random.uniform(-0.5, 0.5, size = z.shape)
     z  = z - z.mean(1)[:, np.newaxis]
     z = z + noise
-
-
-    alpha_values = [1e-2, 1, 10]
-
-    lasso = LassoRegression()
-    lasso.fit_coefficients(x_train, data_train, 5, 0.1)
-    print("MSE = ", np.mean(np.square(data_test - lasso.make_prediction(x_test))/len(data_test)))
-    r2 = lasso.lasso_object.score(lasso.lasso_object.predict(x_test), data_test)
-    print("R2 = ".format(r2))
-
-    for alpha in alpha_values:
-        print("Running Lasso Regression with alpha = {}\n".format(alpha))
-        lasso = LassoRegression() 
-        lasso.fit_coefficients(predictors_input, z, 5, alpha)
-
-        output = lasso.make_prediction(predictors_input)
-        mse = lasso.mean_squared_error()
-        r2 = lasso.r2_score()
-        print("MSE = {:f} for alpha = {:f}".format(r2, alpha))
-        print("R2 = {:f} for alpha = {:f}".format(r2, alpha))
-        print("===================================\n")
     """
 
 

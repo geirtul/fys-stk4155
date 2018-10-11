@@ -17,7 +17,7 @@ class Analysis:
         outcome               - the data on which regression was performed on
         predicted_outcome     - the data the model spits out after regression
         """
-        # TODO: This method only works when bootstrap is not being performs.
+        # TODO: This method only works when bootstrap is not being performed.
         # TODO: Concider generalizing so that this method can be called inside bootstrap?
 
         N = self.outcome.size
