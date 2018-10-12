@@ -81,4 +81,6 @@ if __name__ == "__main__":
     print("MSE = ", ols.mean_squared_error())
     print("R2 score = ", ols.r2_score())
 
-    ols.bootstrap()
+    ols.plotting_3d(True, 'ols')
+
+    #ols.bootstrap()
