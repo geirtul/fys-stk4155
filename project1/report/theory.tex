@@ -18,7 +18,6 @@ The function is given by
 	- \frac{(9y-3)^2}{4}\right)} 
 	-\frac{1}{5}\exp{\left(-(9x-4)^2 - (9y-7)^2\right) }.
 \end{align*}. 
-
 ~\cite{Project1}
 
 \subsection{Linear methods for regression}
@@ -54,7 +53,7 @@ This can be rewritten with matrix notation
 	RSS(\beta) = (\hat{y}-\vec{X}\beta)^T(\hat{y} - \hat{X}\beta)
 \end{equation}. ~\cite{IntroStatistics} 
 As this is explained in detail in the book as well as in the 
-lecture notes ~\cite{Lectures-notes}, we will not derive
+lecture notes ~\cite{LectureNotes-FysStk}, we will not derive
 it here.
 
 As we want to minimize the residual sum of squares, we require
@@ -77,12 +76,12 @@ is invertible to get the solution
 \begin{equation}
 	\hat{\beta} = (\hat{X}^T\hat{X})^{-1}\hat{X}^T\hat{y}
 \end{equation}
-~\cite{Lectures-notes}~\cite{IntroStatistics}
+~\cite{LectureNotes-FysStk}~\cite{IntroStatistics}
 
 \subsubsection{Ridge regression}
 The OLS will not have a solution if the design matrix \(\hat{X}\) is singular
 or near singular, as it depends in \(\hat{X}^T\hat{X}\) being invetertible. 
-~\cite{Lectures-notes}
+~\cite{LectureNotes-FysStk}
 
 Ridge regression is known as a shrinkage method. It shrinks the regression
 coefficients \(\hat{\beta}\) by imposing a penalty on their size
@@ -93,7 +92,7 @@ to the matrix to invert. From OLS we therefore make the following change
 	\hat{X}^T\hat{X} \rightarrow \hat{X}^T\hat{X} + \lambda \hat{I}
 \end{equation}
 
-where I is the identity matrix.~\cite{Lectures-notes}.
+where I is the identity matrix.~\cite{LectureNotes-FysStk}.
 Thus we get 
 
 \begin{equation}
@@ -150,7 +149,59 @@ that the lasso solution don't have a closed form expression.
 
 Lasso does a kind of continous subset selection because of the nature of 
 the constraint. The reason for that is that making \(t\) sufficiently small,
-will cause some of the coefficients to go to zero. 
+will cause some of the coefficients to go to zero. ~\cite{IntroStatistics} 
+
+\subsection{Error estimates}
+To evaluate the different regression methods we have two main
+measures that can be used. In both equation below \(\widetilde{y_i}\) is 
+the predicted value of the i-th sample and that \(y_i\) is the corresponding
+true value. \cite{Project1} 
+The first is the Mean Squared Error (MSE) which is given by 
+\begin{equation}
+	MSE(\hat{y}, \widetilde{\hat{y}}) = \frac{1}{n}\sum\limits_{i=0}^{n-1}
+	(y_i, \widetilde{y_i})^2 
+\end{equation}.
+The other is the \(R^2\) score which is defined by
+\begin{equation}
+	R^2(\hat{y}, \tilde{\hat{y}}) = 1 - \frac{\sum_{i=0}^{n - 1} (y_i - \tilde{		y}	y_i)^2}{\sum_{i=0}^{n - 1} (y_i - \bar{y})^2},
+\end{equation}
+
+where we have defined the mean value  of $\hat{y}$ as
+\begin{equation}
+\bar{y} =  \frac{1}{n} \sum_{i=0}^{n - 1} y_i.
+\end{equation}~\cite{Project1}
+
+\subsection{Resampling methods}
+A resampling method is a tool that involves 
+repeatingly drawing samples from a training data set and refitting a model
+of interest on each sample, in order to obtain additional information 
+about the fitted model. 
+The reason for using a resampling method, is to obtain information that would
+not be available from fitting the model only once using the original training
+sample. ~\cite{LectureNotes-FysStk}
+
+\subsubsection{Bootstrap}
+Bootstrap is a resampling method, and is widely used.
+The bootstrap method is based on the fact that \(\hat{\Theta} = \hat{\Theta}\)
+is a random variable, because it is a function of random variables. 
+Therefore it has a pdf, \(p(\vec{t})\). The aim of the bootstrap is to 
+estimate \(p(\vec{t})\) by the relative frequency of \(\hat{\Theta}\)
+~\cite{LectureNotes-FysStk}
+
+The bootstrap method works with four different steps: 
+\begin{enumerate}
+		\item Draw with replacement \(n\) numbers for the observed variables
+			\(\hat{x} = (x_1, x_2,\cdots, x_n)\).
+		\item Define a vector \(\hat{x}^*\) containing the values which were 
+			drawn from \(\hat{x}\). 
+		\item Using the vector \(\hat{x}^*\) compute \(\hat{\Theta}^*\)
+			by evaluating \(\hat{\Theta}\) under the observations 
+			\(\hat{x}^*\).
+		\item Repeat the process k times. 
+\end{enumerate} 
+~\cite{LectureNotes-FysStk}
+
+		
 
 
 
