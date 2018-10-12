@@ -38,6 +38,47 @@ For all three regression methods that we will look at in this report,
 there is a set of training data from which we want to estimate the parameter 
 \(\beta\). 
 
+\subsubsection{Ordinary Least Squares method}
+The Ordinary Least Squares (OLS) method pick the coefficients
+\(\beta = (\beta_0, \beta_1, \dots, \beta_p)^T\) to minimize the 
+residual sum of squares given by
+\begin{align}
+	RSS(\beta) &= \sum\limits_{i=1}^N (y_i - f(x_i))^2\\
+				&= \sum\limits_{i=1}^N 
+				(y_i - \beta_0 - \sum\limits_{j=1}^p X_{ij}\beta_j )^2\\
+\end{align}
+
+This can be rewritten with matrix notation 
+
+\begin{equation}
+	RSS(\beta) = (\hat{y}-\vec{X}\beta)^T(\hat{y} - \hat{X}\beta)
+\end{equation}. ~\cite{IntroStatistics} 
+As this is explained in detail in the book as well as in the 
+lecture notes ~\cite{Lectures-notes}, we will not derive
+it here.
+
+As we want to minimize the residual sum of squares, we require
+
+\begin{equation}
+	\frac{\partial RSS(\hat{\beta})}{\partial \hat{\beta}} 
+	= 0 
+	= \hat{X}^T(\hat{y} - \hat{X}\hat{\beta})
+\end{equation}
+
+This can be rewritten as 
+
+\begin{equation}
+	\hat{X}^T\hat{y} = \hat{X}^T\hat{X}\hat{\beta} 
+\end{equation}.
+
+We now has to assume that the matrix \(\hat{X}^T\hat{X}\) 
+is invertible to get the solution
+
+\begin{equation}
+	\hat{\beta} = (\hat{X}^T\hat{X})^{-1}\hat{X}^T\hat{y}
+\end{equation}
+~\cite{Lectures-notes}
+
 
 
 
