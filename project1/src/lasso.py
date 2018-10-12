@@ -51,12 +51,14 @@ class LassoRegression(Analysis):
         # Input values to design matrix
         self.predictors = self.poly.fit_transform(predictors)
         
-        self.lasso_object = linear_model.Lasso(alpha=self.alpha, max_iter=1e5)
+        self.lasso_object = linear_model.Lasso(alpha=self.alpha, max_iter=1e4)
         self.lasso_object.fit(self.predictors, self.outcome)
 
     def make_prediction(self, x_in, z_in):
         """
-        Makes a model prediction
+        Makes a model prediction.
+        Demands both x and z- values in order to update the target values
+        (self.outcome) for MSE calculations. This can probably be done better.
         """
         X = self.poly.fit_transform(x_in)
         self.predicted_outcome = self.lasso_object.predict(X)
@@ -77,6 +79,12 @@ if __name__ == "__main__":
     predictors_input = np.c_[x.ravel(), y.ravel()]
     z = z.ravel()
 
+    lasso = LassoRegression()
+    lasso.fit_coefficients(predictors_input, z, 5, alpha=0.001)
+    lasso.make_prediction(predictors_input, z)
+    lasso.bootstrap()
+
+    """
     x_train, x_test, data_train, data_test = train_test_split(predictors_input,
                                                               z,
                                                               test_size=0.2)
@@ -93,7 +101,6 @@ if __name__ == "__main__":
         print("R2: ", lasso.r2_score())
         print("===================================\n")
 
-    """
     noiseRange = 10
     noise = noiseRange*np.random.uniform(-0.5, 0.5, size = z.shape)
     z  = z - z.mean(1)[:, np.newaxis]

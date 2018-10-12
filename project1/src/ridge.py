@@ -53,13 +53,14 @@ class RidgeRegression(Analysis):
 
         self.beta = (np.linalg.inv(X.T @ X + lmb * I) @ X.T @ outcome)
 
-    def make_prediction(self, x_in):
+    def make_prediction(self, x_in, z_in):
         """
         Makes a model prediction
         Returns prediction together with x and y values for plotting. 
         """
         X = self.poly.fit_transform(x_in)
         self.predicted_outcome = X @ self.beta
+        self.outcome = z_in
 
         return self.predicted_outcome
 
@@ -76,11 +77,15 @@ if __name__ == "__main__":
     # number of columns = number of predictors.
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
+    ridge = RidgeRegression()
+    ridge.fit_coefficients(predictors_input, z, 5, 1e-3)
+    ridge.bootstrap()
+
     """
     noiseRange = 1
     noise = noiseRange*np.random.uniform(-0.5, 0.5, size = z.shape)
     z = z + noise
-    """
+
     lmb_values = [0, 1e-4, 1e-3, 1e-2, 10, 1e2, 1e4]
     
     for lmb in lmb_values:
@@ -88,7 +93,7 @@ if __name__ == "__main__":
         ridge = RidgeRegression() 
         ridge.fit_coefficients(predictors_input, z, 5, lmb)
 
-        ridge.make_prediction(predictors_input)
+        ridge.make_prediction(predictors_input, z)
         # ridge.bootstrap()
         # ridge.plotting_3d()
         mse = ridge.mean_squared_error()
@@ -96,3 +101,4 @@ if __name__ == "__main__":
         print("MSE = {:f} for lmd = {:f}".format(mse, lmb))
         print("R2 = {:f} for lmd = {:f}".format(r2, lmb))
         print("===================================\n")
+        """

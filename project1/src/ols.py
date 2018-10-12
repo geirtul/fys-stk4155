@@ -46,7 +46,7 @@ class OrdinaryLeastSquares(Analysis):
         X = self.poly.fit_transform(self.predictors)
         self.beta = np.linalg.inv(X.T @ X) @ X.T @ outcome
 
-    def make_prediction(self, x_in):
+    def make_prediction(self, x_in, z_in):
         """
         Makes a model prediction
         Returns prediction together with x and y values for plotting.
@@ -55,6 +55,8 @@ class OrdinaryLeastSquares(Analysis):
         """
         X = self.poly.fit_transform(x_in)
         self.predicted_outcome = X @ self.beta
+        self.outcome = z_in
+
         return self.predicted_outcome
 
 
@@ -74,7 +76,7 @@ if __name__ == "__main__":
     # Initialize the regression object and perform a fit
     ols = OrdinaryLeastSquares()
     ols.fit_coefficients(predictors_input, z, 5)
-    z_predict = ols.make_prediction(predictors_input)
+    z_predict = ols.make_prediction(predictors_input, z)
 
     print("MSE = ", ols.mean_squared_error())
     print("R2 score = ", ols.r2_score())

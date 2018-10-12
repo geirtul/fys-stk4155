@@ -57,7 +57,7 @@ class Analysis:
             variance = np.mean(np.var(predicted_data))
             return mse, bias, variance
 
-        n_bootstraps = 1000
+        n_bootstraps = 100
 
         # Split into training and test sets
         x_train, x_test, data_train, data_test = train_test_split(self.predictors,
@@ -68,7 +68,7 @@ class Analysis:
         for i in range(n_bootstraps):
             x_re, data_re = resample(x_train, data_train, replace=True)
             self.fit_coefficients(x_re, data_re, self.poly_degree)
-            newfit = self.make_prediction(x_test)
+            newfit = self.make_prediction(x_test, data_test)
             y_fits[i] = newfit.ravel()
 
         mse, bias, variance = statistics(data_test, y_fits)
