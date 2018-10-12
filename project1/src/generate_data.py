@@ -7,6 +7,7 @@ from ols import OrdinaryLeastSquares
 from franke_function import FrankeFunction
 
 # Part a)
+# ============================================================================
 if sys.argv[1] == "a":
 
     # Set up coordinates and data for regression.
@@ -38,8 +39,10 @@ if sys.argv[1] == "a":
     for val in collected_data:
         print("{:12} | {:12f} | {:12f}".format(val[0], val[1], val[2]))
     """
+# ============================================================================
 
 # Part b)
+# ============================================================================
 if sys.argv[1] == "b":
 
     # Set up coordinates and data for regression.
@@ -82,8 +85,10 @@ if sys.argv[1] == "b":
                                                        val[2],
                                                        val[3]))                                              
     """
+# ============================================================================
 
 # Part c)
+# ============================================================================
 if sys.argv[1] == "c":
 
     # Set up coordinates and data for regression.
@@ -110,7 +115,7 @@ if sys.argv[1] == "c":
 
     # Output data to file as csv to be handled in plot/analysis script.
     with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
-        outfile.write("degree,lambda,mse,r2\n")
+        outfile.write("degree,alpha,mse,r2\n")
         for val in collected_data:
             outfile.write("{},{},{},{}\n".format(val[0], val[1], val[2], val[3]))
         outfile.close()
@@ -126,9 +131,11 @@ if sys.argv[1] == "c":
                                                        val[2],
                                                        val[3]))
     """
+# ============================================================================
+
 
 # Part e)
-#
+# ============================================================================
 if sys.argv[1] == "e_ols":
 
     # Set up coordinates and data for regression.

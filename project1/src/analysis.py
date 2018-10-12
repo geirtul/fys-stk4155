@@ -90,7 +90,7 @@ class Analysis:
 
         return y_fits
 
-    def plotting_3d(self, save=False):
+    def plotting_3d(self, save=False, extension=""):
         """
         Plots the modeled data side-by-side with the original dataset
         for comparison.
@@ -133,7 +133,8 @@ class Analysis:
         fig.colorbar(surf2, shrink=0.5, aspect=5)
 
         if save:
-            plt.savefig("../report/figures/comparison.pdf", format='pdf')
+            plt.savefig("../report/figures/comparison_{}.pdf".format(extension),
+                        format='pdf')
         plt.show()
 
 
