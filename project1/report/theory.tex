@@ -77,7 +77,42 @@ is invertible to get the solution
 \begin{equation}
 	\hat{\beta} = (\hat{X}^T\hat{X})^{-1}\hat{X}^T\hat{y}
 \end{equation}
+~\cite{Lectures-notes}~\cite{IntroStatistics}
+
+\subsubsection{Ridge regression}
+The OLS will not have a solution if the design matrix \(\hat{X}\) is singular
+or near singular, as it depends in \(\hat{X}^T\hat{X}\) being invetertible. 
 ~\cite{Lectures-notes}
+
+Ridge regression is known as a shrinkage method. It shrinks the regression
+coefficients \(\hat{\beta}\) by imposing a penalty on their size
+~\cite{IntroStatistics}. We are in other words adding a diagonal component
+to the matrix to invert. From OLS we therefore make the following change
+
+\begin{equation}
+	\hat{X}^T\hat{X} \rightarrow \hat{X}^T\hat{X} + \lambda \hat{I}
+\end{equation}
+
+where I is the identity matrix.~\cite{Lectures-notes}.
+Thus we get 
+
+\begin{equation}
+	RSS(\lambda) = (\hat{y}-\hat{X}\hat{\beta)}^T(\hat{y} 
+	- \hat{X}\hat{\beta})
+	- \lambda \hat{\beta}^T\hat{\beta}
+\end{equation}
+and
+\begin{equation}
+	\hat{\beta}^{ridge} = (\hat{X}^T\hat{X} 
+	+ \lambda \hat{I})^{-1}\hat{X}^T\hat{y} 
+\end{equation}
+\cite{IntroStatistics}
+
+\subsubsection{Lasso regression}
+
+
+
+
 
 
 
