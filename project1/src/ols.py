@@ -43,7 +43,7 @@ class OrdinaryLeastSquares(Analysis):
         self.outcome = outcome
 
         # Regression
-        X = self.poly.fit_transform(self.predictors)  # predictors values to design matrix
+        X = self.poly.fit_transform(self.predictors)
         self.beta = np.linalg.inv(X.T @ X) @ X.T @ outcome
 
     def make_prediction(self, x_in):
@@ -64,8 +64,9 @@ if __name__ == "__main__":
     y = np.arange(0, 1, 0.05)
     x, y = np.meshgrid(x, y)
 
-    # Make predictor values a matrix with number of columns = number of predictors.
-    # TODO: Need better input handling. Number of predictors shouldn't matter.
+    # Make predictor values a matrix with
+    # number of columns = number of predictors.
+
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
     z = FrankeFunction(x, y).ravel()

@@ -18,7 +18,8 @@ class Analysis:
         predicted_outcome     - the data the model spits out after regression
         """
         # TODO: This method only works when bootstrap is not being performed.
-        # TODO: Concider generalizing so that this method can be called inside bootstrap?
+        # TODO: Concider generalizing so that this method can be called inside
+        # TODO: bootstrap?
 
         N = self.outcome.size
         mse = np.sum(np.square(self.outcome - self.predicted_outcome)) / N
@@ -28,8 +29,8 @@ class Analysis:
         """
         Evaluate the R2 score of the model fitted to the dataset.
 
-        :return:    Returns the mean squared error of the model compared with the dataset
-                    used for fitting.
+        :return:    Returns the mean squared error of the model compared with
+                    dataset used for fitting.
         """
 
         outcome_mean = np.mean(self.outcome)
@@ -59,7 +60,9 @@ class Analysis:
         n_bootstraps = 1000
 
         # Split into training and test sets
-        x_train, x_test, data_train, data_test = train_test_split(self.predictors, self.outcome, test_size=0.2)
+        x_train, x_test, data_train, data_test = train_test_split(self.predictors,
+                                                                  self.outcome,
+                                                                  test_size=0.2)
 
         y_fits = np.empty((n_bootstraps, len(data_test.ravel())))
         for i in range(n_bootstraps):
@@ -72,7 +75,10 @@ class Analysis:
 
         # Output
         print("Bootstrap statistics:")
-        print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original", "bias", "mean_fit", "std.err"))
+        print("{:^8s} | {:^8s} | {:^8s} | {:^8s}".format("original",
+                                                         "bias",
+                                                         "mean_fit",
+                                                         "std.err"))
         print("{:8f} | {:8f} | {:8f} | {:8f}".format(np.mean(self.outcome),
                                                      np.std(self.outcome),
                                                      np.mean(y_fits),

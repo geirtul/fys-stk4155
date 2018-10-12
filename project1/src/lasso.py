@@ -14,7 +14,8 @@ class LassoRegression(Analysis):
         on a dataset y, with a polynomial of degree poly_degree.
         The PolynomialFeatures module from scikit learn sets up the 
         vandermonde matrix such that in the matrix equation X*beta = y, 
-        beta is the coefficient vector, and X contains the polynomial expressions.
+        beta is the coefficient vector, and X contains the polynomial
+        expressions.
 
         The method uses scikit learn's Lasso regression methods.
         """
@@ -41,24 +42,25 @@ class LassoRegression(Analysis):
                         an ordinary least square regression.
         """
 
-        self.predictors = predictors
         self.poly_degree = poly_degree
         self.poly = PolynomialFeatures(poly_degree)
         self.outcome = outcome
         self.alpha = alpha
 
         # Regression
-        X = self.poly.fit_transform(self.predictors)  # Input values to design matrix
+        # Input values to design matrix
+        self.predictors = self.poly.fit_transform(predictors)
         
-        self.lasso_object = linear_model.Lasso(alpha=self.alpha)
-        self.lasso_object.fit(X, self.outcome)
+        self.lasso_object = linear_model.Lasso(alpha=self.alpha, max_iter=1e5)
+        self.lasso_object.fit(self.predictors, self.outcome)
 
-    def make_prediction(self, x_in):
+    def make_prediction(self, x_in, z_in):
         """
         Makes a model prediction
         """
         X = self.poly.fit_transform(x_in)
         self.predicted_outcome = self.lasso_object.predict(X)
+        self.outcome = z_in
 
         return self.predicted_outcome
 
@@ -70,25 +72,25 @@ if __name__ == "__main__":
     x, y = np.meshgrid(x, y)
     z = FrankeFunction(x, y)
 
-    # Make predictor values and data a matrix with number of columns = number of predictors.
-    # TODO: Need better input handling. Number of predictors shouldn't matter.
+    # Make predictor values and data a matrix with
+    # number of columns = number of predictors.
     predictors_input = np.c_[x.ravel(), y.ravel()]
     z = z.ravel()
 
-    X = PolynomialFeatures(5).fit_transform(predictors_input)
-
-    x_train, x_test, data_train, data_test = train_test_split(X, z, test_size=0.2)
+    x_train, x_test, data_train, data_test = train_test_split(predictors_input,
+                                                              z,
+                                                              test_size=0.2)
 
     alpha_vals = [1e-5, 1e-4, 1e-3, 1e-2]
 
     for alpha in alpha_vals:
         print("Running Lasso Regression with alpha = {}\n".format(alpha))
-        lasso = linear_model.Lasso(alpha=alpha)
-        lasso.fit(x_train, data_train)
-        pred1 = lasso.predict(x_test)
+        lasso = LassoRegression()
+        lasso.fit_coefficients(x_train, data_train, 5, alpha=alpha)
+        lasso.make_prediction(x_test, data_test)
 
-        print("MSE = ", np.mean(np.square(data_test - pred1) / len(data_test)))
-        print("R2: ", lasso.score(x_test, data_test))
+        print("MSE = ", lasso.mean_squared_error())
+        print("R2: ", lasso.r2_score())
         print("===================================\n")
 
     """

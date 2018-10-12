@@ -47,7 +47,7 @@ class RidgeRegression(Analysis):
         self.lmb = lmb
 
         # Regression
-        X = self.poly.fit_transform(self.predictors)  # Input values to design matrix
+        X = self.poly.fit_transform(self.predictors)
 
         I = np.eye(len(X[1]))
 
@@ -72,8 +72,8 @@ if __name__ == "__main__":
 
     z = FrankeFunction(x, y).ravel()
 
-    # Make predictor values a matrix with number of columns = number of predictors.
-    # TODO: Need better input handling. Number of predictors shouldn't matter.
+    # Make predictor values a matrix with
+    # number of columns = number of predictors.
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
     """
