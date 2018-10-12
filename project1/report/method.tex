@@ -1,1 +1,74 @@
-\section{Method}
+\section{Implementation of methods}
+All code can be found on github, using the following link:\\ 
+https://github.com/geirtul/fys-stk4155/tree/master/project1/src\\
+
+There is one class for each regression method, with corresponding 
+filenames.
+All the error estimations are done in analysis.py
+
+In all the methods, Franke's function is defined for 
+\(x,y \ \epsilon \ [0,1]\). 
+
+\subsection{Ordinary Least Squares}
+The class ols.py i made to make a prediction of Franke's function
+based on the OLS method. 
+It makes \(x, y\) as arrays with uniformly distributed random numbers 
+between \(0\) and \(1\). 
+
+It uses scikit learn to make a polynomial of a given degree. 
+
+The following lines calculates \(\hat{\beta}\) as described in 
+section ~\ref{sec:ols} 
+
+\lstinputlisting[firstline=45,lastline=48]{../src/ols.py}
+
+Then the following lines makes a predicted outcome:
+
+\lstinputlisting[firstline=56,lastline=59]{../src/ols.py}
+
+\subsection{Ridge}
+As stated in section ~\ref{seq:ridge}, there is 
+not a huge difference from OLS to ridge regression. 
+
+The code for calculating \(\hat{\beta}\) from the math  
+shown in the section
+looks like this: 
+
+\lstinputlisting[firstline=49,lastline=55]{../src/ridge.py}.
+
+As we only change \(\beta\), the code for finding the estimated function 
+is the same, only with the new beta. 
+
+\subsection{Lasso}
+We chose to use scikit learn for the lasso regression. The code should 
+do what is described in ~\ref{seq:lasso}. 
+
+The coefficients is therefore calculated like this 
+
+\lstinputlisting[firstline=50,lastline=56]{../src/lasso.py}.
+
+and the predicted function like this 
+
+\lstinputlisting[firstline=63,lastline=65]{../src/lasso.py}.
+
+\subsection{Analysis} 
+The analysis class contains all of the error calculations as well 
+as the bootstrap method and a method for making plots.
+
+As the error calculation is straight forward math, we do not 
+show the implementation in the report. 
+
+\subsubsection{Bootstrap} 
+We chose to use bootstrap because of a number of advantages listed in the 
+lecture notes. ~\cite{LectureNotes-FysStk}
+
+The data is first split into training and test sets. 
+Then the bootstrap method described in ~\ref{seq:bootstrap} is 
+implemented as follows
+
+\lstinputlisting[firstline=68,lastline=73]{../src/analysis.py}.
+~\cite{BiasAndVariance}
+
+
+
+
