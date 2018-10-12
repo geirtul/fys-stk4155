@@ -9,24 +9,6 @@ from ridge import RidgeRegression
 from ols import OrdinaryLeastSquares
 from franke_function import FrankeFunction
 
-
-# Load the terrain data provided as example. This is the Møsvatn data.
-terrain = imread('geodata/SRTM_data_Norway_2.tif')
-
-
-def resize_terrain(data, x1, x2, y1, y2):
-    """
-    Resize the provided terrain data to a smaller sample for testing
-
-    :return: Subset of the terrain data.
-    """
-
-    data_subset = data[x1:x2, y1:y2]
-    return data_subset
-
-
-terrain_resized = resize_terrain(terrain, 0, 1000, 0, 1000)
-
 # Part a)
 if sys.argv[1] == "a":
 
@@ -47,12 +29,18 @@ if sys.argv[1] == "a":
         z_predict = ols.make_prediction(predictors_input, z)
         collected_data.append([degree, ols.mean_squared_error(), ols.r2_score()])
 
+    # Output data to file as csv to be handled in plot/analysis script.
+    with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
+        outfile.write("degree,mse,r2\n")
+        for val in collected_data:
+            outfile.write("{},{},{}\n".format(val[0], val[1], val[2]))
+        outfile.close()
+
+    """
     print("{:12s} | {:12s} | {:12s}".format("Degree", "MSE", "R2 Score"))
     for val in collected_data:
         print("{:12} | {:12f} | {:12f}".format(val[0], val[1], val[2]))
-
-    # Show the terrain predicted by the model.
-
+    """
 
 # Part b)
 if sys.argv[1] == "b":
@@ -79,6 +67,14 @@ if sys.argv[1] == "b":
                                    ridge.mean_squared_error(),
                                    ridge.r2_score()])
 
+    # Output data to file as csv to be handled in plot/analysis script.
+    with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
+        outfile.write("degree,lambda,mse,r2\n")
+        for val in collected_data:
+            outfile.write("{},{},{},{}\n".format(val[0], val[1], val[2], val[3]))
+        outfile.close()
+
+    """
     print("{:12s} | {:12s} | {:12s} | {:12s}".format("Degree",
                                                      "Lambda",
                                                      "MSE",
@@ -87,7 +83,8 @@ if sys.argv[1] == "b":
         print("{:12} | {:12} | {:12f} | {:12f}".format(val[0],
                                                        val[1],
                                                        val[2],
-                                                       val[3]))
+                                                       val[3]))                                              
+    """
 
 # Part c)
 if sys.argv[1] == "c":
@@ -114,6 +111,14 @@ if sys.argv[1] == "c":
                                    lasso.mean_squared_error(),
                                    lasso.r2_score()])
 
+    # Output data to file as csv to be handled in plot/analysis script.
+    with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
+        outfile.write("degree,lambda,mse,r2\n")
+        for val in collected_data:
+            outfile.write("{},{},{},{}\n".format(val[0], val[1], val[2], val[3]))
+        outfile.close()
+
+    """
     print("{:12s} | {:12s} | {:12s} | {:12s}".format("Degree",
                                                      "Alpha",
                                                      "MSE",
@@ -123,6 +128,7 @@ if sys.argv[1] == "c":
                                                        val[1],
                                                        val[2],
                                                        val[3]))
+    """
 
 # Part e)
 #
@@ -147,6 +153,28 @@ if sys.argv[1] == "e_ols":
     for val in collected_data:
         print("{:12} | {:12f} | {:12f}".format(val[0], val[1], val[2]))
 
+
+# ============================================================================
+# THE FOLLOWING CODE USES THE REAL TERRAIN DATA
+# ============================================================================
+
+# Load the terrain data provided as example. This is the Møsvatn data.
+terrain = imread('geodata/SRTM_data_Norway_2.tif')
+
+
+def resize_terrain(data, x1, x2, y1, y2):
+    """
+    Resize the provided terrain data to a smaller sample for testing
+    and or computational efficiency if needed.
+
+    :return: Subset of the terrain data.
+    """
+
+    data_subset = data[x1:x2, y1:y2]
+    return data_subset
+
+
+terrain_resized = resize_terrain(terrain, 0, 1000, 0, 1000)
 
 if sys.argv[1] == "e_ridge":
 
@@ -184,7 +212,7 @@ if sys.argv[1] == "e_ridge":
                                                        val[2],
                                                        val[3]))
 
-
+   
 """
 plt.figure()
 plt.subplot(1, 2, 1)
