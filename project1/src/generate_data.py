@@ -212,7 +212,7 @@ if sys.argv[1] == "e_ridge":
                                                        val[2],
                                                        val[3]))
 
-   
+
 """
 plt.figure()
 plt.subplot(1, 2, 1)
