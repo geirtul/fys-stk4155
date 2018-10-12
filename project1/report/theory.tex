@@ -1,1 +1,211 @@
 \section{Theory}
+
+\subsection{Franke's function}
+% Usikker på om den trenger eget underkapittel, men har det sånn
+% inntil videre
+
+Franke's function is a weighted sum of four exponentials and has been 
+widely used when testing various interpolation and fitting algorithms.
+The function is given by 
+
+\begin{align*}
+	f(x,y) &= 
+	\frac{3}{4}\exp{\left(-\frac{(9x-2)^2}{4} 
+	- \frac{(9y-2)^2}{4}\right)}
+	+\frac{3}{4}\exp{\left(-\frac{(9x+1)^2}{49}
+	- \frac{(9y+1)}{10}\right)} \\
+	&+\frac{1}{2}\exp{\left(-\frac{(9x-7)^2}{4} 
+	- \frac{(9y-3)^2}{4}\right)} 
+	-\frac{1}{5}\exp{\left(-(9x-4)^2 - (9y-7)^2\right) }.
+\end{align*}. 
+~\cite{Project1}
+
+\subsection{Linear methods for regression}
+
+A linear model assumes that the regression function is linear in the 
+inputs \(X_1, \dots, X_p\), and can give a polynomial representation
+using basic expansions such as \(X_2 = X_1^2, X_3 = X_1^3\). 
+
+If we have an input vector as described above and want to predict 
+a real-valued output \(Y\), the linear model reads as
+\begin{equation}
+	f(X) = \beta_0 + \sum\limits_{j=1}^p X_j\beta_j
+\end{equation}
+~\cite{IntroStatistics}
+
+For all three regression methods that we will look at in this report, 
+there is a set of training data from which we want to estimate the parameter 
+\(\beta\). 
+
+\subsubsection{Ordinary Least Squares method}
+The Ordinary Least Squares (OLS) method pick the coefficients
+\(\beta = (\beta_0, \beta_1, \dots, \beta_p)^T\) to minimize the 
+residual sum of squares given by
+\begin{align}
+	RSS(\beta) &= \sum\limits_{i=1}^N (y_i - f(x_i))^2\\
+				&= \sum\limits_{i=1}^N 
+				(y_i - \beta_0 - \sum\limits_{j=1}^p X_{ij}\beta_j )^2\\
+\end{align}
+
+This can be rewritten with matrix notation 
+
+\begin{equation}
+	RSS(\beta) = (\hat{y}-\vec{X}\beta)^T(\hat{y} - \hat{X}\beta)
+\end{equation}. ~\cite{IntroStatistics} 
+As this is explained in detail in the book as well as in the 
+lecture notes ~\cite{LectureNotes-FysStk}, we will not derive
+it here.
+
+As we want to minimize the residual sum of squares, we require
+
+\begin{equation}
+	\frac{\partial RSS(\hat{\beta})}{\partial \hat{\beta}} 
+	= 0 
+	= \hat{X}^T(\hat{y} - \hat{X}\hat{\beta})
+\end{equation}
+
+This can be rewritten as 
+
+\begin{equation}
+	\hat{X}^T\hat{y} = \hat{X}^T\hat{X}\hat{\beta} 
+\end{equation}.
+
+We now has to assume that the matrix \(\hat{X}^T\hat{X}\) 
+is invertible to get the solution
+
+\begin{equation}
+	\hat{\beta} = (\hat{X}^T\hat{X})^{-1}\hat{X}^T\hat{y}
+\end{equation}
+~\cite{LectureNotes-FysStk}~\cite{IntroStatistics}
+
+\subsubsection{Ridge regression}
+The OLS will not have a solution if the design matrix \(\hat{X}\) is singular
+or near singular, as it depends in \(\hat{X}^T\hat{X}\) being invetertible. 
+~\cite{LectureNotes-FysStk}
+
+Ridge regression is known as a shrinkage method. It shrinks the regression
+coefficients \(\hat{\beta}\) by imposing a penalty on their size
+~\cite{IntroStatistics}. We are in other words adding a diagonal component
+to the matrix to invert. From OLS we therefore make the following change
+
+\begin{equation}
+	\hat{X}^T\hat{X} \rightarrow \hat{X}^T\hat{X} + \lambda \hat{I}
+\end{equation}
+
+where I is the identity matrix.~\cite{LectureNotes-FysStk}.
+Thus we get 
+
+\begin{equation}
+	RSS(\lambda) = (\hat{y}-\hat{X}\hat{\beta)}^T(\hat{y} 
+	- \hat{X}\hat{\beta})
+	- \lambda \hat{\beta}^T\hat{\beta}
+\end{equation}
+and
+\begin{equation}
+	\hat{\beta}^{ridge} = (\hat{X}^T\hat{X} 
+	+ \lambda \hat{I})^{-1}\hat{X}^T\hat{y} 
+\end{equation}
+\(\lambda > 0 \) is a complexity parameter that controls the amount
+of shrinkage. The larger calue of \(\lambda\) the greater amount of 
+shrinkage.
+\cite{IntroStatistics}
+
+This can also be written in a non-vector format which makes 
+explicit the size constraint on the parameters. 
+It also makes it easier to see the difference from Lasso regression:
+
+\begin{equation}
+	\hat{\beta}^{ridge} = \operatorname{argmin}_{beta} 
+							\sum\limits_{i=1}^N \left(y_i - \beta_0
+							-\sum\limits_{j=1}^p x_{ij}\beta_j\right)^2
+\end{equation}
+subject to
+\begin{equation}
+	\sum\limits_{j=1}^p \beta_j^2 \leq t
+\end{equation}
+There is a one to one correspondence between \(\lambda\) and \(t\).
+\cite{IntroStatistics} 
+
+\subsubsection{Lasso regression}
+Like ridge, lasso is a shrinkage method. The main difference from 
+ridge is that lasso has no closed form expression. ~\cite{IntroStatistics} 
+
+Similarly to ridge, the lasso estimate is given by
+
+\begin{equation}
+	\hat{\beta}^{lasso} = \operatorname{argmin}_{beta} 
+							\sum\limits_{i=1}^N \left(y_i - \beta_0
+							-\sum\limits_{j=1}^p x_{ij}\beta_j\right)^2
+\end{equation}
+subject to
+\begin{equation}
+	\sum\limits_{j=1}^p |\beta_j| \leq t
+\end{equation}.
+
+As you can see, the ridge penalty \(\sum_1^p \beta_j^2\) is replaced 
+by a lasso penalty given by \(\sum_1^p |\beta_j|\). 
+This makes the solution nonlinear in the \(y_i\) and is the reason
+that the lasso solution don't have a closed form expression.
+
+Lasso does a kind of continous subset selection because of the nature of 
+the constraint. The reason for that is that making \(t\) sufficiently small,
+will cause some of the coefficients to go to zero. ~\cite{IntroStatistics} 
+
+\subsection{Error estimates}
+To evaluate the different regression methods we have two main
+measures that can be used. In both equation below \(\widetilde{y_i}\) is 
+the predicted value of the i-th sample and that \(y_i\) is the corresponding
+true value. \cite{Project1} 
+The first is the Mean Squared Error (MSE) which is given by 
+\begin{equation}
+	MSE(\hat{y}, \widetilde{\hat{y}}) = \frac{1}{n}\sum\limits_{i=0}^{n-1}
+	(y_i, \widetilde{y_i})^2 
+\end{equation}.
+The other is the \(R^2\) score which is defined by
+\begin{equation}
+	R^2(\hat{y}, \tilde{\hat{y}}) = 1 - \frac{\sum_{i=0}^{n - 1} (y_i - \tilde{		y}	y_i)^2}{\sum_{i=0}^{n - 1} (y_i - \bar{y})^2},
+\end{equation}
+
+where we have defined the mean value  of $\hat{y}$ as
+\begin{equation}
+\bar{y} =  \frac{1}{n} \sum_{i=0}^{n - 1} y_i.
+\end{equation}~\cite{Project1}
+
+\subsection{Resampling methods}
+A resampling method is a tool that involves 
+repeatingly drawing samples from a training data set and refitting a model
+of interest on each sample, in order to obtain additional information 
+about the fitted model. 
+The reason for using a resampling method, is to obtain information that would
+not be available from fitting the model only once using the original training
+sample. ~\cite{LectureNotes-FysStk}
+
+\subsubsection{Bootstrap}
+Bootstrap is a resampling method, and is widely used.
+The bootstrap method is based on the fact that \(\hat{\Theta} = \hat{\Theta}\)
+is a random variable, because it is a function of random variables. 
+Therefore it has a pdf, \(p(\vec{t})\). The aim of the bootstrap is to 
+estimate \(p(\vec{t})\) by the relative frequency of \(\hat{\Theta}\)
+~\cite{LectureNotes-FysStk}
+
+The bootstrap method works with four different steps: 
+\begin{enumerate}
+		\item Draw with replacement \(n\) numbers for the observed variables
+			\(\hat{x} = (x_1, x_2,\cdots, x_n)\).
+		\item Define a vector \(\hat{x}^*\) containing the values which were 
+			drawn from \(\hat{x}\). 
+		\item Using the vector \(\hat{x}^*\) compute \(\hat{\Theta}^*\)
+			by evaluating \(\hat{\Theta}\) under the observations 
+			\(\hat{x}^*\).
+		\item Repeat the process k times. 
+\end{enumerate} 
+~\cite{LectureNotes-FysStk}
+
+		
+
+
+
+
+
+
+
