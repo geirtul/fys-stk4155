@@ -1,1 +1,43 @@
 \section{Theory}
+
+\subsection{Franke's function}
+% Usikker på om den trenger eget underkapittel, men har det sånn
+% inntil videre
+
+Franke's function is a weighted sum of four exponentials and has been 
+widely used when testing various interpolation and fitting algorithms.
+The function is given by 
+
+\begin{align*}
+	f(x,y) &= 
+	\frac{3}{4}\exp{\left(-\frac{(9x-2)^2}{4} 
+	- \frac{(9y-2)^2}{4}\right)}
+	+\frac{3}{4}\exp{\left(-\frac{(9x+1)^2}{49}
+	- \frac{(9y+1)}{10}\right)} \\
+	&+\frac{1}{2}\exp{\left(-\frac{(9x-7)^2}{4} 
+	- \frac{(9y-3)^2}{4}\right)} 
+	-\frac{1}{5}\exp{\left(-(9x-4)^2 - (9y-7)^2\right) }.
+\end{align*}. 
+
+~\cite{Project1}
+
+\subsection{Linear methods for regression}
+
+A linear model assumes that the regression function is linear in the 
+inputs \(X_1, \dots, X_p\), and can give a polynomial representation
+using basic expansions such as \(X_2 = X_1^2, X_3 = X_1^3\). 
+
+If we have an input vector as described above and want to predict 
+a real-valued output \(Y\), the linear model reads as
+\begin{equation}
+	f(X) = \beta_0 + \sum\limits_{j=1}^p X_j\beta_j
+\end{equation}
+~\cite{IntroStatistics}
+
+For all three regression methods that we will look at in this report, 
+there is a set of training data from which we want to estimate the parameter 
+\(\beta\). 
+
+
+
+
