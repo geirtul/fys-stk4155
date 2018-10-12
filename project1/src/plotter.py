@@ -90,6 +90,14 @@ if len(sys.argv) > 0:
         elif arg == "c":
             newdata = determine_best_mse(data, headers, 'lasso')
             plot_mse_vs_complexity(newdata, headers, 'lasso')
+        elif arg == "e_ols":
+            plot_mse_vs_complexity(data, headers, 'ols')
+        elif arg == "e_ridge":
+            newdata = determine_best_mse(data, headers, 'ridge')
+            plot_mse_vs_complexity(newdata, headers, 'ridge')
+
+
+
     plt.title('Mean Squared Error vs. Complexity of model')
     plt.xlabel('Degree of fitted polynomial')
     plt.ylabel('Mean squared error')

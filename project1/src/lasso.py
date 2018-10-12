@@ -51,7 +51,7 @@ class LassoRegression(Analysis):
         # Input values to design matrix
         self.predictors = self.poly.fit_transform(predictors)
         
-        self.lasso_object = linear_model.Lasso(alpha=self.alpha, max_iter=1e4)
+        self.lasso_object = linear_model.Lasso(alpha=self.alpha, max_iter=1e3)
         self.lasso_object.fit(self.predictors, self.outcome)
 
     def make_prediction(self, x_in, z_in):
