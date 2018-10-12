@@ -37,7 +37,7 @@ For all three regression methods that we will look at in this report,
 there is a set of training data from which we want to estimate the parameter 
 \(\beta\). 
 
-\subsubsection{Ordinary Least Squares method}
+\subsubsection{Ordinary Least Squares method}\label{sec:ols}
 The Ordinary Least Squares (OLS) method pick the coefficients
 \(\beta = (\beta_0, \beta_1, \dots, \beta_p)^T\) to minimize the 
 residual sum of squares given by
@@ -78,7 +78,7 @@ is invertible to get the solution
 \end{equation}
 ~\cite{LectureNotes-FysStk}~\cite{IntroStatistics}
 
-\subsubsection{Ridge regression}
+\subsubsection{Ridge regression}\label{seq:ridge}
 The OLS will not have a solution if the design matrix \(\hat{X}\) is singular
 or near singular, as it depends in \(\hat{X}^T\hat{X}\) being invetertible. 
 ~\cite{LectureNotes-FysStk}
@@ -126,7 +126,7 @@ subject to
 There is a one to one correspondence between \(\lambda\) and \(t\).
 \cite{IntroStatistics} 
 
-\subsubsection{Lasso regression}
+\subsubsection{Lasso regression}\label{seq:lasso}
 Like ridge, lasso is a shrinkage method. The main difference from 
 ridge is that lasso has no closed form expression. ~\cite{IntroStatistics} 
 
@@ -180,7 +180,7 @@ The reason for using a resampling method, is to obtain information that would
 not be available from fitting the model only once using the original training
 sample. ~\cite{LectureNotes-FysStk}
 
-\subsubsection{Bootstrap}
+\subsubsection{Bootstrap}\label{sec:bootstrap}
 Bootstrap is a resampling method, and is widely used.
 The bootstrap method is based on the fact that \(\hat{\Theta} = \hat{\Theta}\)
 is a random variable, because it is a function of random variables. 
