@@ -1,9 +1,6 @@
 import numpy as np
 import sys
 from imageio import imread
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
 from lasso import LassoRegression
 from ridge import RidgeRegression
 from ols import OrdinaryLeastSquares
@@ -211,20 +208,4 @@ if sys.argv[1] == "e_ridge":
                                                        val[1],
                                                        val[2],
                                                        val[3]))
-
-
-"""
-plt.figure()
-plt.subplot(1, 2, 1)
-plt.title('Terrain predicted by OLS model.')
-plt.imshow(z_predict.reshape((len(y), len(x))), cmap=cm.coolwarm)
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.subplot(1, 2, 2)
-plt.title('Terrain data.')
-plt.imshow(terrain_resized, cmap=cm.coolwarm)
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.show()
-"""
 
