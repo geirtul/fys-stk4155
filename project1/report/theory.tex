@@ -106,10 +106,51 @@ and
 	\hat{\beta}^{ridge} = (\hat{X}^T\hat{X} 
 	+ \lambda \hat{I})^{-1}\hat{X}^T\hat{y} 
 \end{equation}
+\(\lambda > 0 \) is a complexity parameter that controls the amount
+of shrinkage. The larger calue of \(\lambda\) the greater amount of 
+shrinkage.
 \cite{IntroStatistics}
 
-\subsubsection{Lasso regression}
+This can also be written in a non-vector format which makes 
+explicit the size constraint on the parameters. 
+It also makes it easier to see the difference from Lasso regression:
 
+\begin{equation}
+	\hat{\beta}^{ridge} = \operatorname{argmin}_{beta} 
+							\sum\limits_{i=1}^N \left(y_i - \beta_0
+							-\sum\limits_{j=1}^p x_{ij}\beta_j\right)^2
+\end{equation}
+subject to
+\begin{equation}
+	\sum\limits_{j=1}^p \beta_j^2 \leq t
+\end{equation}
+There is a one to one correspondence between \(\lambda\) and \(t\).
+\cite{IntroStatistics} 
+
+\subsubsection{Lasso regression}
+Like ridge, lasso is a shrinkage method. The main difference from 
+ridge is that lasso has no closed form expression. ~\cite{IntroStatistics} 
+
+Similarly to ridge, the lasso estimate is given by
+
+\begin{equation}
+	\hat{\beta}^{lasso} = \operatorname{argmin}_{beta} 
+							\sum\limits_{i=1}^N \left(y_i - \beta_0
+							-\sum\limits_{j=1}^p x_{ij}\beta_j\right)^2
+\end{equation}
+subject to
+\begin{equation}
+	\sum\limits_{j=1}^p |\beta_j| \leq t
+\end{equation}.
+
+As you can see, the ridge penalty \(\sum_1^p \beta_j^2\) is replaced 
+by a lasso penalty given by \(\sum_1^p |\beta_j|\). 
+This makes the solution nonlinear in the \(y_i\) and is the reason
+that the lasso solution don't have a closed form expression.
+
+Lasso does a kind of continous subset selection because of the nature of 
+the constraint. The reason for that is that making \(t\) sufficiently small,
+will cause some of the coefficients to go to zero. 
 
 
 
