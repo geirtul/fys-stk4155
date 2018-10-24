@@ -5,23 +5,23 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
-
+"""
+This class is deprecated and no longer used by the regression models.
+"""
 
 class Analysis:
 
-    def mean_squared_error(self):
+    def mean_squared_error(self, x_in, y_in):
         """
         Evaluate the mean squared error of the output generated
         by Ordinary Least Squares regressions.
 
-        outcome               - the data on which regression was performed on
-        predicted_outcome     - the data the model spits out after regression
+        :param x_in: x-values for data to calculate mean_squared error on.
+        :param y_in: true values for x
+        :return: returns mean squared error for the fit compared with true values.
         """
-        # TODO: This method only works when bootstrap is not being performed.
-        # TODO: Concider generalizing so that this method can be called inside
-        # TODO: bootstrap?
 
-        N = self.outcome.size
+
         mse = np.sum(np.square(self.outcome - self.predicted_outcome)) / N
         return mse
 

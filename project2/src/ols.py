@@ -1,9 +1,8 @@
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
-from analysis import Analysis
 
 
-class OrdinaryLeastSquares(Analysis):
+class OrdinaryLeastSquares():
 
     def __init__(self):
         """
@@ -20,40 +19,69 @@ class OrdinaryLeastSquares(Analysis):
         and performs regression
         """
 
-        self.predictors = None
+        self.x = None
+        self.y = None
         self.poly_degree = None
-        self.outcome = None
-        self.beta = None
         self.poly = None
-        self.predicted_outcome = None
+        self.coeff = None
 
-    def fit_coefficients(self, predictors, outcome, poly_degree):
+    def fit_coefficients(self, x, y, poly_degree):
         """
         Fits the polynomial coefficients beta to the matrix
         of polynomial features.
 
-        :param predictors: x,y, ... values that generated the outcome
-        :param outcome: the dataset we will fit
+        :param x: x values that generated the outcome
+        :param y: the dataset to fit
         :param poly_degree: Degree of the polynomial to fit
         """
-        self.predictors = predictors
+        self.x = x
         self.poly_degree = poly_degree
         self.poly = PolynomialFeatures(poly_degree)
-        self.outcome = outcome
+        self.y = y
 
         # Regression
-        X = self.poly.fit_transform(self.predictors)
-        self.beta = np.linalg.inv(X.T @ X) @ X.T @ outcome
+        X = self.poly.fit_transform(self.x)
+        self.coeff = np.linalg.inv(X.T @ X) @ X.T @ y
 
-    def make_prediction(self, x_in, z_in):
+    def make_prediction(self, x):
         """
-        Makes a model prediction
-        Returns prediction together with x and y values for plotting.
+        Use the trained model to predict values given an input x_in.
 
-        :param x_in: predictors to generate an outcome with
+
+        :param x: Input values to predict new data for
+        :return: predicted values
         """
-        X = self.poly.fit_transform(x_in)
-        self.predicted_outcome = X @ self.beta
-        self.outcome = z_in
 
-        return self.predicted_outcome
+        X = self.poly.fit_transform(x)
+        y_predict = X @ self.coeff
+
+        return y_predict
+
+    def mean_squared_error(self, x, y):
+        """
+        Evaluate the mean squared error of the output generated
+        by Ordinary Least Squares regressions.
+
+        :param x: x-values for data to calculate mean_squared error on.
+        :param y: true values for x
+        :return: returns mean squared error for the fit compared with true values.
+        """
+
+        y_predict = self.make_prediction(x)
+
+        mse = np.mean(np.square(y - y_predict))
+        return mse
+
+    def r2_score(self):
+        """
+        Evaluate the R2 score of the model fitted to the dataset.
+
+        :return:    Returns the mean squared error of the model compared with
+                    dataset used for fitting.
+        """
+
+        outcome_mean = np.mean(self.outcome)
+        upper_sum = np.sum(np.square(self.outcome - self.predicted_outcome))
+        lower_sum = np.sum(np.square(self.outcome - outcome_mean))
+        r2score = 1 - upper_sum / lower_sum
+        return r2score

@@ -56,8 +56,11 @@ x_train, x_test, y_train, y_test = train_test_split(data[0], data[1], test_size=
 # Set up scikit regression
 ols = linear_model.LinearRegression()
 ols.fit(x_train, y_train)
+
 # ridge = linear_model.Ridge()
 # lasso = linear_model.Lasso()
 
 # Set up homemade regression
 homemade_ols = OrdinaryLeastSquares()
+homemade_ols.fit_coefficients(x_train, y_train)
+homemade_ols.make_predictoin(x_test, y_test)

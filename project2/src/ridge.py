@@ -1,10 +1,8 @@
 import numpy as np
-from franke_function import FrankeFunction
 from sklearn.preprocessing import PolynomialFeatures
-from analysis import Analysis
 
 
-class RidgeRegression(Analysis):
+class RidgeRegression():
 
     def __init__(self):
         
@@ -22,44 +20,76 @@ class RidgeRegression(Analysis):
         and performs regression
         """
 
-        self.predictors = None
+        self.x = None
         self.poly_degree = None
-        self.outcome = None
-        self.beta = None
+        self.y = None
+        self.coeff = None
         self.poly = None
         self.predicted_outcome = None
         self.lmb = None
 
-    def fit_coefficients(self, predictors, outcome, poly_degree, lmb=0):
+    def fit_coefficients(self, x, y, poly_degree, lmb=0):
         """
         Fits the polynomial coefficients beta to the matrix
         of polynomial features.
 
-        :param predictors: x,y, ... values that generated the outcome
-        :param outcome: the dataset we will fit
+        :param x: x values that generated the outcome
+        :param y: data corresponding to x
         :param poly_degree: Degree of the polynomial to fit
         :param lmb: float, shrinkage lmb=0 makes the model equal to ols
         """
-        self.predictors = predictors
+
+        self.x = x
         self.poly_degree = poly_degree
         self.poly = PolynomialFeatures(poly_degree)
-        self.outcome = outcome
+        self.y = y
         self.lmb = lmb
 
         # Regression
-        X = self.poly.fit_transform(self.predictors)
+        X = self.poly.fit_transform(self.x)
 
         I = np.eye(len(X[1]))
 
-        self.beta = (np.linalg.inv(X.T @ X + lmb * I) @ X.T @ outcome)
+        self.coeff = (np.linalg.inv(X.T @ X + lmb * I) @ X.T @ y)
 
-    def make_prediction(self, x_in, z_in):
+    def make_prediction(self, x):
         """
         Makes a model prediction
-        Returns prediction together with x and y values for plotting. 
-        """
-        X = self.poly.fit_transform(x_in)
-        self.predicted_outcome = X @ self.beta
-        self.outcome = z_in
+        Returns prediction together with x and y values for plotting.
 
-        return self.predicted_outcome
+        :param x: x values to generate data values for.
+        :returns: predicted data
+        """
+        X = self.poly.fit_transform(x)
+        y_predict = X @ self.coeff
+
+        return y_predict
+
+    def mean_squared_error(self, x, y):
+        """
+        Evaluate the mean squared error of the output generated
+        by Ordinary Least Squares regressions.
+
+        :param x: x-values for data to calculate mean_squared error on.
+        :param y: true values for x
+        :return: returns mean squared error for the fit compared with true values.
+        """
+
+        y_predict = self.make_prediction(x)
+
+        mse = np.mean(np.square(y - y_predict))
+        return mse
+
+    def r2_score(self):
+        """
+        Evaluate the R2 score of the model fitted to the dataset.
+
+        :return:    Returns the mean squared error of the model compared with
+                    dataset used for fitting.
+        """
+
+        outcome_mean = np.mean(self.y)
+        upper_sum = np.sum(np.square(self.y - self.predicted_outcome))
+        lower_sum = np.sum(np.square(self.y - outcome_mean))
+        r2score = 1 - upper_sum / lower_sum
+        return r2score
