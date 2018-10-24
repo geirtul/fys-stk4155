@@ -1,5 +1,4 @@
 import numpy as np
-from franke_function import FrankeFunction
 from sklearn.preprocessing import PolynomialFeatures
 from analysis import Analysis
 
@@ -58,29 +57,3 @@ class OrdinaryLeastSquares(Analysis):
         self.outcome = z_in
 
         return self.predicted_outcome
-
-
-if __name__ == "__main__":
-    # Data from FrankeFunction
-    x = np.arange(0, 1, 0.05)
-    y = np.arange(0, 1, 0.05)
-    x, y = np.meshgrid(x, y)
-
-    # Make predictor values a matrix with
-    # number of columns = number of predictors.
-
-    predictors_input = np.c_[x.ravel(), y.ravel()]
-
-    z = FrankeFunction(x, y).ravel()
-
-    # Initialize the regression object and perform a fit
-    ols = OrdinaryLeastSquares()
-    ols.fit_coefficients(predictors_input, z, 5)
-    z_predict = ols.make_prediction(predictors_input, z)
-
-    print("MSE = ", ols.mean_squared_error())
-    print("R2 score = ", ols.r2_score())
-
-    ols.plotting_3d(True, 'ols')
-
-    #ols.bootstrap()
