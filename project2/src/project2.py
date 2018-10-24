@@ -7,7 +7,7 @@ from sklearn import linear_model
 from sklearn.model_selection import train_test_split
 from ols import OrdinaryLeastSquares
 from ridge import RidgeRegression
-from lasso import LassoRegressions
+from lasso import LassoRegression
 
 """
 This is the file that will run the numerical experiments.
@@ -56,11 +56,20 @@ x_train, x_test, y_train, y_test = train_test_split(data[0], data[1], test_size=
 # Set up scikit regression
 ols = linear_model.LinearRegression()
 ols.fit(x_train, y_train)
+scikit_r2_train = ols.score(x_train, y_train)
+scikit_r2_test = ols.score(x_test, y_test)
 
 # ridge = linear_model.Ridge()
 # lasso = linear_model.Lasso()
 
 # Set up homemade regression
-homemade_ols = OrdinaryLeastSquares()
-homemade_ols.fit_coefficients(x_train, y_train)
-homemade_ols.make_predictoin(x_test, y_test)
+# homemade_ols = OrdinaryLeastSquares()
+# homemade_ols.fit_coefficients(x_train, y_train, 5)
+# homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
+# homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
+
+# Print some comparison values
+print("Scikit results\nR2 train | R2 test")
+print(scikit_r2_train," ", scikit_r2_test)
+# print("Homemade results\nR2 train | R2 test")
+# print(homemade_r2_train," ", homemade_r2_test)
