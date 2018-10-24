@@ -79,16 +79,18 @@ class LassoRegression():
 
         return mse
 
-    def r2_score(self):
+    def r2_score(self, x, y):
         """
-        Evaluate the R2 score of the model fitted to the dataset.
+        Evaluates the R2 score for the fitted model.
 
-        :return:    Returns the mean squared error of the model compared with
-                    dataset used for fitting.
+        :param x: input values x
+        :param y: true values for x
+        :return: r2 score
         """
+        y_predict = self.make_prediction(x)
 
-        outcome_mean = np.mean(self.y)
-        upper_sum = np.sum(np.square(self.y - self.predicted_outcome))
-        lower_sum = np.sum(np.square(self.y - outcome_mean))
+        y_mean = np.mean(y)
+        upper_sum = np.sum(np.square(y - y_predict))
+        lower_sum = np.sum(np.square(y - y_mean))
         r2score = 1 - upper_sum / lower_sum
         return r2score
