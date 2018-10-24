@@ -1,6 +1,13 @@
 import numpy as np
 import warnings
+import matplotlib.pyplot as plt
+
 from ising_data import ising_energies, recast_to_regression
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+from ols import OrdinaryLeastSquares
+from ridge import RidgeRegression
+from lasso import LassoRegressions
 
 """
 This is the file that will run the numerical experiments.
@@ -23,3 +30,34 @@ energies = ising_energies(states, L)
 states = recast_to_regression(states)
 data = [states, energies]
 
+# Store errors for regression with sklearn and homemade regression.
+train_errors_ols = []
+test_errors_ols = []
+
+# train_errors_ridge = []
+# test_errors_ridge = []
+#
+# train_errors_lasso = []
+# test_errors_lasso = []
+
+homemade_train_errors_ols = []
+homemade_test_errors_ols = []
+
+# homemade_train_errors_ridge = []
+# homemade_test_errors_ridge = []
+#
+# homemade_train_errors_lasso = []
+# homemade_test_errors_lasso = []
+
+
+# Split into training and test data sets
+x_train, x_test, y_train, y_test = train_test_split(data[0], data[1], test_size=0.1)
+
+# Set up scikit regression
+ols = linear_model.LinearRegression()
+ols.fit(x_train, y_train)
+# ridge = linear_model.Ridge()
+# lasso = linear_model.Lasso()
+
+# Set up homemade regression
+homemade_ols = OrdinaryLeastSquares()
