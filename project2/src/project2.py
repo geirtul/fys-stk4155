@@ -63,13 +63,13 @@ scikit_r2_test = ols.score(x_test, y_test)
 # lasso = linear_model.Lasso()
 
 # Set up homemade regression
-# homemade_ols = OrdinaryLeastSquares()
-# homemade_ols.fit_coefficients(x_train, y_train, 5)
-# homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
-# homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
+homemade_ols = OrdinaryLeastSquares()
+homemade_ols.fit_coefficients(x_train, y_train)
+homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
+homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
 
 # Print some comparison values
 print("Scikit results\nR2 train | R2 test")
 print(scikit_r2_train," ", scikit_r2_test)
-# print("Homemade results\nR2 train | R2 test")
-# print(homemade_r2_train," ", homemade_r2_test)
+print("Homemade results\nR2 train | R2 test")
+print(homemade_r2_train," ", homemade_r2_test)

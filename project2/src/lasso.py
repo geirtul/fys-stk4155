@@ -3,52 +3,40 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn import linear_model
 
 
-class LassoRegression():
+class LassoRegression:
 
     def __init__(self):
         """
-        Perform regression using the Lasso method
-        on a dataset y, with a polynomial of degree poly_degree.
-        The PolynomialFeatures module from scikit learn sets up the 
-        vandermonde matrix such that in the matrix equation X*beta = y, 
-        beta is the coefficient vector, and X contains the polynomial
-        expressions.
-
-        The method uses scikit learn's Lasso regression methods.
+        Perform regression using the Lasso method on a
+        data set y. The method is scikit learn's Lasso implementation
+        put into the same framework as the OLD and Ridge methods here.
         """
 
         self.x = None
-        self.poly_degree = None
         self.y = None
         self.coeff = None
-        self.poly = None
         self.alpha = None
         self.lasso_object = None
 
-    def fit_coefficients(self, x, y, poly_degree, alpha=1.0):
+    def fit_coefficients(self, x, y, alpha=1.0):
         """
-        Fits the polynomial coefficients beta to the matrix
-        of polynomial features.
+        Fits coefficients to the matrix.
 
         :param x: input values that generated the dataset y
         :param y: the dataset corresponding to input values x
-        :param poly_degree: Degree of the polynomial to fit
         :param alpha: float, Constant that multiplies the L1 term.
                         Defaults to 1.0. alpha = 0 is equivalent to
                         an ordinary least square regression.
         """
 
-        self.poly_degree = poly_degree
-        self.poly = PolynomialFeatures(poly_degree)
         self.y = y
         self.alpha = alpha
 
         # Regression
         # Input values to design matrix
-        self.x = self.poly.fit_transform(x)
         
         self.lasso_object = linear_model.Lasso(alpha=self.alpha, max_iter=1e3)
-        self.lasso_object.fit(self.x, self.y)
+        self.lasso_object.fit(x, y)
 
     def make_prediction(self, x):
         """
@@ -59,8 +47,8 @@ class LassoRegression():
         :param x: input values to generate predicted data set for
         :returns: predicted values
         """
-        X = self.poly.fit_transform(x)
-        y_predict = self.lasso_object.predict(X)
+
+        y_predict = self.lasso_object.predict(x)
 
         return y_predict
 
