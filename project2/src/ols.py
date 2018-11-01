@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
 
 
 class OrdinaryLeastSquares():
@@ -21,39 +20,30 @@ class OrdinaryLeastSquares():
 
         self.x = None
         self.y = None
-        self.poly_degree = None
-        self.poly = None
         self.coeff = None
 
-    def fit_coefficients(self, x, y, poly_degree):
+    def fit_coefficients(self, x, y):
         """
-        Fits the polynomial coefficients beta to the matrix
-        of polynomial features.
+        Makes a linear fit of the data.
 
         :param x: x values that generated the outcome
         :param y: the dataset to fit
-        :param poly_degree: Degree of the polynomial to fit
         """
         self.x = x
-        self.poly_degree = poly_degree
-        self.poly = PolynomialFeatures(poly_degree)
         self.y = y
 
         # Regression
-        X = self.poly.fit_transform(self.x)
-        self.coeff = np.linalg.inv(X.T @ X) @ X.T @ y
+        self.coeff = np.linalg.inv(x.T @ x) @ x.T @ y
 
     def make_prediction(self, x):
         """
-        Use the trained model to predict values given an input x_in.
-
+        Use the trained model to predict values given an input x.
 
         :param x: Input values to predict new data for
         :return: predicted values
         """
 
-        X = self.poly.fit_transform(x)
-        y_predict = X @ self.coeff
+        y_predict = x @ self.coeff
 
         return y_predict
 

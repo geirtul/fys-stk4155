@@ -95,7 +95,9 @@ if len(sys.argv) > 0:
         elif arg == "e_ridge":
             newdata = determine_best_mse(data, headers, 'ridge')
             plot_mse_vs_complexity(newdata, headers, 'ridge')
-
+        elif arg == "e_lasso":
+            newdata = determine_best_mse(data, headers, 'lasso')
+            plot_mse_vs_complexity(newdata, headers, 'lasso')
 
 
     plt.title('Mean Squared Error vs. Complexity of model')
@@ -105,24 +107,3 @@ if len(sys.argv) > 0:
     figname = "../report/figures/mse_vs_complexity_{}.pdf".format(sys.argv[1])
     plt.savefig(figname, format='pdf')
     plt.show()
-
-
-
-
-
-
-
-"""
-plt.figure()
-plt.subplot(1, 2, 1)
-plt.title('Terrain predicted by OLS model.')
-plt.imshow(z_predict.reshape((len(y), len(x))), cmap=cm.coolwarm)
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.subplot(1, 2, 2)
-plt.title('Terrain data.')
-plt.imshow(terrain_resized, cmap=cm.coolwarm)
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.show()
-"""
