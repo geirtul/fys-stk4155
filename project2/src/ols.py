@@ -5,17 +5,10 @@ class OrdinaryLeastSquares():
 
     def __init__(self):
         """
-        Perform linear regression using the Ordinary Least Squares method
-        on a dataset y, with a polynomial of degree m.
-        The PolynomialFeatures module from scikit learn sets up the
-        vandermonde matrix such that in the matrix equation X*beta = y,
-        beta is the coefficient vector,
-        and X contains the polynomial expressions.
-        returns x and y values for plotting along with the predicted y values
-        from the model.
-
+        Perform regression using the ordinary least squares method on a
+        data set y.
         Sets up the matrix X in the matrix equation y = X*Beta
-        and performs regression
+        and performs linear regression to find the best coefficients.
         """
 
         self.x = None
