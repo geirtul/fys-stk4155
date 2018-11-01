@@ -27,7 +27,7 @@ class OrdinaryLeastSquares(Analysis):
         self.y = y
 
         # Regression
-        self.coeff = np.linalg.inv(x.T @ x) @ x.T @ y
+        self.coeff = np.linalg.pinv(x.T @ x) @ x.T @ y
 
     def make_prediction(self, x):
         """

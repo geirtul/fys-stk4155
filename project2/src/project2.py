@@ -22,7 +22,7 @@ warnings.filterwarnings('ignore')
 
 np.random.seed(12)
 L = 40
-num_states = 1000
+num_states = 10000
 
 # create N random Ising states, calculate energies and recast for regression.
 states = np.random.choice([-1, 1], size=(num_states, L))
@@ -51,13 +51,17 @@ homemade_test_errors_ols = []
 
 
 # Split into training and test data sets
-x_train, x_test, y_train, y_test = train_test_split(data[0], data[1], test_size=0.1)
+x_train, x_test, y_train, y_test = train_test_split(data[0],
+                                                    data[1],
+                                                    test_size=0.1)
 
 # Set up scikit regression
 ols = linear_model.LinearRegression()
 ols.fit(x_train, y_train)
 scikit_r2_train = ols.score(x_train, y_train)
 scikit_r2_test = ols.score(x_test, y_test)
+print("Scikit results\nR2 train | R2 test")
+print(scikit_r2_train," ", scikit_r2_test)
 
 # ridge = linear_model.Ridge()
 # lasso = linear_model.Lasso()
@@ -69,7 +73,6 @@ homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
 homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
 
 # Print some comparison values
-print("Scikit results\nR2 train | R2 test")
-print(scikit_r2_train," ", scikit_r2_test)
+
 print("Homemade results\nR2 train | R2 test")
 print(homemade_r2_train," ", homemade_r2_test)
