@@ -25,10 +25,5 @@ def bootstrap(data, num_draws):
                                             np.mean(t),
                                             np.std(t)))
 
-    return t
+    return y_predictions
 
-if __name__ == "__main__":
-    mu, sigma = 10, 2
-    datapoints = 10000
-    x = mu + sigma*randn(datapoints)
-    t = bootstrap(x, datapoints)

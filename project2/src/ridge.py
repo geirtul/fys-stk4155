@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 
 
-class RidgeRegression():
+class RidgeRegression(Analysis):
 
     def __init__(self):
         
