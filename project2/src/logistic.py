@@ -7,8 +7,6 @@ class LogisticRegression(Analysis):
     def __init__(self):
         """
         Perform logistic regression  on a data set y.
-        Sets up the matrix X in the matrix equation y = X*Beta
-        and performs linear regression to find the best coefficients.
         """
 
         self.x = None
@@ -17,7 +15,7 @@ class LogisticRegression(Analysis):
 
     def fit_coefficients(self, x, y):
         """
-        Makes a linear fit of the data.
+        make s a fit of probabilities.
 
         :param x: x values that generated the outcome
         :param y: the dataset to fit
