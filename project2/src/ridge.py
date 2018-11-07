@@ -7,17 +7,9 @@ class RidgeRegression(Analysis):
     def __init__(self):
         
         """
-        Perform regression using the ridge method
-        on a dataset y, with a polynomial of degree m.
-        The PolynomialFeatures module from scikit learn sets up the 
-        vandermonde matrix such that in the matrix equation X*beta = y, 
-        beta is the coefficient vector,
-        and X contains the polynomial expressions.
-        returns x and y values for plotting along with the predicted y values
-        from the model.
-
-        Sets up the matrix X in the matrix equation y = X*Beta
-        and performs regression
+        Perform regression using the ridge method on a dataset y,
+        with a polynomial of degree m.
+        TODO: Add better description of the method, or link to it.
         """
 
         self.x = None
@@ -40,7 +32,7 @@ class RidgeRegression(Analysis):
         self.lmb = lmb
 
         # Regression
-        I = np.eye(len(X[1]))
+        I = np.eye(len(x[1]))
 
         self.coeff = (np.linalg.inv(x.T @ x + lmb * I) @ x.T @ y)
 
