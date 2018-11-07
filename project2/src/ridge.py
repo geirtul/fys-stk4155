@@ -4,37 +4,37 @@ from analysis import import Analysis
 
 class RidgeRegression(Analysis):
 
-    def __init__(self):
+    def __init__(self, lmb):
         
         """
         Perform regression using the ridge method on a dataset y,
         with a polynomial of degree m.
         TODO: Add better description of the method, or link to it.
+        
+        :param lmb: float, shrinkage lmb=0 makes the model equal to ols
         """
 
         self.x = None
         self.y = None
         self.coeff = None
-        self.lmb = None
+        self.lmb = lmb
 
-    def fit_coefficients(self, x, y, lmb=0):
+    def fit_coefficients(self, x, y):
         """
         Fits the polynomial coefficients beta to the matrix
         of polynomial features.
 
         :param x: x values that generated the outcome
         :param y: data corresponding to x
-        :param lmb: float, shrinkage lmb=0 makes the model equal to ols
         """
 
         self.x = x
         self.y = y
-        self.lmb = lmb
 
         # Regression
         I = np.eye(len(x[1]))
 
-        self.coeff = (np.linalg.inv(x.T @ x + lmb * I) @ x.T @ y)
+        self.coeff = (np.linalg.inv(x.T @ x + self.lmb * I) @ x.T @ y)
 
     def make_prediction(self, x):
         """
