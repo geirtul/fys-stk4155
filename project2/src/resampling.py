@@ -30,7 +30,7 @@ class Resampling:
                                                             self.y,
                                                             test_size=test_size)
         
-        y_predictions = np.empty((n_boostraps, y_test.shape[0]))
+        y_predictions = np.empty((num_bootstraps, y_test.shape[0]))
         for i in range(num_bootstraps):
             x_re, y_re = resample(x_train, y_train)
 
