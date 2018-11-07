@@ -14,7 +14,6 @@ class Resampling:
         Perform bootstrapping on the dataset the regression model has been
         fit to.
         """
-        y_predictions = np.empty((y_test.shape[0], n_boostraps))
 
         # Split the data the model was initially fit on into training and test
         # sets. Recommended test_size is around 0.1, so we'll stick to that.
@@ -23,6 +22,7 @@ class Resampling:
                                                             self.y,
                                                             test_size=0.1)
 
+        y_predictions = np.empty((y_test.shape[0], n_boostraps))
         for i in range(num_bootstraps):
             x_re, y_re = resample(x_train, y_train)
 
@@ -40,14 +40,8 @@ class Resampling:
                                                          "std.err"))
         print("{:8f} | {:8f} | {:8f} | {:8f}".format(np.mean(data),
                                                      np.std(data),
-                                                     np.mean(t),
-                                                     np.std(t)))
+                                                     np.mean(y_predictions),
+                                                     np.std(y_predictions)))
 
-        return t
+        return y_predictions
 
-
-if __name__ == "__main__":
-    mu, sigma = 10, 2
-    datapoints = 10000
-    x = mu + sigma*randn(datapoints)
-    t = bootstrap(x, datapoints)
