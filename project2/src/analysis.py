@@ -33,3 +33,6 @@ class Analysis:
         lower_sum = np.sum(np.square(y - y_mean))
         r2score = 1 - upper_sum / lower_sum
         return r2score
+    
+    def bootstrap(self, x, y):
+        raise NotImplemented
