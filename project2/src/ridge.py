@@ -1,8 +1,8 @@
 import numpy as np
-from sklearn.preprocessing import PolynomialFeatures
+from analysis import import Analysis
 
 
-class RidgeRegression():
+class RidgeRegression(Analysis):
 
     def __init__(self):
         
@@ -21,36 +21,28 @@ class RidgeRegression():
         """
 
         self.x = None
-        self.poly_degree = None
         self.y = None
         self.coeff = None
-        self.poly = None
-        self.predicted_outcome = None
         self.lmb = None
 
-    def fit_coefficients(self, x, y, poly_degree, lmb=0):
+    def fit_coefficients(self, x, y, lmb=0):
         """
         Fits the polynomial coefficients beta to the matrix
         of polynomial features.
 
         :param x: x values that generated the outcome
         :param y: data corresponding to x
-        :param poly_degree: Degree of the polynomial to fit
         :param lmb: float, shrinkage lmb=0 makes the model equal to ols
         """
 
         self.x = x
-        self.poly_degree = poly_degree
-        self.poly = PolynomialFeatures(poly_degree)
         self.y = y
         self.lmb = lmb
 
         # Regression
-        X = self.poly.fit_transform(self.x)
-
         I = np.eye(len(X[1]))
 
-        self.coeff = (np.linalg.inv(X.T @ X + lmb * I) @ X.T @ y)
+        self.coeff = (np.linalg.inv(x.T @ x + lmb * I) @ x.T @ y)
 
     def make_prediction(self, x):
         """
@@ -60,8 +52,7 @@ class RidgeRegression():
         :param x: x values to generate data values for.
         :returns: predicted data
         """
-        X = self.poly.fit_transform(x)
-        y_predict = X @ self.coeff
+        y_predict = x @ self.coeff
 
         return y_predict
 
@@ -70,9 +61,10 @@ class RidgeRegression():
         Evaluate the mean squared error of the output generated
         by Ordinary Least Squares regressions.
 
-        :param x: x-values for data to calculate mean_squared error on.
-        :param y: true values for x
-        :return: returns mean squared error for the fit compared with true values.
+        :param x:   x-values for data to calculate mean_squared error on.
+        :param y:   true values for x
+        :return:    returns mean squared error for the fit compared with true
+                    values.
         """
 
         y_predict = self.make_prediction(x)
@@ -84,9 +76,9 @@ class RidgeRegression():
         """
         Evaluates the R2 score for the fitted model.
 
-        :param x: input values x
-        :param y: true values for x
-        :return: r2 score
+        :param x:   input values x
+        :param y:   true values for x
+        :return:    r2 score
         """
         y_predict = self.make_prediction(x)
 
