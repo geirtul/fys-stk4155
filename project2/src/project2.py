@@ -65,9 +65,10 @@ x_train, x_test, y_train, y_test = train_test_split(data[0],
 # print("Scikit results\nR2 train | R2 test")
 # print(scikit_r2_train," ", scikit_r2_test)
 
+ridge_lmb = 0.1
 # Set up scikit regression
-# Ridge
-ridge = linear_model.Ridge()
+# Ridge - ridge alpha is equivalent with homemade ridge's lmb
+ridge = linear_model.Ridge(alpha = ridge_lmb)
 ridge.fit(x_train, y_train)
 scikit_r2_train = ridge.score(x_train, y_train)
 scikit_r2_test = ridge.score(x_test, y_test)
@@ -77,12 +78,13 @@ print(scikit_r2_train," ", scikit_r2_test)
 
 # Set up homemade regression
 # OLS
-#homemade_ols = OrdinaryLeastSquares()
-#homemade_ols.fit_coefficients(x_train, y_train)
-#homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
-#homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
-# Ridge
-homemade_ridge = RidgeRegression()
+# homemade_ols = OrdinaryLeastSquares()
+# homemade_ols.fit_coefficients(x_train, y_train)
+# homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
+# homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
+
+# Ridge - lmb is equivalent with scikit's alpha
+homemade_ridge = RidgeRegression(lmb = ridge_lmb)
 homemade_ridge.fit_coefficients(x_train, y_train)
 homemade_r2_train = homemade_ridge.r2_score(x_train, y_train)
 homemade_r2_test = homemade_ridge.r2_score(x_test, y_test)

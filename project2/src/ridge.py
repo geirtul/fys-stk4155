@@ -1,5 +1,5 @@
 import numpy as np
-from analysis import import Analysis
+from analysis import Analysis
 
 
 class RidgeRegression(Analysis):
@@ -34,7 +34,7 @@ class RidgeRegression(Analysis):
         # Regression
         I = np.eye(len(x[1]))
 
-        self.coeff = (np.linalg.inv(x.T @ x + self.lmb * I) @ x.T @ y)
+        self.coeff = (np.linalg.pinv(x.T @ x + self.lmb * I) @ x.T @ y)
 
     def make_prediction(self, x):
         """
