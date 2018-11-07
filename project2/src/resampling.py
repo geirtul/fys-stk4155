@@ -9,10 +9,18 @@ class Resampling:
     Class containing resampling methods to be used with regression classes.
     """
 
-    def bootstrap(self, num_bootstraps):
+    def bootstrap(self, num_bootstraps = 1000, test_size = 0.1):
         """
         Perform bootstrapping on the dataset the regression model has been
-        fit to.
+        fit to. It is assumed that the regression class has been initialized
+        with whatever parameters necessary (alpha, lmb etc).
+
+        :param num_bootstraps:  Number of random draws to make.
+                                Defaults to 1000.
+        :param test_size:   Relative size of test_data compared to full data.
+                            Defaults to 0.1.
+
+        :return: y_predictions - predicticed values for each resampled data set.
         """
 
         # Split the data the model was initially fit on into training and test
@@ -20,9 +28,9 @@ class Resampling:
 
         x_train, x_test, y_train, y_test = train_test_split(self.x,
                                                             self.y,
-                                                            test_size=0.1)
-
-        y_predictions = np.empty((y_test.shape[0], n_boostraps))
+                                                            test_size=test_size)
+        
+        y_predictions = np.empty((n_boostraps, y_test.shape[0]))
         for i in range(num_bootstraps):
             x_re, y_re = resample(x_train, y_train)
 
@@ -38,8 +46,9 @@ class Resampling:
                                                          "bias",
                                                          "mean",
                                                          "std.err"))
-        print("{:8f} | {:8f} | {:8f} | {:8f}".format(np.mean(data),
-                                                     np.std(data),
+
+        print("{:8f} | {:8f} | {:8f} | {:8f}".format(np.mean(y_test),
+                                                     np.std(t_test),
                                                      np.mean(y_predictions),
                                                      np.std(y_predictions)))
 
