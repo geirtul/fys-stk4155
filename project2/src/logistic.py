@@ -9,7 +9,7 @@ class LogisticRegression():
     weights, beta.
     """
 
-    def __init__(self, learning_rate = 5e-4, intercept = True, num_iter = 1e1):
+    def __init__(self, learning_rate = 5e-4, intercept = True, num_iter = 1.5e2):
         """
 
         :param learning_rate: How fast should we learn?
@@ -45,7 +45,10 @@ class LogisticRegression():
 
         for i in tqdm(range(self.num_iter)):
             y_predict = self.make_prediction(self.x)
-            gradient = -np.dot(self.x.T, self.y - y_predict)
+
+            # Dividing gradient by number of states to prevent overflow/nan.
+            # TODO: Figure out why this happens?
+            gradient = -np.dot(self.x.T, self.y - y_predict)/self.x.shape[0]
 
             self.weights += self.learning_rate * gradient
 
@@ -63,12 +66,14 @@ class LogisticRegression():
         self.y = y
 
         # Initialize weights using OLS regression
+        print("Initializing weights...")
         ols = OrdinaryLeastSquares()
         ols.fit_coefficients(self.x, self.y)
         self.weights = ols.coeff
         #self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
 
         # Gradient descent to optimize weights
+        print("Performing gradient descent...")
         self.gradient_descent()
 
         return self.weights
