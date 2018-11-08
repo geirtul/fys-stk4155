@@ -83,9 +83,11 @@ print('\nPerforming logistic regression:')
 print('======================================================================')
 logistic = LogisticRegression()
 logistic.fit(X_train, Y_train)
-accuracy = logistic.accuracy(X_test, Y_test)
+accuracy_train = logistic.accuracy(X_train, Y_train)
+accuracy_test = logistic.accuracy(X_test, Y_test)
 
-print('Accuracy = {}'.format(accuracy))
+print('Accuracy train = {}'.format(accuracy_train))
+print('Accuracy test = {}'.format(accuracy_test))
 
 
 
