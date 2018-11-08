@@ -3,7 +3,6 @@ import warnings
 import matplotlib.pyplot as plt
 import pickle
 import os
-from ising_data import ising_energies, recast_to_regression
 from sklearn.model_selection import train_test_split
 from logistic import LogisticRegression
 
@@ -23,7 +22,7 @@ T_c=2.26 # Onsager critical temperature in the TD limit
 
 # define ML parameters
 num_classes=2
-train_to_test_ratio=0.5 # training samples
+
 
 # Set up datasets before regression begins.
 # ==================================================
@@ -44,24 +43,25 @@ data[np.where(data == 0)] = -1
 labels = pickle.load(open(path_to_data+file_name_labels,'rb')) 
 
 # Divide data into ordered, critical and disordered
-X_ordered=data[:70000,:]
+X_ordered=data[:70000, :]
 Y_ordered=labels[:70000]
 
-X_critical=data[70000:100000,:]
+X_critical=data[70000:100000, :]
 Y_critical=labels[70000:100000]
 
-X_disordered=data[100000:,:]
+X_disordered=data[100000:, :]
 Y_disordered=labels[100000:]
 
 # We want to pick samples from ordered or disordered, so we
 # combine these.
-X=np.concatenate((X_ordered,X_disordered))
-Y=np.concatenate((Y_ordered,Y_disordered))
+X=np.concatenate((X_ordered, X_disordered))
+Y=np.concatenate((Y_ordered, Y_disordered))
 
 # Pick random data points from ordered and disordered states 
 # to create the training and test sets
-X_train,X_test,Y_train,Y_test = train_test_split(
-        X,Y,train_size=train_to_test_ratio)
+train_to_test_ratio=0.5 # training samples
+X_train, X_test, Y_train, Y_test = train_test_split(
+        X, Y, train_size=train_to_test_ratio)
 
 # Full data set
 # X = np.concatenate((X_critical,X))
@@ -77,7 +77,17 @@ print(X_test.shape[0], 'test samples')
 # Regression
 # ==================================================
 # We apply logistic regression to the states to optimize
-# a set of weights, beta
+# a set of weights that minimize the cross-entropy to produce
+# the best model for the data.
+print('\nPerforming logistic regression:')
+print('======================================================================')
+logistic = LogisticRegression()
+logistic.fit(X_train, Y_train)
+accuracy = logistic.accuracy(X_test, Y_test)
+
+print('Accuracy = {}'.format(accuracy))
+
+
 
 
 
