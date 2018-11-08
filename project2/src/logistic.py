@@ -9,7 +9,7 @@ class LogisticRegression():
     weights, beta.
     """
 
-    def __init__(self, learning_rate = 1e-3, intercept = True, num_iter = 1e2):
+    def __init__(self, learning_rate = 1e-2, intercept = True, num_iter = 1e2):
         """
 
         :param learning_rate: How fast should we learn?
@@ -84,7 +84,9 @@ class LogisticRegression():
         :param x: Input values to predict new data for
         :return: predicted values
         """
-        while x.shape != self.x.shape:
+        # Make sure input shape matches the weights etc.
+        # This is mostly to append the bias column.
+        while x.shape[1] != self.x.shape[1]:
             x = np.c_[np.ones(x.shape[0]), x]
 
         y_predict = np.dot(x, self.weights)
@@ -108,16 +110,26 @@ class LogisticRegression():
         Evaluate the accuracy of the model based on the number of correctly
         labeled classes divided by the number of classes in total.
         """
-
         y_predict = self.make_prediction(x)
         check = []
-        for el in y_predict:
+        print("Binary-fying the probabilites...")
+        for el in tqdm(y_predict):
             if el >= threshold:
                 check.append(1)
             else:
                 check.append(0)
 
-        correct = np.array(check) - y
-        score = (correct.size - np.count_nonzero(correct))/correct.size
+        correct = np.array(check, dtype=int) - y
+        print("Calculating score...")
+        count = 0
+        for el in tqdm(correct):
+            if el == 0: count += 1
+        score = count / correct.size
+
+
+        # # counting number of 0's. correct == 0 makes the array true where
+        # # it is zero, and true corresponds to nonzero value, effectively
+        # # making np.count_nonzero count zeros. :p
+        # score = np.count_nonzero(correct == 0)/correct.size
 
         return score
