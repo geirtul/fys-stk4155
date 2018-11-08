@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+from ols import OrdinaryLeastSquares
 
 
 class LogisticRegression():
@@ -31,32 +32,25 @@ class LogisticRegression():
         :return: predicted probabilites based on the sigmoid function
         """
 
-
         exp_predict = np.exp(y)
-
         return exp_predict/(1 + exp_predict)
 
-    def gradient(self):
+    def gradient_descent(self):
         """
-        Calculate the gradient of the cost function (cross entropy)
+        Use gradient descent to optimize the weights.
+        Calculate the gradient of the cost function (cross entropy).
         :return: gradient
+        TODO: Add some tolerance condition for when to stop.
         """
 
-        y_predict = self.make_prediction(self.x)
-        gradient = -np.dot(self.x.T, self.y - y_predict)
+        for i in tqdm(range(self.num_iter)):
+            y_predict = self.make_prediction(self.x)
+            gradient = -np.dot(self.x.T, self.y - y_predict)
 
-        return gradient
-
-    def update_weights(self):
-        """
-        Update the weights by performing gradient descent.
-        """
-        self.weights += self.learning_rate * self.gradient()
+            self.weights += self.learning_rate * gradient
 
     def fit(self, x, y):
         """
-        Use gradient descent to fit the weights, based on input data.
-
         :param x: x values that generated the data
         :param y: true values for x
         """
@@ -68,16 +62,14 @@ class LogisticRegression():
             self.x = x
         self.y = y
 
-        # initialize weights to some smallish non-zero numbers
-        self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
+        # Initialize weights using OLS regression
+        ols = OrdinaryLeastSquares()
+        ols.fit_coefficients(self.x, self.y)
+        self.weights = ols.coeff
+        #self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
 
-        # Regression
-        for i in tqdm(range(self.num_iter)):
-            self.update_weights()
-
-            # Print cross-entropy value to keep some track
-            # if i > 5 and i % 10 == 0:
-            #     print("Cross-entropy = {}".format(self.cross_entropy()))
+        # Gradient descent to optimize weights
+        self.gradient_descent()
 
         return self.weights
 
