@@ -9,7 +9,7 @@ class LogisticRegression():
     weights, beta.
     """
 
-    def __init__(self, learning_rate = 5e-4, intercept = True, num_iter = 1.5e2):
+    def __init__(self, learning_rate = 1e-3, intercept = True, num_iter = 1e2):
         """
 
         :param learning_rate: How fast should we learn?
@@ -50,7 +50,7 @@ class LogisticRegression():
             # TODO: Figure out why this happens?
             gradient = -np.dot(self.x.T, self.y - y_predict)/self.x.shape[0]
 
-            self.weights += self.learning_rate * gradient
+            self.weights = self.weights + self.learning_rate * gradient
 
     def fit(self, x, y):
         """
