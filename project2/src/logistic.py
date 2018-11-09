@@ -70,7 +70,7 @@ class LogisticRegression():
         ols = OrdinaryLeastSquares()
         ols.fit_coefficients(self.x, self.y)
         self.weights = ols.coeff
-        #self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
+        # self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
 
         # Gradient descent to optimize weights
         print("Performing gradient descent...")

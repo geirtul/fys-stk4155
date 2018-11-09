@@ -2,32 +2,21 @@ import numpy as np
 
 
 class mlp:
-    def __init__(self, nhidden):
+    def __init__(self):
         """
-        Initialize the network.
-
-        :param nhidden: Number of hidden layers in the network.
+        Initialize the network. This MLP network has one hidden layer.
         """
         self.beta = 1
         self.eta = 0.1
         self.momentum = 0.0
-
-        # Initialize randomized weights, and activations
-        self.weights1 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
-                                          1 / np.sqrt(inputs.shape[1]),
-                                          (inputs.shape[1], nhidden))
-        self.weights2 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
-                                          1 / np.sqrt(inputs.shape[1]),
-                                          (nhidden, targets.shape[1]))
-
-        # Add bias
-        np.concatenate((inputs, -np.ones((np.shape(inputs)[0], 1))), axis=1)
+        self.weights1 = None
+        self.weights2 = None
 
         # errors
-        self.error_squared = []
-        self.validation_error = []
+        self.accuracy_vals = []
+        self.validation_accuracy = []
 
-    def earlystopping(self, valid, validtargets, counter):
+    def early_stopping(self, valid, validtargets, counter):
         """
         Stops the training phase of the network if two squared-error points
         are too close in value. The nature of the test is due to the error
@@ -37,7 +26,7 @@ class mlp:
 
         :param valid: validation set inputs
         :param validtargets: validation set outputs
-        :param counter:
+        :param counter: counts number of epochs
         :return: Boolean, defines if training should stop.
         """
 
@@ -46,21 +35,22 @@ class mlp:
         valid_output = self.forward(valid)[1]
 
         # Compute error in validation
-        new_valid_error = np.mean(
-            0.5 * np.sum(np.square(valid_output - validtargets), axis=1))
-        self.validation_error.append(new_valid_error)
+        new_validation_accuracy = self.accuracy(valid_output, validtargets)
+
+        # new_validation_accuracy = np.mean(
+        #    0.5 * np.sum(np.square(valid_output - validtargets), axis=1))
+        self.validation_accuracy.append(new_validation_accuracy)
 
         # Check if error has stopped changing.
         if counter > 10:
-            check = abs(self.validation_error[counter]
-                        - self.validation_error[counter - 10])
+            check = abs(self.validation_accuracy[counter]
+                        - self.validation_accuracy[counter - 10])
             if check > eps:
-                olderr = new_valid_error
                 return False
             else:
                 return True
 
-    def train(self, inputs, targets, valid, validtargets):
+    def train(self, inputs, targets, valid, validtargets, nhidden):
         """
         Trains the network. Runs the backwards phase of the training algorithm
         to adjust the weights.
@@ -69,8 +59,24 @@ class mlp:
         :param targets: training targets
         :param valid: validation inputs
         :param validtargets: validation targets
+        :param nhidden: number of hidden nodes in the network
         :return:
         """
+        # Initialize randomized weights, and activations
+        self.weights1 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
+                                          1 / np.sqrt(inputs.shape[1]),
+                                          (inputs.shape[1], nhidden))
+
+        # Handle target arrays with shape (N, )
+        if len(targets.shape) == 1:
+            targets = targets.reshape(len(targets), 1)
+
+        self.weights2 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
+                                          1 / np.sqrt(inputs.shape[1]),
+                                          (nhidden, targets.shape[1]))
+
+        # Add bias
+        np.concatenate((inputs, -np.ones((np.shape(inputs)[0], 1))), axis=1)
 
         # errors
         counter = 0
@@ -79,15 +85,14 @@ class mlp:
             self.backwards(inputs, act_hidden, act_output, targets)
 
             # Run earlystopping, break loop if necessary.
-            if self.earlystopping(valid, validtargets, counter):
+            if self.early_stopping(valid, validtargets, counter):
                 break
-
             counter += 1
 
     def forward(self, inputs):
         """
         Feed inputs forward through the network.
-        :param inputs: The inputs to feed forward.
+        :param inputs: Training inputs.
         :return: Output from the network.
         """
 
@@ -112,16 +117,17 @@ class mlp:
             """
 
             activations = np.dot(inputs, weights)
-            raise NotImplemented
+            return activations
 
         act_hidden = g_hidden(inputs, self.weights1)
+
         # Using g_hidden for output aswell because the linear function causes
         # overflow. Likely, a restriction on the linear function has been
         # forgotten.
         # TODO: Check the g_output function to see if it can be implemented.
         act_output = g_hidden(act_hidden, self.weights2)
 
-        return act_output
+        return act_hidden, act_output
 
     def backwards(self, inputs, act_hidden, act_output, targets):
         """
@@ -139,15 +145,33 @@ class mlp:
         delta_h = act_hidden * (1.0 - act_hidden) * (
             np.dot(delta_o, np.transpose(self.weights2)))
 
-        # updatew1 = np.zeros((np.shape(self.weights1)))
-        # updatew2 = np.zeros((np.shape(self.weights2)))
-
         updatew1 = self.eta * (np.dot(inputs.T, delta_h[:, :]))
         updatew2 = self.eta * (np.dot(act_hidden.T, delta_o))
         self.weights1 += updatew1
         self.weights2 += updatew2
-        self.error_squared.append(
-            np.mean(0.5 * np.sum(np.square(act_output - targets), axis=1)))
+
+        current_accuracy = self.accuracy(act_output, targets)
+        self.accuracy_vals.append(current_accuracy)
+        # self.error_squared.append(
+        #     np.mean(0.5 * np.sum(np.square(act_output - targets), axis=1)))
+
+    def accuracy(self, output, targets):
+        """
+        Evaluate the accuracy of the model based on the number of correctly
+        labeled classes divided by the number of classes in total.
+        """
+        print("Accuracy stuff")
+        print(output.shape)
+        print(targets.shape)
+        correct = output - targets
+
+        count = 0
+        for el in correct:
+            if el == 0:
+                count += 1
+        score = count / correct.size
+
+        return score
 
     def confusion(self, inputs, targets, out=True):
         """
@@ -160,7 +184,7 @@ class mlp:
         :return: percentage of correct classifications, confusion matrix
         """
 
-        output = self.forward(inputs)
+        output = self.forward(inputs)[1]
         conf = np.dot(np.transpose(output), targets)
         correct = np.matrix.trace(conf)
         total = np.sum(conf)

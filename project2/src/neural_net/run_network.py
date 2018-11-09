@@ -38,6 +38,8 @@ num_classes=2
 # Decompress array and reshape for convenience
 # Also map 0 state to -1 (Ising variable can take values +/-1)
 
+print("Importing data...")
+
 path_to_data = '../data/IsingData/'
 file_name_data = "Ising2DFM_reSample_L40_T=All.pkl"
 file_name_labels = "Ising2DFM_reSample_L40_T=All_labels.pkl"
@@ -65,30 +67,31 @@ Y=np.concatenate((Y_ordered, Y_disordered))
 
 # Pick random data points from ordered and disordered states
 # to create the training and test sets
-train_to_test_ratio=0.95 # training samples
+train_to_test_ratio=0.1 # training samples
 X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, train_size=train_to_test_ratio)
 
 # Full data set
 # X = np.concatenate((X_critical,X))
 # Y = np.concatenate((Y_critical,Y))
-print('X_train shape:', X_train.shape)
-print('Y_train shape:', Y_train.shape)
-print()
-print(X_train.shape[0], 'train samples')
-print(X_critical.shape[0], 'critical samples')
-print(X_test.shape[0], 'test samples')
+# print('X_train shape:', X_train.shape)
+# print('Y_train shape:', Y_train.shape)
+# print()
+# print(X_train.shape[0], 'train samples')
+# print(X_critical.shape[0], 'critical samples')
+# print(X_test.shape[0], 'test samples')
 
 
 # Try networks with different number of hidden nodes:
+print("Starting network...")
 num_hidden = [6, 8, 12]
 iterations = 100
 for hidden in num_hidden:
     # Initialize the network:
-    net = mlp.mlp(hidden)
+    net = mlp.mlp()
 
     # Run training:
-    net.train(X_train, Y_train, X_test, Y_test)
+    net.train(X_train, Y_train, X_test, Y_test, hidden)
 
     # Check how well the network performed:
     percentage, conf = net.confusion(X_test, Y_test)
