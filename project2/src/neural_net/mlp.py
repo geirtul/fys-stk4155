@@ -30,7 +30,7 @@ class mlp:
         :return: Boolean, defines if training should stop.
         """
 
-        eps = 1e-5  # Threshold value for squared error
+        eps = 1e-5  # Threshold value for accuracy
         # Run validation set forward
         valid_output = self.forward(valid)[1]
 

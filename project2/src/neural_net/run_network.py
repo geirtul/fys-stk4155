@@ -67,7 +67,7 @@ Y=np.concatenate((Y_ordered, Y_disordered))
 
 # Pick random data points from ordered and disordered states
 # to create the training and test sets
-train_to_test_ratio=0.5 # training samples
+train_to_test_ratio=0.9 # training samples
 X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, train_size=train_to_test_ratio)
 
@@ -94,14 +94,16 @@ for hidden in num_hidden:
     net.train(X_train, Y_train, X_test, Y_test, hidden)
 
     # Check how well the network performed:
-    percentage, conf = net.confusion(X_test, Y_test)
+    print("Validation accuracy = {}".format(net.validation_accuracy[-1]))
+    #percentage, conf = net.confusion(X_test, Y_test)
 
     # Plotting and tex
-    plt.plot(range(len(net.error_squared)), net.error_squared)
-    plt.plot(range(len(net.validation_error)), net.validation_error)
+    plt.plot(range(len(net.accuracy_vals)), net.accuracy_vals, label=str(hidden)+"train")
+    plt.plot(range(len(net.validation_accuracy)), net.validation_accuracy, label=str(hidden)+"test")
     plt.xlabel("Epochs")
-    plt.ylabel("Error squared")
+    plt.ylabel("Accuracy")
+    plt.legend()
 
     # print(bmatrix(conf) + "\n")
 
-# plt.show()
+plt.show()
