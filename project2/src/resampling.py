@@ -45,9 +45,3 @@ class Resampling:
 
         return t
 
-
-if __name__ == "__main__":
-    mu, sigma = 10, 2
-    datapoints = 10000
-    x = mu + sigma*randn(datapoints)
-    t = bootstrap(x, datapoints)

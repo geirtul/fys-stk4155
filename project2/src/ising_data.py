@@ -1,4 +1,6 @@
 import numpy as np
+import pickle
+import os
 
 
 def ising_energies(states, L):
@@ -33,3 +35,4 @@ def recast_to_regression(states):
     shape = states_recast.shape
     states_recast = states_recast.reshape(shape[0], shape[1]*shape[2])
     return states_recast
+
