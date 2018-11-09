@@ -21,7 +21,7 @@ warnings.filterwarnings('ignore')
 # system size
 
 np.random.seed(12)
-L = 40
+L = 20
 num_states = 10000
 
 # create N random Ising states, calculate energies and recast for regression.
@@ -71,6 +71,7 @@ homemade_ols = OrdinaryLeastSquares()
 homemade_ols.fit_coefficients(x_train, y_train)
 homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
 homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
+homemade_ols.bootstrap(100)
 
 # Print some comparison values
 

@@ -1,7 +1,8 @@
 import numpy as np
+from resampling import Resampling
 
 
-class OrdinaryLeastSquares():
+class OrdinaryLeastSquares(Resampling):
 
     def __init__(self):
         """
