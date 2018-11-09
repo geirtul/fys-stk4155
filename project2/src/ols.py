@@ -1,8 +1,7 @@
 import numpy as np
-from analysis import Analysis
 
 
-class OrdinaryLeastSquares(Analysis):
+class OrdinaryLeastSquares():
 
     def __init__(self):
         """
