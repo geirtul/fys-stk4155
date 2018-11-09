@@ -52,5 +52,7 @@ class Resampling:
                                                      np.mean(y_predictions),
                                                      np.std(y_predictions)))
 
+
         return y_predictions
+
 
