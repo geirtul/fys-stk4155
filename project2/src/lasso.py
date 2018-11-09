@@ -1,8 +1,7 @@
 from sklearn import linear_model
-from analysis import Analysis
 
 
-class LassoRegression(Analysis):
+class LassoRegression():
 
     def __init__(self, alpha = 1.0):
         """

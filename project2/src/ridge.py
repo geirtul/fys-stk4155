@@ -1,8 +1,7 @@
 import numpy as np
-from analysis import Analysis
 
 
-class RidgeRegression(Analysis):
+class RidgeRegression():
 
     def __init__(self, lmb):
         
