@@ -73,9 +73,7 @@ class mlp:
         :param validtargets:
         :return:
         """
-        '''
 
-        '''
         # errors
         counter = 0
         while counter >= 0:
@@ -83,20 +81,25 @@ class mlp:
             self.backwards(inputs, act_hidden, act_output, targets)
 
             # Run earlystopping, break loop if necessary.
-            if self.earlystopping(valid, validtargets, counter) == True:
+            if self.earlystopping(valid, validtargets, counter):
                 break
 
             counter += 1
 
     def forward(self, inputs):
+        """
+        Feed inputs forward through the network.
+        :param inputs: The inputs to feed forward.
+        :return: Output from the network.
+        """
 
         def g_hidden(inputs, weights):
             """
-            Get activations based on sigmoid function.
+            Get activations in hidden layers based on sigmoid function.
 
-            :param inputs:
-            :param weights:
-            :return:
+            :param inputs: inputs to the network
+            :param weights: weights in the network
+            :return: sigmoid-based activations
             """
 
             activations = np.dot(inputs, weights)
@@ -105,18 +108,19 @@ class mlp:
         def g_output(inputs, weights):
             """
             Get activations based on linear function.
-            :param inputs:
-            :param weights:
-            :return:
+            :param inputs: inputs to the network
+            :param weights: weights in the network
+            :return: linear-based activations for the output
             """
 
             activations = np.dot(inputs, weights)
-            return activations
+            raise NotImplemented
 
         act_hidden = g_hidden(inputs, self.weights1)
         # Using g_hidden for output aswell because the linear function causes
         # overflow. Likely, a restriction on the linear function has been
         # forgotten.
+        # TODO: Check the g_output function to see if it can be implemented.
         act_output = g_hidden(act_hidden, self.weights2)
 
         return act_output
@@ -124,12 +128,12 @@ class mlp:
     def backwards(self, inputs, act_hidden, act_output, targets):
         """
         Backwards propagation of error, with updating weights accordingly.
-        From 4.2.1 marsland.
+        From 4.2.1 Marsland.
 
-        :param inputs:
-        :param act_hidden:
-        :param act_output:
-        :param targets:
+        :param inputs: inputs to the network
+        :param act_hidden: activations from the hidden layers
+        :param act_output: activations in output
+        :param targets: target values for the supervised learning
         :return:
         """
 
@@ -137,11 +141,11 @@ class mlp:
         delta_h = act_hidden * (1.0 - act_hidden) * (
             np.dot(delta_o, np.transpose(self.weights2)))
 
-        updatew1 = np.zeros((np.shape(self.weights1)))
-        updatew2 = np.zeros((np.shape(self.weights2)))
+        # updatew1 = np.zeros((np.shape(self.weights1)))
+        # updatew2 = np.zeros((np.shape(self.weights2)))
 
-        updatew1 = self.eta * (np.dot(np.transpose(inputs), delta_h[:, :]))
-        updatew2 = self.eta * (np.dot(np.transpose(act_hidden), delta_o))
+        updatew1 = self.eta * (np.dot(inputs.T, delta_h[:, :]))
+        updatew2 = self.eta * (np.dot(act_hidden.T, delta_o))
         self.weights1 += updatew1
         self.weights2 += updatew2
         self.error_squared.append(
@@ -152,10 +156,10 @@ class mlp:
         Calculates and prints confusion matrix for the network,
         and includes the percentage of correct classifications.
 
-        :param inputs:
-        :param targets:
-        :param out:
-        :return:
+        :param inputs: inputs to the network
+        :param targets: target values for the supervised learning
+        :param out: Boolean, print success rate or not.
+        :return: percentage of correct classifications, confusion matrix
         """
 
         output = self.forward(inputs)
