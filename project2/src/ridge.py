@@ -1,7 +1,8 @@
 import numpy as np
+from resampling import Resampling
 
 
-class RidgeRegression():
+class RidgeRegression(Resampling):
 
     def __init__(self, lmb):
         
