@@ -70,6 +70,7 @@ class mlp:
         # Handle target arrays with shape (N, )
         if len(targets.shape) == 1:
             targets = targets.reshape(len(targets), 1)
+            validtargets = validtargets.reshape(len(validtargets), 1)
 
         self.weights2 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
                                           1 / np.sqrt(inputs.shape[1]),
@@ -145,24 +146,22 @@ class mlp:
         delta_h = act_hidden * (1.0 - act_hidden) * (
             np.dot(delta_o, np.transpose(self.weights2)))
 
+        # Update weights
         updatew1 = self.eta * (np.dot(inputs.T, delta_h[:, :]))
         updatew2 = self.eta * (np.dot(act_hidden.T, delta_o))
+
         self.weights1 += updatew1
         self.weights2 += updatew2
 
+        # Check current accuracy
         current_accuracy = self.accuracy(act_output, targets)
         self.accuracy_vals.append(current_accuracy)
-        # self.error_squared.append(
-        #     np.mean(0.5 * np.sum(np.square(act_output - targets), axis=1)))
 
     def accuracy(self, output, targets):
         """
         Evaluate the accuracy of the model based on the number of correctly
         labeled classes divided by the number of classes in total.
         """
-        print("Accuracy stuff")
-        print(output.shape)
-        print(targets.shape)
         correct = output - targets
 
         count = 0
@@ -185,7 +184,7 @@ class mlp:
         """
 
         output = self.forward(inputs)[1]
-        conf = np.dot(np.transpose(output), targets)
+        conf = np.outer(np.transpose(output), targets)
         correct = np.matrix.trace(conf)
         total = np.sum(conf)
 

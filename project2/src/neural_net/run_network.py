@@ -67,7 +67,7 @@ Y=np.concatenate((Y_ordered, Y_disordered))
 
 # Pick random data points from ordered and disordered states
 # to create the training and test sets
-train_to_test_ratio=0.1 # training samples
+train_to_test_ratio=0.5 # training samples
 X_train, X_test, Y_train, Y_test = train_test_split(
         X, Y, train_size=train_to_test_ratio)
 
