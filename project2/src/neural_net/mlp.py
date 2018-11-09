@@ -2,12 +2,10 @@ import numpy as np
 
 
 class mlp:
-    def __init__(self, inputs, targets, nhidden):
+    def __init__(self, nhidden):
         """
         Initialize the network.
 
-        :param inputs:
-        :param targets:
         :param nhidden: Number of hidden layers in the network.
         """
         self.beta = 1
@@ -37,13 +35,13 @@ class mlp:
         We want to let the algorithm past the first plateau, but not necessarily
         the next.
 
-        :param valid:
-        :param validtargets:
+        :param valid: validation set inputs
+        :param validtargets: validation set outputs
         :param counter:
         :return: Boolean, defines if training should stop.
         """
 
-        eps = 1e-3  # Threshold value for squared error
+        eps = 1e-5  # Threshold value for squared error
         # Run validation set forward
         valid_output = self.forward(valid)[1]
 
@@ -67,10 +65,10 @@ class mlp:
         Trains the network. Runs the backwards phase of the training algorithm
         to adjust the weights.
 
-        :param inputs:
-        :param targets:
-        :param valid:
-        :param validtargets:
+        :param inputs: training inputs
+        :param targets: training targets
+        :param valid: validation inputs
+        :param validtargets: validation targets
         :return:
         """
 

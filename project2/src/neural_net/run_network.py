@@ -1,68 +1,97 @@
 # This file will read in data and start the mlp network.
 
-#import tabulate # latex tables
-#from bmatrix import bmatrix #latex matrices
+# Uncomment below to allow outputting confusion matrix as latex.
+# import tabulate # latex tables
+# from bmatrix import bmatrix #latex matrices
+
 import numpy as np
 import mlp
+import warnings
 import matplotlib.pyplot as plt
+import pickle
+import os
+from sklearn.model_selection import train_test_split
 
-filename = 'data/movements_day1-3.dat'
+# Comment this to turn on warnings
+warnings.filterwarnings('ignore')
 
-movements = np.loadtxt(filename,delimiter='\t')
+# Shuffle random seed generator
+np.random.seed()
 
-# Subtract arithmetic mean for each sensor. We only care about how it varies:
-movements[:,:40] = movements[:,:40] - movements[:,:40].mean(axis=0)
+# Ising model parameters
+# ==================================================
+L=40 # linear system size
+J=-1.0 # Ising interaction
+T=np.linspace(0.25,4.0,16) # set of temperatures
+T_c=2.26 # Onsager critical temperature in the TD limit
+# system size
 
-# Find maximum absolute value:
-imax = np.concatenate(  ( movements.max(axis=0) * np.ones((1,41)) ,
-                          np.abs( movements.min(axis=0) * np.ones((1,41)) ) ),
-                          axis=0 ).max(axis=0)
+# define ML parameters
+num_classes=2
 
-# Divide by imax, values should now be between -1,1
-movements[:,:40] = movements[:,:40]/imax[:40]
 
-# Generate target vectors for all inputs 2 -> [0,1,0,0,0,0,0,0]
-target = np.zeros((np.shape(movements)[0],8));
-for x in range(1,9):
-    indices = np.where(movements[:,40]==x)
-    target[indices,x-1] = 1
+# Set up datasets before running the network.
+# ==================================================
+# Data files contains 16*10000 samples taken in
+# T = np.arange(0.25,4.0001,0.25)
+# Pickle imports the data as a 1D array, compressed bits.
+# Decompress array and reshape for convenience
+# Also map 0 state to -1 (Ising variable can take values +/-1)
 
-# Randomly order the data
-order = list(range(np.shape(movements)[0]))
-np.random.shuffle(order)
-movements = movements[order,:]
-target = target[order,:]
+path_to_data = '../data/IsingData/'
+file_name_data = "Ising2DFM_reSample_L40_T=All.pkl"
+file_name_labels = "Ising2DFM_reSample_L40_T=All_labels.pkl"
 
-# Split data into 3 sets
+data = pickle.load(open(path_to_data+file_name_data,'rb'))
+data = np.unpackbits(data).reshape(-1, 1600)
+data = data.astype('int')
+data[np.where(data == 0)] = -1
+labels = pickle.load(open(path_to_data+file_name_labels,'rb'))
 
-# Training updates the weights of the network and thus improves the network
-train = movements[::2,0:40]
-train_targets = target[::2]
+# Divide data into ordered, critical and disordered
+X_ordered=data[:70000, :]
+Y_ordered=labels[:70000]
 
-# Validation checks how well the network is performing and when to stop
-valid = movements[1::4,0:40]
-valid_targets = target[1::4]
+X_critical=data[70000:100000, :]
+Y_critical=labels[70000:100000]
 
-# Test data is used to evaluate how good the completely trained network is.
-test = movements[3::4,0:40]
-test_targets = target[3::4]
+X_disordered=data[100000:, :]
+Y_disordered=labels[100000:]
+
+# We want to pick samples from ordered or disordered, so we
+# combine these.
+X=np.concatenate((X_ordered, X_disordered))
+Y=np.concatenate((Y_ordered, Y_disordered))
+
+# Pick random data points from ordered and disordered states
+# to create the training and test sets
+train_to_test_ratio=0.95 # training samples
+X_train, X_test, Y_train, Y_test = train_test_split(
+        X, Y, train_size=train_to_test_ratio)
+
+# Full data set
+# X = np.concatenate((X_critical,X))
+# Y = np.concatenate((Y_critical,Y))
+print('X_train shape:', X_train.shape)
+print('Y_train shape:', Y_train.shape)
+print()
+print(X_train.shape[0], 'train samples')
+print(X_critical.shape[0], 'critical samples')
+print(X_test.shape[0], 'test samples')
+
 
 # Try networks with different number of hidden nodes:
-hiddens = [6,8,12]
+num_hidden = [6, 8, 12]
 iterations = 100
-for hidden in hiddens:
-
+for hidden in num_hidden:
     # Initialize the network:
-    net = mlp.mlp(train, train_targets, hidden)
+    net = mlp.mlp(hidden)
 
     # Run training:
-    net.train(train,train_targets, valid, valid_targets)
-    # NOTE: You can also call train method from here,
-    #       and make train use earlystopping method.
-    #       This is a matter of preference.
+    net.train(X_train, Y_train, X_test, Y_test)
 
     # Check how well the network performed:
-    percentage, conf = net.confusion(test,test_targets)
+    percentage, conf = net.confusion(X_test, Y_test)
 
     # Plotting and tex
     plt.plot(range(len(net.error_squared)), net.error_squared)
@@ -70,9 +99,6 @@ for hidden in hiddens:
     plt.xlabel("Epochs")
     plt.ylabel("Error squared")
 
-    #print(bmatrix(conf) + "\n")
+    # print(bmatrix(conf) + "\n")
 
-
-
-
-#plt.show()
+# plt.show()

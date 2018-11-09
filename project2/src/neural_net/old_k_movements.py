@@ -1,86 +1,42 @@
-# This file will read in data and start the mlp network.
-
-# Uncomment below to allow outputting confusion matrix as latex.
-# import tabulate # latex tables
-# from bmatrix import bmatrix #latex matrices
-
+#!/usr/bin/env Python3
+'''
+    This file will read in data and start your mlp network.
+    You can leave this file mostly untouched and do your
+    mlp implementation in mlp.py.
+'''
+# Feel free to use numpy in your MLP if you like to.
 import numpy as np
 import mlp
-import warnings
 import matplotlib.pyplot as plt
-import pickle
-import os
-from sklearn.model_selection import train_test_split
 
-# Comment this to turn on warnings
-warnings.filterwarnings('ignore')
+filename = 'data/movements_day1-3.dat'
 
-# Shuffle random seed generator
-np.random.seed()
+movements = np.loadtxt(filename, delimiter='\t')
 
-# Ising model parameters
-# ==================================================
-L = 40  # linear system size
-J = -1.0  # Ising interaction
-T = np.linspace(0.25, 4.0, 16)  # set of temperatures
-T_c = 2.26  # Onsager critical temperature in the TD limit
-# system size
+# Subtract arithmetic mean for each sensor. We only care about how it varies:
+movements[:, :40] = movements[:, :40] - movements[:, :40].mean(axis=0)
 
-# define ML parameters
-num_classes = 2
+# Find maximum absolute value:
+imax = np.concatenate((movements.max(axis=0) * np.ones((1, 41)),
+                       np.abs(movements.min(axis=0) * np.ones((1, 41)))),
+                      axis=0).max(axis=0)
 
-# Set up datasets before running the network.
-# ==================================================
-# Data files contains 16*10000 samples taken in
-# T = np.arange(0.25,4.0001,0.25)
-# Pickle imports the data as a 1D array, compressed bits.
-# Decompress array and reshape for convenience
-# Also map 0 state to -1 (Ising variable can take values +/-1)
+# Divide by imax, values should now be between -1,1
+movements[:, :40] = movements[:, :40] / imax[:40]
 
-path_to_data = '../data/IsingData/'
-file_name_data = "Ising2DFM_reSample_L40_T=All.pkl"
-file_name_labels = "Ising2DFM_reSample_L40_T=All_labels.pkl"
+# Generate target vectors for all inputs 2 -> [0,1,0,0,0,0,0,0]
+target = np.zeros((np.shape(movements)[0], 8));
+for x in range(1, 9):
+    indices = np.where(movements[:, 40] == x)
+    target[indices, x - 1] = 1
 
-data = pickle.load(open(path_to_data + file_name_data, 'rb'))
-data = np.unpackbits(data).reshape(-1, 1600)
-data = data.astype('int')
-data[np.where(data == 0)] = -1
-labels = pickle.load(open(path_to_data + file_name_labels, 'rb'))
+# Randomly order the data
+order = list(range(np.shape(movements)[0]))
+np.random.shuffle(order)
+movements = movements[order, :]
+target = target[order, :]
 
-# Divide data into ordered, critical and disordered
-X_ordered = data[:70000, :]
-Y_ordered = labels[:70000]
-
-X_critical = data[70000:100000, :]
-Y_critical = labels[70000:100000]
-
-X_disordered = data[100000:, :]
-Y_disordered = labels[100000:]
-
-# We want to pick samples from ordered or disordered, so we
-# combine these.
-X = np.concatenate((X_ordered, X_disordered))
-Y = np.concatenate((Y_ordered, Y_disordered))
-
-# Pick random data points from ordered and disordered states
-# to create the training and test sets
-train_to_test_ratio = 0.95  # training samples
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X, Y, train_size=train_to_test_ratio)
-
-# Full data set
-# X = np.concatenate((X_critical,X))
-# Y = np.concatenate((Y_critical,Y))
-print('X_train shape:', X_train.shape)
-print('Y_train shape:', Y_train.shape)
-print()
-print(X_train.shape[0], 'train samples')
-print(X_critical.shape[0], 'critical samples')
-print(X_test.shape[0], 'test samples')
-
-# =========== Divide data in k segments.============
-# TODO: This needs to be generalized and made into a function,
-# TODO: Also needs to be changed to fit the new variable names.
+# =========== Divide data in k segments.===========0
 k = 10
 
 # Determine size of intervals, reusing data rather than discarding
@@ -89,8 +45,7 @@ training_segments = []
 target_segments = []
 for i in range(k):
 
-    # Set up segments as long as (i+1)*nodes_per_segment
-    # does not cause indexerror
+    # Set up segments as long as (i+1)*nodes_per_segment does not cause indexerror
     if (i + 1) * nodes_per_segment < movements.shape[0]:
         training_segments.append(
             movements[i * nodes_per_segment:(i + 1) * nodes_per_segment, 0:40])
@@ -106,8 +61,7 @@ for i in range(k):
         target_segments.append(np.array(
             list(target[i * nodes_per_segment:]) + list(target[:repeat_index])))
 
-# Now we can iterate over indices in training_segments list
-# to perform the training.
+# Now we can iterate over indices in training_segments list to perform the training.
 correctness = []
 
 # What happens in this for-loop is not elegant, but it works.
@@ -151,12 +105,12 @@ for i in range(len(training_segments)):
         exit(1)
 
     # Set up networks and run training ++
-    net = mlp.mlp(8)
+    net = mlp.mlp(train, train_targets, 8)
     net.train(train, train_targets, valid, valid_targets)
     percent, conf = net.confusion(test, test_targets, out=False)
     correctness.append(percent)
 
-    # === Uncomment for plotting errors ===
+    # === Uncommend for plotting errors ===
     # plt.plot(range(len(net.error_squared)), net.error_squared)
     # plt.xlabel("Epochs")
     # plt.ylabel("Error squared")
@@ -167,3 +121,4 @@ for percent in correctness:
     print(percent)
 print("Average percentage correct= ", np.mean(np.array(correctness)))
 print("Standard deviation = ", np.std(np.array(correctness)))
+
