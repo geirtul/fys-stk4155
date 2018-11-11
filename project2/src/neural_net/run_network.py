@@ -1,16 +1,11 @@
-# This file will read in data and start the mlp network.
-
-# Uncomment below to allow outputting confusion matrix as latex.
-# import tabulate # latex tables
-# from bmatrix import bmatrix #latex matrices
-
 import numpy as np
-import mlp
+from mlp import MLP
 import warnings
 import matplotlib.pyplot as plt
 import pickle
-import os
 from sklearn.model_selection import train_test_split
+import seaborn as sns
+sns.set()
 
 # Comment this to turn on warnings
 warnings.filterwarnings('ignore')
@@ -20,15 +15,11 @@ np.random.seed()
 
 # Ising model parameters
 # ==================================================
-L=40 # linear system size
-J=-1.0 # Ising interaction
-T=np.linspace(0.25,4.0,16) # set of temperatures
-T_c=2.26 # Onsager critical temperature in the TD limit
+L = 40  # linear system size
+J = -1.0  # Ising interaction
+T = np.linspace(0.25, 4.0, 16)  # set of temperatures
+T_c = 2.26  # Onsager critical temperature in the TD limit
 # system size
-
-# define ML parameters
-num_classes=2
-
 
 # Set up datasets before running the network.
 # ==================================================
@@ -44,11 +35,11 @@ path_to_data = '../data/IsingData/'
 file_name_data = "Ising2DFM_reSample_L40_T=All.pkl"
 file_name_labels = "Ising2DFM_reSample_L40_T=All_labels.pkl"
 
-data = pickle.load(open(path_to_data+file_name_data,'rb'))
+data = pickle.load(open(path_to_data+file_name_data, 'rb'))
 data = np.unpackbits(data).reshape(-1, 1600)
 data = data.astype('int')
 data[np.where(data == 0)] = -1
-labels = pickle.load(open(path_to_data+file_name_labels,'rb'))
+labels = pickle.load(open(path_to_data+file_name_labels, 'rb'))
 
 # Divide data into ordered, critical and disordered
 X_ordered=data[:70000, :]
@@ -62,14 +53,14 @@ Y_disordered=labels[100000:]
 
 # We want to pick samples from ordered or disordered, so we
 # combine these.
-X=np.concatenate((X_ordered, X_disordered))
-Y=np.concatenate((Y_ordered, Y_disordered))
+X = np.concatenate((X_ordered, X_disordered))
+Y = np.concatenate((Y_ordered, Y_disordered))
 
 # Pick random data points from ordered and disordered states
 # to create the training and test sets
-train_to_test_ratio=0.9 # training samples
+train_size = 0.8  # training samples
 X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, train_size=train_to_test_ratio)
+        X, Y, train_size=train_size)
 
 # Full data set
 # X = np.concatenate((X_critical,X))
@@ -82,28 +73,87 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # print(X_test.shape[0], 'test samples')
 
 
+def accuracy_score(test_targets, prediction):
+    return np.sum(test_targets == prediction) / len(test_targets)
+
+
+# n_hidden = 50
+# n_classes = 2
+# epochs = 100
+# batch_size = 100
+# eta = 0.001
+# lmd = 1.0
+
 # Try networks with different number of hidden nodes:
-print("Starting network...")
-num_hidden = [6, 8, 12]
-iterations = 100
-for hidden in num_hidden:
-    # Initialize the network:
-    net = mlp.mlp()
+#nodes, eta, lmd, acc,
+# 20 0.0001 1.0 0.8312307692307692
 
-    # Run training:
-    net.train(X_train, Y_train, X_test, Y_test, hidden)
 
-    # Check how well the network performed:
-    print("Validation accuracy = {}".format(net.validation_accuracy[-1]))
-    #percentage, conf = net.confusion(X_test, Y_test)
 
-    # Plotting and tex
-    plt.plot(range(len(net.accuracy_vals)), net.accuracy_vals, label=str(hidden)+"train")
-    plt.plot(range(len(net.validation_accuracy)), net.validation_accuracy, label=str(hidden)+"test")
-    plt.xlabel("Epochs")
-    plt.ylabel("Accuracy")
-    plt.legend()
+# Grid search for optimal parameters
 
-    # print(bmatrix(conf) + "\n")
+n_hidden = [5, 10, 20]
+n_classes = 2
+epochs = 20
+batch_size = 100
+etas = np.logspace(-5, 1, 7)
+lmds = np.logspace(-5, 1, 7)
 
+net_accuracies = []
+for hidden in n_hidden:
+    net = MLP(X_train, Y_train, X_test, Y_test, hidden, n_classes, epochs, batch_size, etas[1], 0.0)
+    net.train()
+    #prob = net.predict(X_test)
+    #acc = accuracy_score(Y_test, prob)
+    #print("\neta, lmd, acc,\n{}, {}, {}".format(etas[1], lmds[2], acc))
+    net_accuracies.append(net.accuracies_test)
+
+for acc, n in zip(net_accuracies, n_hidden):
+    plt.plot(range(epochs), acc, label=str(n)+" nodes")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy score")
+plt.title(r"$\eta$ = {}, $\lambda$ = {}".format(etas[1], 0.0))
+plt.legend()
 plt.show()
+
+
+
+# stored_models = np.zeros((len(etas), len(lmds)), dtype=object)
+#
+# for i, eta in enumerate(etas):
+#     for j, lmd in enumerate(lmds):
+#         net = MLP(X_train, Y_train, n_hidden, n_classes, epochs, batch_size, eta, lmd)
+#         net.train()
+#         stored_models[i,j] = net
+#         test_prob = net.predict(X_test)
+#         acc = accuracy_score(Y_test, test_prob)
+#         print("Eta: {} | Lambda: {} | Accuracy: {}".format(eta, lmd, acc))
+#
+# # Plotting the  grid search.
+#
+# train_accuracy = np.zeros((len(etas), len(lmds)))
+# test_accuracy = np.zeros((len(etas), len(lmds)))
+#
+# for i in range(len(etas)):
+#     for j in range(len(lmds)):
+#         net = stored_models[i][j]
+#
+#         train_pred = net.predict(X_train)
+#         test_pred = net.predict(X_test)
+#
+#         train_accuracy[i][j] = accuracy_score(Y_train, train_pred)
+#         test_accuracy[i][j] = accuracy_score(Y_test, test_pred)
+#
+# fig, ax = plt.subplots(figsize=(10, 10))
+# sns.heatmap(train_accuracy, annot=True, ax=ax, cmap="viridis")
+# ax.set_title("Training Accuracy")
+# ax.set_ylabel("$\eta$")
+# ax.set_xlabel("$\lambda$")
+# plt.show()
+#
+# fig, ax = plt.subplots(figsize=(10, 10))
+# sns.heatmap(test_accuracy, annot=True, ax=ax, cmap="viridis")
+# ax.set_title("Test Accuracy")
+# ax.set_ylabel("$\eta$")
+# ax.set_xlabel("$\lambda$")
+# plt.show()

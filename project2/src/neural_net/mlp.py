@@ -1,199 +1,186 @@
 import numpy as np
+from tqdm import tqdm
 
 
-class mlp:
-    def __init__(self):
+class MLP:
+    def __init__(self,
+                 inputs,
+                 targets,
+                 test_inputs,
+                 test_targets,
+                 n_hidden=50,
+                 n_classes=2,
+                 epochs=10,
+                 batch_size=100,
+                 eta=0.01,
+                 lmd=0.0,
+                 ):
         """
-        Initialize the network. This MLP network has one hidden layer.
-        """
-        self.beta = 1
-        self.eta = 0.1
-        self.momentum = 0.0
-        self.weights1 = None
-        self.weights2 = None
-
-        # errors
-        self.accuracy_vals = []
-        self.validation_accuracy = []
-
-    def early_stopping(self, valid, validtargets, counter):
-        """
-        Stops the training phase of the network if two squared-error points
-        are too close in value. The nature of the test is due to the error
-        being seemingly strictly decreasing, but reaching plateaus now and then.
-        We want to let the algorithm past the first plateau, but not necessarily
-        the next.
-
-        :param valid: validation set inputs
-        :param validtargets: validation set outputs
-        :param counter: counts number of epochs
-        :return: Boolean, defines if training should stop.
-        """
-
-        eps = 1e-5  # Threshold value for accuracy
-        # Run validation set forward
-        valid_output = self.forward(valid)[1]
-
-        # Compute error in validation
-        new_validation_accuracy = self.accuracy(valid_output, validtargets)
-
-        # new_validation_accuracy = np.mean(
-        #    0.5 * np.sum(np.square(valid_output - validtargets), axis=1))
-        self.validation_accuracy.append(new_validation_accuracy)
-
-        # Check if error has stopped changing.
-        if counter > 10:
-            check = abs(self.validation_accuracy[counter]
-                        - self.validation_accuracy[counter - 10])
-            if check > eps:
-                return False
-            else:
-                return True
-
-    def train(self, inputs, targets, valid, validtargets, nhidden):
-        """
-        Trains the network. Runs the backwards phase of the training algorithm
-        to adjust the weights.
+        Initialize the network. This MLP network has one hidden layer, and is
+        thus a Single Layer Perceptron.Heavily inspired by lecture notes on
+        Neural Networks:
+        https://compphysics.github.io/MachineLearning/doc/pub/NeuralNet/pdf/NeuralNet-minted.pdf
 
         :param inputs: training inputs
         :param targets: training targets
-        :param valid: validation inputs
-        :param validtargets: validation targets
-        :param nhidden: number of hidden nodes in the network
-        :return:
+        :param n_hidden: number of hidden nodes in the network
+        :param n_classes: number of categories/classes for data.
+        :param epochs: number of times the training data will be fed through network.
+        :param eta: Learning rate
+        :param lmd: Regularization parameter
         """
-        # Initialize randomized weights, and activations
-        self.weights1 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
-                                          1 / np.sqrt(inputs.shape[1]),
-                                          (inputs.shape[1], nhidden))
+        self.eta = eta  # Learning rate
+        self.lmb = lmd  # Regularization parameter
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.n_inputs = inputs.shape[0]
+        self.n_features = inputs.shape[1]
+        self.n_hidden = n_hidden
+        self.n_classes = n_classes
+        self.iterations = self.n_inputs // self.batch_size
 
-        # Handle target arrays with shape (N, )
-        if len(targets.shape) == 1:
-            targets = targets.reshape(len(targets), 1)
-            validtargets = validtargets.reshape(len(validtargets), 1)
+        self.inputs_full = inputs
+        self.targets_full = self.handle_targets_shape(targets)
+        self.test_inputs = test_inputs
+        self.test_targets = test_targets
+        self.setup_weights_biases_targets()
+        self.accuracies_test = []
 
-        self.weights2 = np.random.uniform(-1 / np.sqrt(inputs.shape[1]),
-                                          1 / np.sqrt(inputs.shape[1]),
-                                          (nhidden, targets.shape[1]))
+    def train(self):
+        """
+        Trains the network. Runs the backwards phase of the training algorithm
+        to adjust the weights. The network outputs probabilities for
+        n_classes - 1, thus assuming that the probability of the last class is
+        1 - sum(the rest).
+        """
+        indices = np.arange(self.n_inputs)
 
-        # Add bias
-        np.concatenate((inputs, -np.ones((np.shape(inputs)[0], 1))), axis=1)
+        # Train with mini-batches.
+        for i in tqdm(range(self.epochs)):
+            for j in range(self.iterations):
+                chosen_indices = np.random.choice(
+                    indices, size=self.batch_size, replace=False)
 
-        # errors
-        counter = 0
-        while counter >= 0:
-            act_hidden, act_output = self.forward(inputs)
-            self.backwards(inputs, act_hidden, act_output, targets)
+                # Batch the training data
+                self.inputs = self.inputs_full[chosen_indices]
+                self.targets = self.targets_full[chosen_indices]
 
-            # Run earlystopping, break loop if necessary.
-            if self.early_stopping(valid, validtargets, counter):
-                break
-            counter += 1
+                self.forward()
+                self.backwards()
+            # For each epoch, store the accuracy of the network.
+            curr_acc = self.accuracy_score(self.test_inputs, self.test_targets)
+            self.accuracies_test.append(curr_acc)
 
-    def forward(self, inputs):
+    def forward(self):
         """
         Feed inputs forward through the network.
-        :param inputs: Training inputs.
-        :return: Output from the network.
+        :return: activations in hidden layer and probabilities in output layer.
         """
 
-        def g_hidden(inputs, weights):
-            """
-            Get activations in hidden layers based on sigmoid function.
+        # Calculate activations in the hidden layer
+        self.z_hidden = np.matmul(self.inputs, self.weights_hidden) + self.bias_hidden
+        self.a_hidden = self.sigmoid(self.z_hidden)
 
-            :param inputs: inputs to the network
-            :param weights: weights in the network
-            :return: sigmoid-based activations
-            """
+        # Calculate output probabilities
+        self.z_output = np.matmul(self.a_hidden, self.weights_output) + self.bias_output
+        exp_term = np.exp(self.z_output)
+        self.probabilities = exp_term / np.sum(exp_term, axis=1, keepdims=True)
 
-            activations = np.dot(inputs, weights)
-            return 1 / (1 + np.exp(-self.beta * activations))
-
-        def g_output(inputs, weights):
-            """
-            Get activations based on linear function.
-            :param inputs: inputs to the network
-            :param weights: weights in the network
-            :return: linear-based activations for the output
-            """
-
-            activations = np.dot(inputs, weights)
-            return activations
-
-        act_hidden = g_hidden(inputs, self.weights1)
-
-        # Using g_hidden for output aswell because the linear function causes
-        # overflow. Likely, a restriction on the linear function has been
-        # forgotten.
-        # TODO: Check the g_output function to see if it can be implemented.
-        act_output = g_hidden(act_hidden, self.weights2)
-
-        return act_hidden, act_output
-
-    def backwards(self, inputs, act_hidden, act_output, targets):
+    def forward_output(self, inputs):
         """
-        Backwards propagation of error, with updating weights accordingly.
-        From 4.2.1 Marsland.
-
-        :param inputs: inputs to the network
-        :param act_hidden: activations from the hidden layers
-        :param act_output: activations in output
-        :param targets: target values for the supervised learning
-        :return:
+        The same as self.forward(), but takes input in order to return
+        probabilities for test datasets.
+        :param inputs: test data to predict classification for.
+        :return: probabilities
         """
 
-        delta_o = (targets - act_output) * act_output * (1.0 - act_output)
-        delta_h = act_hidden * (1.0 - act_hidden) * (
-            np.dot(delta_o, np.transpose(self.weights2)))
+        z_hidden = np.matmul(inputs, self.weights_hidden) + self.bias_hidden
+        a_hidden = self.sigmoid(z_hidden)
 
-        # Update weights
-        updatew1 = self.eta * (np.dot(inputs.T, delta_h[:, :]))
-        updatew2 = self.eta * (np.dot(act_hidden.T, delta_o))
+        # Calculate output probabilities
+        z_output = np.matmul(a_hidden, self.weights_output) + self.bias_output
+        exp_term = np.exp(z_output)
+        probabilities = exp_term / np.sum(exp_term, axis=1, keepdims=True)
 
-        self.weights1 += updatew1
-        self.weights2 += updatew2
+        return probabilities
 
-        # Check current accuracy
-        current_accuracy = self.accuracy(act_output, targets)
-        self.accuracy_vals.append(current_accuracy)
-
-    def accuracy(self, output, targets):
+    def backwards(self):
         """
-        Evaluate the accuracy of the model based on the number of correctly
-        labeled classes divided by the number of classes in total.
-        """
-        correct = output - targets
-
-        count = 0
-        for el in correct:
-            if el == 0:
-                count += 1
-        score = count / correct.size
-
-        return score
-
-    def confusion(self, inputs, targets, out=True):
-        """
-        Calculates and prints confusion matrix for the network,
-        and includes the percentage of correct classifications.
-
-        :param inputs: inputs to the network
-        :param targets: target values for the supervised learning
-        :param out: Boolean, print success rate or not.
-        :return: percentage of correct classifications, confusion matrix
+        Backwards propagation of error, updating weights accordingly.
         """
 
-        output = self.forward(inputs)[1]
-        conf = np.outer(np.transpose(output), targets)
-        correct = np.matrix.trace(conf)
-        total = np.sum(conf)
+        error_output = self.probabilities - self.targets
+        error_hidden = np.matmul(error_output, self.weights_output.T) * self.a_hidden * (1 - self.a_hidden)
 
-        # Just prettier printing of confusion matrix
-        np.set_printoptions(suppress=True, precision=0)
-        percentage = 100 * correct / total
+        # Gradients for the output layer weights and bias
+        dWo = np.matmul(self.a_hidden.T, error_output)  # output_weights_gradient
+        dBo = np.sum(error_output, axis=0)  # output_bias_gradient
 
-        # Only print confusion matrix and percentages if we want to.
-        if out == True:
-            print(conf)
-            print("Percentage correct = {}%".format(percentage))
-        return percentage, conf
+        # Gradients for the hidden layer weights and bias
+        dWh = np.matmul(self.inputs.T, error_hidden)  # hidden_weights_gradient
+        dBh = np.sum(error_hidden, axis=0)  # hidden_bias_gradient
+
+        # Regularization term gradients
+        if self.lmb > 0.0:
+            dWo += self.lmb * self.weights_output
+            dWh += self.lmb * self.weights_hidden
+
+        # Update weights and biases
+        self.weights_hidden -= self.eta * dWh
+        self.bias_hidden -= self.eta * dBh
+        self.weights_output -= self.eta * dWo
+        self.bias_output -= self.eta * dBo
+
+    def setup_weights_biases_targets(self):
+        """
+        Initializes randomized weights, sets up bias.
+        """
+        weights_scale = np.sqrt(2/self.n_inputs)
+        # Initialize randomized weights
+        self.weights_hidden = np.random.randn(self.n_features, self.n_hidden)*weights_scale
+        self.weights_output = np.random.randn(self.n_hidden, self.n_classes)*weights_scale
+
+        # Bias
+        self.bias_hidden = np.zeros(self.n_hidden) + 0.01
+        self.bias_output = np.zeros(self.n_classes) + 0.01
+
+    def sigmoid(self, x):
+        """
+        Calculate sigmoid of x.
+        """
+        return 1 / (1 + np.exp(-x))
+
+    def handle_targets_shape(self, targets):
+        """
+        Handles input targets with shape (N, ), turning them into (N,1)
+        to avoid issues with matrix / vector multiplication.
+        :param targets: The targets to reshape if necessary
+        :return: reshaped targets
+        """
+
+        if len(targets.shape) == 1:
+            targets = targets.reshape(len(targets), 1)
+            return targets
+        else:
+            return targets
+
+    def predict(self, test_input):
+        probabilites = self.forward_output(test_input)
+        return np.argmax(probabilites, axis=1)
+
+    def predict_probabilities(self, inputs):
+        """
+        Predict the probabilities of classes for a given input.
+        :param inputs: The input to be fed through the network.
+        :return: Predicted probabilities for classification.
+        """
+        probabilities = self.forward_output(inputs)
+        return probabilities
+
+    def accuracy_score(self, test_inputs, test_targets):
+        """
+        Calculate the current accuracy score of the network.
+        """
+        prediction = self.predict(test_inputs)
+
+        return np.sum(test_targets == prediction) / len(test_targets)
