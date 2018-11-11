@@ -67,6 +67,8 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # Y = np.concatenate((Y_critical,Y))
 # print('X_train shape:', X_train.shape)
 # print('Y_train shape:', Y_train.shape)
+# print('X_test shape:', X_test.shape)
+# print('Y_test shape:', Y_test.shape)
 # print()
 # print(X_train.shape[0], 'train samples')
 # print(X_critical.shape[0], 'critical samples')
@@ -91,15 +93,22 @@ def accuracy_score(test_targets, prediction):
 
 
 # Grid search for optimal parameters
+# nodes = [5, 10, 15, 20, 30, 40, 50, 100, 150, 200]
+# times = [3.9, 4.06, 4.18, 4.15, 4.55, 4.53, 4.70, 6.22, 7.30, 8.26]
+# plt.plot(nodes, times)
+# plt.show()
+# exit(1)
 
-n_hidden = [5, 10, 20]
+n_hidden = [10, 20, 50]
 n_classes = 2
 epochs = 20
 batch_size = 100
 etas = np.logspace(-5, 1, 7)
 lmds = np.logspace(-5, 1, 7)
 
+limit = int(len(X_train)*0.2)
 net_accuracies = []
+
 for hidden in n_hidden:
     net = MLP(X_train, Y_train, X_test, Y_test, hidden, n_classes, epochs, batch_size, etas[1], 0.0)
     net.train()
@@ -117,17 +126,16 @@ plt.legend()
 plt.show()
 
 
-
 # stored_models = np.zeros((len(etas), len(lmds)), dtype=object)
 #
 # for i, eta in enumerate(etas):
 #     for j, lmd in enumerate(lmds):
-#         net = MLP(X_train, Y_train, n_hidden, n_classes, epochs, batch_size, eta, lmd)
+#         net = MLP(X_train[:limit, :], Y_train[:limit], X_test, Y_test, n_hidden, n_classes, epochs, batch_size, eta, lmd)
 #         net.train()
-#         stored_models[i,j] = net
+#         stored_models[i, j] = net
 #         test_prob = net.predict(X_test)
 #         acc = accuracy_score(Y_test, test_prob)
-#         print("Eta: {} | Lambda: {} | Accuracy: {}".format(eta, lmd, acc))
+#         #print("Eta: {} | Lambda: {} | Accuracy: {}".format(eta, lmd, acc))
 #
 # # Plotting the  grid search.
 #

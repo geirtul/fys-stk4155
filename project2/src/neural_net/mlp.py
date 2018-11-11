@@ -43,7 +43,8 @@ class MLP:
         self.targets_full = self.handle_targets_shape(targets)
         self.test_inputs = test_inputs
         self.test_targets = test_targets
-        self.setup_weights_biases_targets()
+        self.setup_weights_biases()
+
         self.accuracies_test = []
 
     def train(self):
@@ -83,8 +84,7 @@ class MLP:
 
         # Calculate output probabilities
         self.z_output = np.matmul(self.a_hidden, self.weights_output) + self.bias_output
-        exp_term = np.exp(self.z_output)
-        self.probabilities = exp_term / np.sum(exp_term, axis=1, keepdims=True)
+        self.probabilities = self.softmax(self.z_output)
 
     def forward_output(self, inputs):
         """
@@ -93,14 +93,19 @@ class MLP:
         :param inputs: test data to predict classification for.
         :return: probabilities
         """
+        # a_hidden shape:
+        # (n_inputs, n_features) x (n_features, n_hidden) = (n_inputs, n_hidden)
+        # z_output shape:
+        # (n_inputs, n_hidden) x (n_hidden, n_classes) = (n_inputs, n_classes)
+        # probabilities shape:
+        #
 
         z_hidden = np.matmul(inputs, self.weights_hidden) + self.bias_hidden
         a_hidden = self.sigmoid(z_hidden)
 
         # Calculate output probabilities
         z_output = np.matmul(a_hidden, self.weights_output) + self.bias_output
-        exp_term = np.exp(z_output)
-        probabilities = exp_term / np.sum(exp_term, axis=1, keepdims=True)
+        probabilities = self.softmax(z_output)
 
         return probabilities
 
@@ -109,7 +114,7 @@ class MLP:
         Backwards propagation of error, updating weights accordingly.
         """
 
-        error_output = self.probabilities - self.targets
+        error_output = self.targets - self.probabilities
         error_hidden = np.matmul(error_output, self.weights_output.T) * self.a_hidden * (1 - self.a_hidden)
 
         # Gradients for the output layer weights and bias
@@ -131,14 +136,13 @@ class MLP:
         self.weights_output -= self.eta * dWo
         self.bias_output -= self.eta * dBo
 
-    def setup_weights_biases_targets(self):
+    def setup_weights_biases(self):
         """
         Initializes randomized weights, sets up bias.
         """
-        weights_scale = np.sqrt(2/self.n_inputs)
         # Initialize randomized weights
-        self.weights_hidden = np.random.randn(self.n_features, self.n_hidden)*weights_scale
-        self.weights_output = np.random.randn(self.n_hidden, self.n_classes)*weights_scale
+        self.weights_hidden = np.random.randn(self.n_features, self.n_hidden)
+        self.weights_output = np.random.randn(self.n_hidden, self.n_classes)
 
         # Bias
         self.bias_hidden = np.zeros(self.n_hidden) + 0.01
@@ -149,6 +153,16 @@ class MLP:
         Calculate sigmoid of x.
         """
         return 1 / (1 + np.exp(-x))
+
+    def softmax(self, x):
+        """
+        Calculate the probabilities for the output layer nodes.
+
+        :param x: Weighted sum of inputs to the output layer
+        :return: probabilities.
+        """
+        exp_term = np.exp(x)
+        return exp_term / np.sum(exp_term, axis=1, keepdims=True)
 
     def handle_targets_shape(self, targets):
         """
