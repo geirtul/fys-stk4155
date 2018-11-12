@@ -9,20 +9,21 @@ class LogisticRegression():
     weights, beta.
     """
 
-    def __init__(self, learning_rate = 1e-2, intercept = True, num_iter = 1e2):
-        """
+    def __init__(self, eta = 1e-2, intercept = True, epochs = 1e2, batch_size=100):
+        #:param eta: How fast should we learn?
+        #:param intercept: boolean - Specify if a constant should be added
+        #:param n_iter: number of iterations
 
-        :param learning_rate: How fast should we learn?
-        :param intercept: boolean - Specify if a constant should be added
-        :param num_iter: number of iterations
-        """
+        # Initialize x based on intercept boolean
 
-        self.learning_rate = learning_rate
+        self.eta = eta
         self.intercept = intercept
-        self.num_iter = int(num_iter)
-        self.x = None
-        self.y = None
+        self.epochs = int(epochs)
+        self.batch_size = batch_size
+
         self.weights = None
+        self.accuracies = []
+        self.cost_function = []
 
     def sigmoid(self, y):
         """
@@ -37,71 +38,83 @@ class LogisticRegression():
 
     def gradient_descent(self):
         """
-        Use gradient descent to optimize the weights.
+        Use stochastic gradient descent to optimize the weights.
         Calculate the gradient of the cost function (cross entropy).
-        :return: gradient
-        TODO: Add some tolerance condition for when to stop.
         """
 
-        for i in tqdm(range(self.num_iter)):
-            y_predict = self.make_prediction(self.x)
+        # Run mini-batches for the stochastic gradient descent
 
-            # Dividing gradient by number of states to prevent overflow/nan.
-            # TODO: Figure out why this happens?
-            gradient = -np.dot(self.x.T, self.y - y_predict)/self.x.shape[0]
+        indices = np.arange(self.n_inputs)
+        gradient_scale = (1 / self.n_iter)
 
-            self.weights = self.weights + self.learning_rate * gradient
+        for i in tqdm(range(self.epochs)):
+            tmp_cost = []
+            for j in range(self.n_iter):
+                chosen_indices = np.random.choice(
+                    indices, size=self.batch_size, replace=False)
+
+                # Batch the training data and targets
+                self.inputs = self.inputs_full[chosen_indices]
+                self.targets = self.targets_full[chosen_indices]
+
+                y_predict = self.sigmoid(np.matmul(self.inputs, self.weights))
+
+                gradient = -gradient_scale * np.matmul(self.inputs.T,
+                                                       self.targets - y_predict)
+
+                self.weights -= self.eta * gradient
+                tmp_cost.append(self.cross_entropy(self.inputs_full, self.targets_full))
+
+            self.accuracies.append(self.accuracy(self.inputs_full, self.targets_full))
+            self.cost_function.append(tmp_cost)
 
     def fit(self, x, y):
         """
-        :param x: x values that generated the data
-        :param y: true values for x
+        Fit the weights to inputs.
         """
-
-        # Initialize x based on intercept boolean
         if self.intercept:
-            self.x = np.c_[np.ones(x.shape[0]), x]
+            self.inputs_full = np.c_[np.ones(x.shape[0]), x]
         else:
-            self.x = x
-        self.y = y
+            self.inputs_full = x
+
+        self.targets_full = y
+        self.n_inputs = self.inputs_full.shape[0]
+        self.n_features = self.inputs_full.shape[1]
+        self.n_iter = self.n_inputs // self.batch_size
 
         # Initialize weights using OLS regression
-        print("Initializing weights...")
-        ols = OrdinaryLeastSquares()
-        ols.fit_coefficients(self.x, self.y)
-        self.weights = ols.coeff
-        #self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
+        # ols = OrdinaryLeastSquares()
+        # ols.fit_coefficients(self.inputs_full, self.targets_full)
+        # self.weights = ols.coeff
+
+        # Initializing weights randomly
+        self.weights = np.random.randn(self.n_features)
 
         # Gradient descent to optimize weights
-        print("Performing gradient descent...")
         self.gradient_descent()
 
         return self.weights
 
-    def make_prediction(self, x):
+    def predict(self, x):
         """
         Generate a set of probabilites for some new input x.
         :param x: Input values to predict new data for
         :return: predicted values
         """
-        # Make sure input shape matches the weights etc.
-        # This is mostly to append the bias column.
-        while x.shape[1] != self.x.shape[1]:
+        while x.shape[1] != self.inputs_full.shape[1]:
             x = np.c_[np.ones(x.shape[0]), x]
-
-        y_predict = np.dot(x, self.weights)
-        y_predict = self.sigmoid(y_predict)
+        y_predict = self.sigmoid(np.matmul(x, self.weights))
 
         return y_predict
 
-    def cross_entropy(self):
+    def cross_entropy(self, input, targets):
         """
         Calculate the cross-entropy (negative log likelihood).
         :return: cross-entropy
         """
 
-        y_predict = self.make_prediction(self.x)
-        ce = -np.sum(self.y * y_predict - np.log(1 + np.exp(y_predict)))
+        term = np.matmul(input, self.weights)
+        ce = -np.sum(targets * term - np.log(1 + np.exp(term)))
 
         return ce
 
@@ -110,26 +123,19 @@ class LogisticRegression():
         Evaluate the accuracy of the model based on the number of correctly
         labeled classes divided by the number of classes in total.
         """
-        y_predict = self.make_prediction(x)
+        y_predict = self.predict(x)
+
         check = []
-        print("Binary-fying the probabilites...")
-        for el in tqdm(y_predict):
+        for el in y_predict:
             if el >= threshold:
                 check.append(1)
             else:
                 check.append(0)
 
         correct = np.array(check, dtype=int) - y
-        print("Calculating score...")
         count = 0
-        for el in tqdm(correct):
+        for el in correct:
             if el == 0: count += 1
         score = count / correct.size
-
-
-        # # counting number of 0's. correct == 0 makes the array true where
-        # # it is zero, and true corresponds to nonzero value, effectively
-        # # making np.count_nonzero count zeros. :p
-        # score = np.count_nonzero(correct == 0)/correct.size
 
         return score
