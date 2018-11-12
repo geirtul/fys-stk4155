@@ -1,28 +1,29 @@
 import numpy as np
 from tqdm import tqdm
-from ols import OrdinaryLeastSquares
 
 
-class LogisticRegression():
+class LogisticRegression:
     """
     Perform logistic regression  on a data set y, to fit a set of
     weights, beta.
     """
 
-    def __init__(self, learning_rate = 1e-2, intercept = True, num_iter = 1e2):
-        """
+    def __init__(self, eta = 1e-2, gamma = 0.01, intercept = True, epochs = 1e2, batch_size=100):
+        #:param eta: How fast should we learn?
+        #:param intercept: boolean - Specify if a constant should be added
+        #:param n_iter: number of iterations
 
-        :param learning_rate: How fast should we learn?
-        :param intercept: boolean - Specify if a constant should be added
-        :param num_iter: number of iterations
-        """
+        # Initialize x based on intercept boolean
 
-        self.learning_rate = learning_rate
+        self.eta = eta
+        self.gamma = gamma
         self.intercept = intercept
-        self.num_iter = int(num_iter)
-        self.x = None
-        self.y = None
+        self.epochs = int(epochs)
+        self.batch_size = batch_size
+
         self.weights = None
+        self.accuracies = []
+        self.cost_function = []
 
     def sigmoid(self, y):
         """
@@ -32,104 +33,116 @@ class LogisticRegression():
         :return: predicted probabilites based on the sigmoid function
         """
 
-        exp_predict = np.exp(y)
-        return exp_predict/(1 + exp_predict)
+        return 1/(1 + np.exp(-y))
 
     def gradient_descent(self):
         """
-        Use gradient descent to optimize the weights.
+        Use stochastic gradient descent to optimize the weights.
         Calculate the gradient of the cost function (cross entropy).
-        :return: gradient
-        TODO: Add some tolerance condition for when to stop.
         """
 
-        for i in tqdm(range(self.num_iter)):
-            y_predict = self.make_prediction(self.x)
+        # Run mini-batches for the stochastic gradient descent
 
-            # Dividing gradient by number of states to prevent overflow/nan.
-            # TODO: Figure out why this happens?
-            gradient = -np.dot(self.x.T, self.y - y_predict)/self.x.shape[0]
+        indices = np.arange(self.n_inputs)
+        gradient_scale = (1 / self.n_iter)
 
-            self.weights = self.weights + self.learning_rate * gradient
+        # Because the current implementation of the logistic regression
+        # varies alot, we're gonna go ahead and just store the weights
+        # that perform the best across all epochs and set these to be
+        # the weights after iterating.
+        best_weights = None
+        best_accuracy = 0
 
-    def fit(self, x, y):
+        for i in tqdm(range(self.epochs)):
+            prev_gradient = 0 # Store previous gradient for momentum.
+            for j in range(self.n_iter):
+                chosen_indices = np.random.choice(
+                    indices, size=self.batch_size, replace=True)
+
+                # Batch the training data and targets
+                self.inputs = self.inputs_full[chosen_indices]
+                self.targets = self.targets_full[chosen_indices]
+
+                scores = np.dot(self.inputs, self.weights)
+                y_predict = self.sigmoid(scores)
+
+                gradient = gradient_scale * np.dot(self.inputs.T,
+                                                   self.targets - y_predict)
+
+                # update weights including momentum (gamma parameter)
+                self.weights += self.gamma*prev_gradient + self.eta * gradient
+                prev_gradient = gradient
+
+            # Store accuracy on test set for plotting.
+            self.accuracies.append(self.accuracy(self.x_test, self.y_test))
+
+            # Check if current accuracy is better.
+            if self.accuracies[-1] > best_accuracy:
+                best_weights = np.copy(self.weights)
+
+        # Set weights equal to the best weights
+        self.weights = best_weights
+
+    def fit(self, x, y, x_test, y_test):
         """
-        :param x: x values that generated the data
-        :param y: true values for x
+        Fit the weights to inputs. Currently takes in test sets aswell
+        to continuously evaluate the accuracy as a function of epochs.
         """
 
-        # Initialize x based on intercept boolean
+        # Initialize input arrays and constants
         if self.intercept:
-            self.x = np.c_[np.ones(x.shape[0]), x]
+            self.inputs_full = np.c_[np.ones(x.shape[0]), x]
         else:
-            self.x = x
-        self.y = y
+            self.inputs_full = x
 
-        # Initialize weights using OLS regression
-        print("Initializing weights...")
-        ols = OrdinaryLeastSquares()
-        ols.fit_coefficients(self.x, self.y)
-        self.weights = ols.coeff
-        # self.weights = np.random.uniform(1e-4, 0.1, self.x.shape[1])
+        self.targets_full = y
+        self.n_inputs = self.inputs_full.shape[0]
+        self.n_features = self.inputs_full.shape[1]
+        self.n_iter = self.n_inputs // self.batch_size
+
+        # Initializing weights randomly
+        #self.weights = np.random.randn(self.n_features)
+
+        # Initialize weights to zero
+        self.weights = np.zeros(self.n_features)
+
+        self.x_test = x_test
+        self.y_test = y_test
 
         # Gradient descent to optimize weights
-        print("Performing gradient descent...")
         self.gradient_descent()
 
         return self.weights
 
-    def make_prediction(self, x):
+    def predict(self, x):
         """
         Generate a set of probabilites for some new input x.
         :param x: Input values to predict new data for
         :return: predicted values
         """
-        # Make sure input shape matches the weights etc.
-        # This is mostly to append the bias column.
-        while x.shape[1] != self.x.shape[1]:
+        while x.shape[1] != self.inputs_full.shape[1]:
             x = np.c_[np.ones(x.shape[0]), x]
-
-        y_predict = np.dot(x, self.weights)
-        y_predict = self.sigmoid(y_predict)
+        y_predict = self.sigmoid(np.matmul(x, self.weights))
 
         return y_predict
 
-    def cross_entropy(self):
+    def cross_entropy(self, input, targets):
         """
         Calculate the cross-entropy (negative log likelihood).
         :return: cross-entropy
         """
-
-        y_predict = self.make_prediction(self.x)
-        ce = -np.sum(self.y * y_predict - np.log(1 + np.exp(y_predict)))
+        scores = np.dot(input, self.weights)
+        log_likelihood = np.sum(targets*scores - np.log(1 + np.exp(scores)))
+        ce = -log_likelihood
 
         return ce
 
-    def accuracy(self, x, y, threshold = 0.5):
+    def accuracy(self, x, y):
         """
         Evaluate the accuracy of the model based on the number of correctly
         labeled classes divided by the number of classes in total.
         """
-        y_predict = self.make_prediction(x)
-        check = []
-        print("Binary-fying the probabilites...")
-        for el in tqdm(y_predict):
-            if el >= threshold:
-                check.append(1)
-            else:
-                check.append(0)
-
-        correct = np.array(check, dtype=int) - y
-        print("Calculating score...")
-        count = 0
-        for el in tqdm(correct):
-            if el == 0: count += 1
-        score = count / correct.size
-
-
-        # # counting number of 0's. correct == 0 makes the array true where
-        # # it is zero, and true corresponds to nonzero value, effectively
-        # # making np.count_nonzero count zeros. :p
-        # score = np.count_nonzero(correct == 0)/correct.size
+        y_predict = np.round(self.predict(x))
+        score = np.sum(y_predict == y) / len(y)
 
         return score
