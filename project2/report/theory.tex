@@ -20,7 +20,7 @@ Given an ensamble of random spin configurations we can assign an energy to
 each state, using the 1D Ising model with nearest-neighbor interactions: 
 
 \begin{equation}
-	H = -J\sum\limits_{j=1}^N S_jS_{j+1} 
+	E = -J\sum\limits_{j=1}^N S_jS_{j+1} 
 \end{equation}
 J is the nearest-neighbor spin interaction, and \(S_j \epsilon {\pm 1}\) is a 
 spin variable. N is the chain length. 
@@ -29,8 +29,24 @@ spin variable. N is the chain length.
 In one dimension, this model has no phase transitions at finite temperature.
 ~\cite{Project2} 
 
-
 \subsection{The 2D Ising model}
+To get a spin model with pairwise interactions between every pair of variables,
+we choose the following model class: 
+
+\begin{equation}
+	E_{model}[S^i] = -\sum\limits_{j=1}^N\sum\limits_{k=1}^N J_{j,k} S_j^iS_{k}^i
+\end{equation}
+~\cite{HighBias} 
+
+In this equation \(i\) represents a particular spin configuration. ~\cite{Project2}
+
+The goal with this model is to determine the interaction matrix \(J_{j,k}\). 
+As the model is linear in \(\mathbf{J}\), it is possible to use
+linear regression. 
+
+
+
+
 
 \subsection{Accuracy score}
 
