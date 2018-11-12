@@ -24,7 +24,7 @@ if sys.argv[1] == "a":
     for degree in degrees:
         ols = OrdinaryLeastSquares()
         ols.fit_coefficients(predictors_input, z, degree)
-        z_predict = ols.make_prediction(predictors_input, z)
+        z_predict = ols.predict(predictors_input, z)
         collected_data.append([degree, ols.mean_squared_error(), ols.r2_score()])
 
     # Output data to file as csv to be handled in plot/analysis script.
@@ -61,7 +61,7 @@ if sys.argv[1] == "b":
         for lmb in lmb_values:
             ridge = RidgeRegression()
             ridge.fit_coefficients(predictors_input, z, degree, lmb)
-            z_predict = ridge.make_prediction(predictors_input, z)
+            z_predict = ridge.predict(predictors_input, z)
             collected_data.append([degree,
                                    lmb,
                                    ridge.mean_squared_error(),
@@ -107,7 +107,7 @@ if sys.argv[1] == "c":
         for alpha in alpha_values:
             lasso = LassoRegression()
             lasso.fit_coefficients(predictors_input, z, degree, alpha=alpha)
-            lasso.make_prediction(predictors_input, z)
+            lasso.predict(predictors_input, z)
             collected_data.append([degree,
                                    alpha,
                                    lasso.mean_squared_error(),
@@ -172,7 +172,7 @@ if sys.argv[1] == "e_ols":
     for degree in degrees:
         ols = OrdinaryLeastSquares()
         ols.fit_coefficients(predictors_input, z, degree)
-        z_predict = ols.make_prediction(predictors_input, z)
+        z_predict = ols.predict(predictors_input, z)
         collected_data.append([degree, ols.mean_squared_error(), ols.r2_score()])
 
     # Output data to file as csv to be handled in plot/analysis script.
@@ -208,7 +208,7 @@ if sys.argv[1] == "e_ridge":
         for lmb in lmb_values:
             ridge = RidgeRegression()
             ridge.fit_coefficients(predictors_input, z, degree, lmb)
-            z_predict = ridge.make_prediction(predictors_input, z)
+            z_predict = ridge.predict(predictors_input, z)
             collected_data.append([degree,
                                    lmb,
                                    ridge.mean_squared_error(),
@@ -253,7 +253,7 @@ if sys.argv[1] == "e_lasso":
         for alpha in alpha_values:
             lasso = LassoRegression()
             lasso.fit_coefficients(predictors_input, z, degree, alpha=alpha)
-            lasso.make_prediction(predictors_input, z)
+            lasso.predict(predictors_input, z)
             collected_data.append([degree,
                                    alpha,
                                    lasso.mean_squared_error(),
