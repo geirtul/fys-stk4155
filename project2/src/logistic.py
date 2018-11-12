@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 
-class LogisticRegression():
+class LogisticRegression:
     """
     Perform logistic regression  on a data set y, to fit a set of
     weights, beta.
@@ -46,9 +46,15 @@ class LogisticRegression():
         indices = np.arange(self.n_inputs)
         gradient_scale = (1 / self.n_iter)
 
+        # Because the current implementation of the logistic regression
+        # varies alot, we're gonna go ahead and just store the weights
+        # that perform the best across all epochs and set these to be
+        # the weights after iterating.
+        best_weights = None
+        best_accuracy = 0
+
         for i in tqdm(range(self.epochs)):
-            tmp_cost = []
-            prev_gradient = 0
+            prev_gradient = 0 # Store previous gradient for momentum.
             for j in range(self.n_iter):
                 chosen_indices = np.random.choice(
                     indices, size=self.batch_size, replace=True)
@@ -70,9 +76,17 @@ class LogisticRegression():
             # Store accuracy on test set for plotting.
             self.accuracies.append(self.accuracy(self.x_test, self.y_test))
 
+            # Check if current accuracy is better.
+            if self.accuracies[-1] > best_accuracy:
+                best_weights = np.copy(self.weights)
+
+        # Set weights equal to the best weights
+        self.weights = best_weights
+
     def fit(self, x, y, x_test, y_test):
         """
-        Fit the weights to inputs.
+        Fit the weights to inputs. Currently takes in test sets aswell
+        to continuously evaluate the accuracy as a function of epochs.
         """
 
         # Initialize input arrays and constants
@@ -88,6 +102,8 @@ class LogisticRegression():
 
         # Initializing weights randomly
         #self.weights = np.random.randn(self.n_features)
+
+        # Initialize weights to zero
         self.weights = np.zeros(self.n_features)
 
         self.x_test = x_test
