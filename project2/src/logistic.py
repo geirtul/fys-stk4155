@@ -1,6 +1,5 @@
 import numpy as np
 from tqdm import tqdm
-from ols import OrdinaryLeastSquares
 
 
 class LogisticRegression():
@@ -9,7 +8,7 @@ class LogisticRegression():
     weights, beta.
     """
 
-    def __init__(self, eta = 1e-2, intercept = True, epochs = 1e2, batch_size=100):
+    def __init__(self, eta = 1e-2, gamma = 0.01, intercept = True, epochs = 1e2, batch_size=100):
         #:param eta: How fast should we learn?
         #:param intercept: boolean - Specify if a constant should be added
         #:param n_iter: number of iterations
@@ -17,6 +16,7 @@ class LogisticRegression():
         # Initialize x based on intercept boolean
 
         self.eta = eta
+        self.gamma = gamma
         self.intercept = intercept
         self.epochs = int(epochs)
         self.batch_size = batch_size
@@ -33,8 +33,7 @@ class LogisticRegression():
         :return: predicted probabilites based on the sigmoid function
         """
 
-        exp_predict = np.exp(y)
-        return exp_predict/(1 + exp_predict)
+        return 1/(1 + np.exp(-y))
 
     def gradient_descent(self):
         """
@@ -49,29 +48,34 @@ class LogisticRegression():
 
         for i in tqdm(range(self.epochs)):
             tmp_cost = []
+            prev_gradient = 0
             for j in range(self.n_iter):
                 chosen_indices = np.random.choice(
-                    indices, size=self.batch_size, replace=False)
+                    indices, size=self.batch_size, replace=True)
 
                 # Batch the training data and targets
                 self.inputs = self.inputs_full[chosen_indices]
                 self.targets = self.targets_full[chosen_indices]
 
-                y_predict = self.sigmoid(np.matmul(self.inputs, self.weights))
+                scores = np.dot(self.inputs, self.weights)
+                y_predict = self.sigmoid(scores)
 
-                gradient = -gradient_scale * np.matmul(self.inputs.T,
-                                                       self.targets - y_predict)
+                gradient = gradient_scale * np.dot(self.inputs.T,
+                                                   self.targets - y_predict)
 
-                self.weights -= self.eta * gradient
-                tmp_cost.append(self.cross_entropy(self.inputs_full, self.targets_full))
+                # update weights including momentum (gamma parameter)
+                self.weights += self.gamma*prev_gradient + self.eta * gradient
+                prev_gradient = gradient
 
-            self.accuracies.append(self.accuracy(self.inputs_full, self.targets_full))
-            self.cost_function.append(tmp_cost)
+            # Store accuracy on test set for plotting.
+            self.accuracies.append(self.accuracy(self.x_test, self.y_test))
 
-    def fit(self, x, y):
+    def fit(self, x, y, x_test, y_test):
         """
         Fit the weights to inputs.
         """
+
+        # Initialize input arrays and constants
         if self.intercept:
             self.inputs_full = np.c_[np.ones(x.shape[0]), x]
         else:
@@ -82,13 +86,12 @@ class LogisticRegression():
         self.n_features = self.inputs_full.shape[1]
         self.n_iter = self.n_inputs // self.batch_size
 
-        # Initialize weights using OLS regression
-        # ols = OrdinaryLeastSquares()
-        # ols.fit_coefficients(self.inputs_full, self.targets_full)
-        # self.weights = ols.coeff
-
         # Initializing weights randomly
-        self.weights = np.random.randn(self.n_features)
+        #self.weights = np.random.randn(self.n_features)
+        self.weights = np.zeros(self.n_features)
+
+        self.x_test = x_test
+        self.y_test = y_test
 
         # Gradient descent to optimize weights
         self.gradient_descent()
@@ -112,30 +115,18 @@ class LogisticRegression():
         Calculate the cross-entropy (negative log likelihood).
         :return: cross-entropy
         """
-
-        term = np.matmul(input, self.weights)
-        ce = -np.sum(targets * term - np.log(1 + np.exp(term)))
+        scores = np.dot(input, self.weights)
+        log_likelihood = np.sum(targets*scores - np.log(1 + np.exp(scores)))
+        ce = -log_likelihood
 
         return ce
 
-    def accuracy(self, x, y, threshold = 0.5):
+    def accuracy(self, x, y):
         """
         Evaluate the accuracy of the model based on the number of correctly
         labeled classes divided by the number of classes in total.
         """
-        y_predict = self.predict(x)
-
-        check = []
-        for el in y_predict:
-            if el >= threshold:
-                check.append(1)
-            else:
-                check.append(0)
-
-        correct = np.array(check, dtype=int) - y
-        count = 0
-        for el in correct:
-            if el == 0: count += 1
-        score = count / correct.size
+        y_predict = np.round(self.predict(x))
+        score = np.sum(y_predict == y) / len(y)
 
         return score

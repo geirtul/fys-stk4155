@@ -58,9 +58,9 @@ Y = np.concatenate((Y_ordered, Y_disordered))
 
 # Pick random data points from ordered and disordered states 
 # to create the training and test sets
-train_size = 0.8  # training samples
+train_size = 0.5  # training samples
 X_train, X_test, Y_train, Y_test = train_test_split(
-    X, Y, train_size=train_size)
+    X, Y, train_size=train_size, shuffle=True)
 
 limit = int(len(X_train)*0.2)
 
@@ -82,49 +82,33 @@ print(X_test.shape[0], 'test samples')
 # the best model for the data.
 print('\nPerforming logistic regression:')
 print('======================================================================')
-etas = np.logspace(-3, -2, 2)
+etas = np.logspace(-5, 0, 6)
+# eta = 0.01
+gamma = 0.01
 intercept = True
-epochs = 1e1
+epochs = 3e1
 batch_size = 100
 accuracies = []
 costs = []
 for eta in etas:
-    logistic = LogisticRegression(eta, intercept, epochs, batch_size)
-    logistic.fit(X_train[:limit, :], Y_train[:limit])
+    logistic = LogisticRegression(eta, gamma,  intercept, epochs, batch_size)
+    logistic.fit(X_train, Y_train, X_test, Y_test)
     accuracy_train = logistic.accuracy(X_train, Y_train)
     accuracy_test = logistic.accuracy(X_test, Y_test)
     accuracy_critical = logistic.accuracy(X_critical, Y_critical)
     accuracies.append(logistic.accuracies)
-    costs.append(logistic.cost_function)
+    #costs.append(logistic.cost_function)
     print("Eta = {}".format(eta))
     print('Accuracy train = {}'.format(accuracy_train))
     print('Accuracy test = {}'.format(accuracy_test))
     print('Accuracy critical = {}'.format(accuracy_critical))
 
-# Plot cost function changes in each epoch
-xvals = range(len(costs[0][0]))
-for i, cost in enumerate(costs[0]):
-    plt.subplot(5, 2, i+1)
-    plt.plot(xvals, cost, label='epoch '+str(i))
-    plt.title(r'$\eta$ = 0.001')
-    plt.xlabel('iteration')
-    plt.ylabel('cost function')
-    plt.legend()
-plt.show()
-
-for i, cost in enumerate(costs[1]):
-    plt.subplot(5, 2, i+1)
-    plt.plot(xvals, cost, label='epoch '+str(i))
-    plt.title(r'$\eta$ = 0.01')
-    plt.xlabel('iteration')
-    plt.ylabel('cost function')
-    plt.legend()
-plt.show()
-
 for acc, eta in zip(accuracies, etas):
-    plt.plot(range(len(acc)), acc, label=r'$\eta$ = '+str(eta))
+    plt.plot(range(len(acc)), acc,'x-', label=r'$\eta$ = '+str(eta))
+# plt.plot(range(len(accuracies[0])), accuracies[0],'x-', label=r'$\eta$ = '+str(eta))
 
 plt.xlabel("Epochs")
 plt.ylabel("Accuracy")
+plt.ylim([0, 1])
 plt.legend()
 plt.show()
