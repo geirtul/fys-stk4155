@@ -6,9 +6,9 @@
 %Until then: 
 As the theory behond the three regression methods used as well as error 
 estimates and the bootstrap method is covered in the previous 
-project, we will not restate it here. 
+project, we will not restate it here.
 
-\subsection{The 1D Ising model} 
+\subsection{The Ising model} 
 The ising model is a simple binary value system where the variables
 in the model can take only two values. For examle \(\pm 1\) or \(0\) and \(1\). 
 ~\cite{Project2} 
@@ -29,7 +29,6 @@ spin variable. N is the chain length.
 In one dimension, this model has no phase transitions at finite temperature.
 ~\cite{Project2} 
 
-\subsection{The 2D Ising model}
 To get a spin model with pairwise interactions between every pair of variables,
 we choose the following model class: 
 
@@ -42,10 +41,23 @@ In this equation \(i\) represents a particular spin configuration. ~\cite{Projec
 
 The goal with this model is to determine the interaction matrix \(J_{j,k}\). 
 As the model is linear in \(\mathbf{J}\), it is possible to use
-linear regression. 
+linear regression.  
 
+The problem can be recast on the form
 
+\begin{equation}
+	E_{model}^i = \mathbf{x}^i \cdot \mathbf{J}  
+\end{equation}
 
+\subsection{Logistic regression and classification problems}
+Differently to linear regression, classificaltion problems 
+are concerned with outcomes taking the form of descrete variables. 
+For a specific physical problem, we'd like to identify its state, say whether
+it is an ordered of disordered system. ~\cite{LectureNotes-FysStk}
+
+Configurations representing states below the critical temperature are calles 
+ordered states, while those above the critical temperature are called 
+disorderes states. ~\cite{Project2} 
 
 
 \subsection{Accuracy score}
