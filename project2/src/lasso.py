@@ -1,7 +1,7 @@
 from sklearn import linear_model
 
 
-class LassoRegression():
+class LassoRegression:
 
     def __init__(self, alpha = 1.0):
         """
@@ -32,6 +32,7 @@ class LassoRegression():
 
         # Regression
         self.lasso_object.fit(x, y)
+        self.coeff = self.lasso_object.coef_
 
     def make_prediction(self, x):
         """
