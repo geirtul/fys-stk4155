@@ -1,5 +1,4 @@
 import numpy as np
-from mlp import MLP
 from neural_net import NeuralNet
 import warnings
 import matplotlib.pyplot as plt
@@ -61,7 +60,7 @@ Y = np.concatenate((Y_ordered, Y_disordered))
 # to create the training and test sets
 train_size = 0.8  # training samples
 X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, train_size=train_size)
+        X, Y, train_size=train_size, shuffle=True)
 
 # Full data set
 # X = np.concatenate((X_critical,X))
@@ -79,20 +78,17 @@ limit = int(len(X_train)*0.2)
 n_hidden = 50
 epochs = 10
 batch_size = 100
-etas = np.logspace(-5, 0, 6)
-
+#etas = np.logspace(-5, 0, 6)
+eta = 0.01
+lmda = 0.01
 accuracies = []
 
-for eta in etas:
-    print("Running network with eta = {}".format(eta))
-    net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test,
-                    n_hidden, epochs, eta, batch_size)
-    net.train()
-    accuracies.append([net.accuracy(X_train, Y_train),
-                           net.accuracy(X_test, Y_test),
-                           net.accuracy(X_critical, Y_critical)])
-    plotlabel = r'$\eta$ = {}'.format(eta)
-    plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
+net = NeuralNet(X_train, Y_train, X_test, Y_test,
+                n_hidden, epochs, eta, batch_size, lmda)
+net.train()
+print("Accuracy on critical set = ", net.accuracy(X_critical, Y_critical))
+plotlabel = r'$\eta$ = {}'.format(eta)
+plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
 
 plt.title("Test set accuracy")
 plt.xlabel("Epochs")
@@ -100,9 +96,20 @@ plt.ylabel("Accuracy score")
 plt.legend()
 plt.show()
 
-print("eta | train | test | critical")
-for eta, acc in zip(etas, accuracies):
-    print("{:g} | {:.2f} | {:.2f} | {:.2f}".format(eta, acc[0], acc[1], acc[2]))
+#for eta in etas:
+#    print("Running network with eta = {}".format(eta))
+#    net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test,
+#                    n_hidden, epochs, eta, batch_size)
+#    net.train()
+#    accuracies.append([net.accuracy(X_train, Y_train),
+#                           net.accuracy(X_test, Y_test),
+#                           net.accuracy(X_critical, Y_critical)])
+#    plotlabel = r'$\eta$ = {}'.format(eta)
+#    plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
+#
+#print("eta | train | test | critical")
+#for eta, acc in zip(etas, accuracies):
+#    print("{:g} | {:.2f} | {:.2f} | {:.2f}".format(eta, acc[0], acc[1], acc[2]))
 
 # # Grid search for optimal parameters
 #

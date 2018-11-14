@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+from sklearn.metrics import accuracy_score
 
 
 class NeuralNet:
@@ -21,6 +22,7 @@ class NeuralNet:
             epochs=1e2,
             eta = 0.01,
             batch_size=100,
+            lmda=0.0
     ):
         """
         Initialize the neural network
@@ -32,6 +34,8 @@ class NeuralNet:
         :param epochs: Number of times the training algorithm feeds all training
                         data through the network. Default 100
         :param eta: Learning rate, default 0.01
+        :param batch_size: Size of mini-batches for Gradient Descent.
+        :param lmda: Lambda, regularization parameter.
         """
 
         # Data. Reshaping targets to be (N, 1)
@@ -48,6 +52,8 @@ class NeuralNet:
         self.eta = eta
         self.batch_size = batch_size
         self.n_iter = self.n_inputs // self.batch_size
+        self.batch_scale = 1 / self.batch_size
+        self.lmda = lmda
 
         # Weights (w) and biases (b)
         self.w_hidden = None
@@ -68,7 +74,7 @@ class NeuralNet:
         for i in tqdm(range(self.epochs)):
             for j in range(self.n_iter):
                 chosen_indices = np.random.choice(
-                    indices, size=self.batch_size, replace=False)
+                    indices, size=self.batch_size, replace=True)
 
                 # Batch training data and targets
                 self.x_batch = self.x[chosen_indices]
@@ -125,12 +131,18 @@ class NeuralNet:
         delta_w_hidden = np.matmul(self.x_batch.T, error_hidden)
         delta_b_hidden = np.sum(error_hidden)
 
-        # Update weights and biases
-        self.w_output -= self.eta * delta_w_output
-        self.b_output -= self.eta * delta_b_output
+        if self.lmda > 0.0:
+            delta_w_output += self.lmda * self.w_output
+            delta_w_hidden += self.lmda * self.w_hidden
 
-        self.w_hidden -= self.eta * delta_w_hidden
-        self.b_hidden -= self.eta * delta_b_hidden
+        # Update weights and biases
+        self.w_output -= self.eta * delta_w_output * self.batch_scale
+        self.b_output -= self.eta * delta_b_output * self.batch_scale
+
+        self.w_hidden -= self.eta * delta_w_hidden * self.batch_scale
+        self.b_hidden -= self.eta * delta_b_hidden * self.batch_scale
+
+
 
     def setup_weights_biases(self):
         """
@@ -156,12 +168,21 @@ class NeuralNet:
         """
         # TODO: Check if ordered or disordered is class 0 in the data set.
 
+        #if x is not None and y is not None:
+        #    y = y.reshape((len(y), 1))
+        #    output = self.feed_forward(x)[1]
+        #    score = np.sum(y == output) / len(y)
+        #else:
+        #    output = self.feed_forward(self.x_test)[1]
+        #    score = np.sum(self.y_test == output)/len(self.y_test)
+        
+        # Run with sklearn's accuracy score.
         if x is not None and y is not None:
             y = y.reshape((len(y), 1))
-            output = self.feed_forward(x)[1]
-            score = np.sum(y == output) / len(y)
+            output = np.round(self.feed_forward(x)[1])
+            score = accuracy_score(y, output)
         else:
-            output = self.feed_forward(self.x_test)[1]
-            score = np.sum(self.y_test == output)/len(self.y_test)
+            output = np.round(self.feed_forward(self.x_test)[1])
+            score = accuracy_score(self.y_test, output)
 
         return score
