@@ -19,7 +19,8 @@ class NeuralNet:
             y_test,
             n_hidden=10,
             epochs=1e2,
-            eta = 0.01
+            eta = 0.01,
+            batch_size=100,
     ):
         """
         Initialize the neural network
@@ -45,6 +46,8 @@ class NeuralNet:
         self.n_hidden = n_hidden
         self.epochs = int(epochs)
         self.eta = eta
+        self.batch_size = batch_size
+        self.n_iter = self.n_inputs // self.batch_size
 
         # Weights (w) and biases (b)
         self.w_hidden = None
@@ -58,14 +61,23 @@ class NeuralNet:
 
     def train(self):
         """
-        Runs the training algorithm.
+        Runs the training algorithm with Batch Gradient Descent.
         """
+        indices = np.arange(self.n_inputs)
 
         for i in tqdm(range(self.epochs)):
-            a_h, a_o = self.feed_forward()
-            self.backwards_propagation(a_h, a_o)
+            for j in range(self.n_iter):
+                chosen_indices = np.random.choice(
+                    indices, size=self.batch_size, replace=False)
 
-            # Save the accuracy
+                # Batch training data and targets
+                self.x_batch = self.x[chosen_indices]
+                self.y_batch = self.y[chosen_indices]
+
+                a_h, a_o = self.feed_forward()
+                self.backwards_propagation(a_h, a_o)
+
+            # Save the accuracy for each epoch
             current_accuracy = self.accuracy()
             self.accuracies.append(current_accuracy)
 
@@ -81,7 +93,7 @@ class NeuralNet:
         if x is not None:
             z_hidden = np.matmul(x, self.w_hidden) + self.b_hidden
         else:
-            z_hidden = np.matmul(self.x, self.w_hidden) + self.b_hidden
+            z_hidden = np.matmul(self.x_batch, self.w_hidden) + self.b_hidden
         a_hidden = self.sigmoid(z_hidden)
 
         # Calculate activations in output layer
@@ -92,7 +104,7 @@ class NeuralNet:
 
     def backwards_propagation(self, a_h, a_o):
         """
-        Calculate error in output and backpropagate to update weights and
+        Calculate error in output and backwards propagate to update weights and
         biases.
 
         :param a_h: Activations in the hidden layer
@@ -100,7 +112,7 @@ class NeuralNet:
         """
 
         # Error in output layer
-        error_output = self.y - a_o
+        error_output = self.y_batch - a_o
 
         # Gradients for the output weights and bias
         delta_w_output = np.matmul(a_h.T, error_output)
@@ -110,7 +122,7 @@ class NeuralNet:
         error_hidden = np.matmul(error_output, self.w_output.T) * a_h * (1 - a_h)
 
         # Gradients for the hidden weights and biases
-        delta_w_hidden = np.matmul(self.x.T, error_hidden)
+        delta_w_hidden = np.matmul(self.x_batch.T, error_hidden)
         delta_b_hidden = np.sum(error_hidden)
 
         # Update weights and biases

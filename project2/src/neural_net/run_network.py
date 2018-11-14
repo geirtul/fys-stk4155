@@ -76,28 +76,33 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # print(X_test.shape[0], 'test samples')
 
 limit = int(len(X_train)*0.2)
-n_hiddens = 50
+n_hidden = 50
 epochs = 10
+batch_size = 100
 etas = np.logspace(-5, 0, 6)
 
 accuracies = []
 
-
 for eta in etas:
-    print("Running network with eta = {} and {} hidden nodes".format(eta, n_hidden))
-    net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test, n_hidden, epochs, eta)
+    print("Running network with eta = {}".format(eta))
+    net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test,
+                    n_hidden, epochs, eta, batch_size)
     net.train()
-    tmp_accuracies.append([net.accuracy(X_train, Y_train),
-                       net.accuracy(X_test, Y_test),
-                       net.accuracy(X_critical, Y_critical)])
+    accuracies.append([net.accuracy(X_train, Y_train),
+                           net.accuracy(X_test, Y_test),
+                           net.accuracy(X_critical, Y_critical)])
+    plotlabel = r'$\eta$ = {}'.format(eta)
+    plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
 
-# plotlabel = r'$\eta$ = {} | nodes = {}'.format(eta, n_hidden)
-# plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
-# plt.title("SLP accuracy vs. epochs")
-# plt.xlabel("Epochs")
-# plt.ylabel("Accuracy score")
-# plt.legend()
-# plt.show()
+plt.title("Test set accuracy")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy score")
+plt.legend()
+plt.show()
+
+print("eta | train | test | critical")
+for eta, acc in zip(etas, accuracies):
+    print("{:g} | {:.2f} | {:.2f} | {:.2f}".format(eta, acc[0], acc[1], acc[2]))
 
 # # Grid search for optimal parameters
 #
