@@ -1,5 +1,6 @@
 import numpy as np
 from mlp import MLP
+from neural_net import NeuralNet
 import warnings
 import matplotlib.pyplot as plt
 import pickle
@@ -74,58 +75,40 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # print(X_critical.shape[0], 'critical samples')
 # print(X_test.shape[0], 'test samples')
 
-
-def accuracy_score(test_targets, prediction):
-    return np.sum(test_targets == prediction) / len(test_targets)
-
-
-# n_hidden = 50
-# n_classes = 2
-# epochs = 100
-# batch_size = 100
-# eta = 0.001
-# lmd = 1.0
-
-# Try networks with different number of hidden nodes:
-#nodes, eta, lmd, acc,
-# 20 0.0001 1.0 0.8312307692307692
-
-
-
-# Grid search for optimal parameters
-# nodes = [5, 10, 15, 20, 30, 40, 50, 100, 150, 200]
-# times = [3.9, 4.06, 4.18, 4.15, 4.55, 4.53, 4.70, 6.22, 7.30, 8.26]
-# plt.plot(nodes, times)
-# plt.show()
-# exit(1)
-
-n_hidden = [10, 20, 50]
-n_classes = 2
-epochs = 20
-batch_size = 100
-etas = np.logspace(-5, 1, 7)
-lmds = np.logspace(-5, 1, 7)
-
 limit = int(len(X_train)*0.2)
-net_accuracies = []
+n_hiddens = 50
+epochs = 10
+etas = np.logspace(-5, 0, 6)
 
-for hidden in n_hidden:
-    net = MLP(X_train, Y_train, X_test, Y_test, hidden, n_classes, epochs, batch_size, etas[1], 0.0)
+accuracies = []
+
+
+for eta in etas:
+    print("Running network with eta = {} and {} hidden nodes".format(eta, n_hidden))
+    net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test, n_hidden, epochs, eta)
     net.train()
-    #prob = net.predict(X_test)
-    #acc = accuracy_score(Y_test, prob)
-    #print("\neta, lmd, acc,\n{}, {}, {}".format(etas[1], lmds[2], acc))
-    net_accuracies.append(net.accuracies_test)
+    tmp_accuracies.append([net.accuracy(X_train, Y_train),
+                       net.accuracy(X_test, Y_test),
+                       net.accuracy(X_critical, Y_critical)])
 
-for acc, n in zip(net_accuracies, n_hidden):
-    plt.plot(range(epochs), acc, label=str(n)+" nodes")
-plt.xlabel("Epochs")
-plt.ylabel("Accuracy score")
-plt.title(r"$\eta$ = {}, $\lambda$ = {}".format(etas[1], 0.0))
-plt.legend()
-plt.show()
+# plotlabel = r'$\eta$ = {} | nodes = {}'.format(eta, n_hidden)
+# plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
+# plt.title("SLP accuracy vs. epochs")
+# plt.xlabel("Epochs")
+# plt.ylabel("Accuracy score")
+# plt.legend()
+# plt.show()
 
-
+# # Grid search for optimal parameters
+#
+#
+# n_hidden = [10, 20, 50]
+# n_classes = 2
+# epochs = 20
+# batch_size = 100
+# etas = np.logspace(-5, 1, 7)
+#
+#
 # stored_models = np.zeros((len(etas), len(lmds)), dtype=object)
 #
 # for i, eta in enumerate(etas):
