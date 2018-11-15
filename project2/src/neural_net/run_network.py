@@ -75,13 +75,13 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # print(X_test.shape[0], 'test samples')
 
 limit = int(len(X_train)*0.2)
-n_hidden1 = 100
+n_hidden1 = 50
 n_hidden2 = 50
 epochs = 10
 batch_size = 100
 #etas = np.logspace(-4, 0, 5)
 eta = 0.01
-lmda = 1.0
+lmda = 0.01
 accuracies = []
 
 
@@ -107,12 +107,6 @@ plt.title("Test set accuracy")
 plt.xlabel("Epochs")
 plt.ylabel("Accuracy score")
 plt.legend()
-plt.show()
-
-errors = net.mean_errors
-plt.plot(range(len(errors)), errors, 'x-')
-plt.xlabel("Epoch")
-plt.ylabel("Mean output error")
 plt.show()
 
 # # Grid search for optimal parameters

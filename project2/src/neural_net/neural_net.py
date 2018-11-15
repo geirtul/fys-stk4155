@@ -59,7 +59,6 @@ class NeuralNet:
 
         # Keep track of accuracy while training
         self.accuracies = []
-        self.mean_errors = []
 
     def train(self):
         """
@@ -68,7 +67,6 @@ class NeuralNet:
         indices = np.arange(self.n_inputs)
 
         for i in tqdm(range(self.epochs)):
-            self.tmp_errors = []
             for j in range(self.n_iter):
                 chosen_indices = np.random.choice(
                     indices, size=self.batch_size, replace=False)
@@ -83,7 +81,10 @@ class NeuralNet:
             # Save the accuracy for each epoch
             current_accuracy = self.accuracy()
             self.accuracies.append(current_accuracy)
-            self.mean_errors.append(np.mean(np.array(self.tmp_errors)))
+            print("Amax hidden1: ", np.amax(self.w_hidden1))
+            print("Amax hidden2: ", np.amax(self.w_hidden2))
+            print("Amax output : ", np.amax(self.w_output))
+
 
     def feed_forward(self, x=None):
         """
@@ -93,7 +94,7 @@ class NeuralNet:
         :return: activations in hidden layer, and output.
         """
 
-        # Calculate activations in hidden layer
+        # Calculate activations in hidden layers
         if x is not None:
             z_hidden1 = np.matmul(x, self.w_hidden1) + self.b_hidden1
         else:
@@ -121,7 +122,6 @@ class NeuralNet:
 
         # Errors
         error_output = self.y_batch - a_o
-        self.tmp_errors.append(error_output)
         error_hidden2 = np.matmul(error_output, self.w_output.T) * a_h2 * (1 - a_h2)
         error_hidden1 = np.matmul(error_hidden2, self.w_hidden2.T) * a_h1 * (1 - a_h1)
 
@@ -142,6 +142,7 @@ class NeuralNet:
             delta_w_hidden1 += self.lmda * self.w_hidden1
 
         # Update weights and biases
+        scale = 1 / self.batch_size
         self.w_output -= self.eta * delta_w_output
         self.b_output -= self.eta * delta_b_output
 
