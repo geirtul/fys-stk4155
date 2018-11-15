@@ -75,20 +75,33 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # print(X_test.shape[0], 'test samples')
 
 limit = int(len(X_train)*0.2)
-n_hidden = 50
+n_hidden1 = 100
+n_hidden2 = 50
 epochs = 10
 batch_size = 100
-#etas = np.logspace(-5, 0, 6)
+#etas = np.logspace(-4, 0, 5)
 eta = 0.01
-lmda = 0.01
+lmda = 1.0
 accuracies = []
 
+
 net = NeuralNet(X_train, Y_train, X_test, Y_test,
-                n_hidden, epochs, eta, batch_size, lmda)
+                n_hidden1, n_hidden2, epochs, eta, batch_size, lmda)
 net.train()
 print("Accuracy on critical set = ", net.accuracy(X_critical, Y_critical))
 plotlabel = r'$\eta$ = {}'.format(eta)
 plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
+
+# for eta in etas:
+#    print("Running network with eta = {}".format(eta))
+#    net = NeuralNet(X_train, Y_train, X_test, Y_test,
+#                    n_hidden1, n_hidden2, epochs, eta, batch_size)
+#    net.train()
+#    accuracies.append([net.accuracies[-1],
+#                           net.accuracy(X_test, Y_test),
+#                           net.accuracy(X_critical, Y_critical)])
+#    plotlabel = r'$\eta$ = {}'.format(eta)
+#    plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
 
 plt.title("Test set accuracy")
 plt.xlabel("Epochs")
@@ -96,56 +109,42 @@ plt.ylabel("Accuracy score")
 plt.legend()
 plt.show()
 
-#for eta in etas:
-#    print("Running network with eta = {}".format(eta))
-#    net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test,
-#                    n_hidden, epochs, eta, batch_size)
-#    net.train()
-#    accuracies.append([net.accuracy(X_train, Y_train),
-#                           net.accuracy(X_test, Y_test),
-#                           net.accuracy(X_critical, Y_critical)])
-#    plotlabel = r'$\eta$ = {}'.format(eta)
-#    plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
-#
-#print("eta | train | test | critical")
-#for eta, acc in zip(etas, accuracies):
-#    print("{:g} | {:.2f} | {:.2f} | {:.2f}".format(eta, acc[0], acc[1], acc[2]))
+errors = net.mean_errors
+plt.plot(range(len(errors)), errors, 'x-')
+plt.xlabel("Epoch")
+plt.ylabel("Mean output error")
+plt.show()
 
 # # Grid search for optimal parameters
 #
-#
-# n_hidden = [10, 20, 50]
-# n_classes = 2
-# epochs = 20
+# n_hidden1 = 100
+# n_hidden2 = 50
+# epochs = 10
 # batch_size = 100
-# etas = np.logspace(-5, 1, 7)
+# etas = np.logspace(-5, 0, 6)
+# lmdas = np.logspace(-5, 0, 6)
 #
-#
-# stored_models = np.zeros((len(etas), len(lmds)), dtype=object)
+# stored_models = np.zeros((len(etas), len(lmdas)), dtype=object)
 #
 # for i, eta in enumerate(etas):
-#     for j, lmd in enumerate(lmds):
-#         net = MLP(X_train[:limit, :], Y_train[:limit], X_test, Y_test, n_hidden, n_classes, epochs, batch_size, eta, lmd)
+#     for j, lmda in enumerate(lmdas):
+#         net = NeuralNet(X_train, Y_train, X_test, Y_test,
+#                   n_hidden1, n_hidden2, epochs, eta, batch_size, lmda)
 #         net.train()
 #         stored_models[i, j] = net
-#         test_prob = net.predict(X_test)
-#         acc = accuracy_score(Y_test, test_prob)
 #         #print("Eta: {} | Lambda: {} | Accuracy: {}".format(eta, lmd, acc))
 #
 # # Plotting the  grid search.
 #
-# train_accuracy = np.zeros((len(etas), len(lmds)))
-# test_accuracy = np.zeros((len(etas), len(lmds)))
+# train_accuracy = np.zeros((len(etas), len(lmdas)))
+# test_accuracy = np.zeros((len(etas), len(lmdas)))
 #
 # for i in range(len(etas)):
-#     for j in range(len(lmds)):
+#     for j in range(len(lmdas)):
 #         net = stored_models[i][j]
 #
-#         train_pred = net.predict(X_train)
-#         test_pred = net.predict(X_test)
-#
-#         train_accuracy[i][j] = accuracy_score(Y_train, train_pred)
-#         test_accuracy[i][j] = accuracy_score(Y_test, test_pred)
+#         train_accuracy[i][j] = net.accuracies[-1]
+#         test_accuracy[i][j] = net.accuracy(X_test, Y_test)
 #
 # fig, ax = plt.subplots(figsize=(10, 10))
 # sns.heatmap(train_accuracy, annot=True, ax=ax, cmap="viridis")
