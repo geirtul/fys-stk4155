@@ -60,6 +60,21 @@ class NeuralNet:
         # Keep track of accuracy while training
         self.accuracies = []
 
+    def setup_weights_biases(self):
+        """
+        Initializes the weights to random values and biases to a small value.
+        """
+        # Weights and biases in hidden layers
+        self.w_hidden1 = np.random.randn(self.n_features, self.n_hidden1)
+        self.b_hidden1 = np.zeros(self.n_hidden1) + 0.01
+
+        self.w_hidden2 = np.random.randn(self.n_hidden1, self.n_hidden2)
+        self.b_hidden2 = np.zeros(self.n_hidden2) + 0.01
+
+        # Weights and biases in output layer
+        self.w_output = np.random.randn(self.n_hidden2, 1)
+        self.b_output = 0.01
+
     def train(self):
         """
         Runs the training algorithm with Batch Gradient Descent.
@@ -83,8 +98,7 @@ class NeuralNet:
             self.accuracies.append(current_accuracy)
             print("Amax hidden1: ", np.amax(self.w_hidden1))
             print("Amax hidden2: ", np.amax(self.w_hidden2))
-            print("Amax output : ", np.amax(self.w_output))
-
+            print("bias output : ", self.b_output)
 
     def feed_forward(self, x=None):
         """
@@ -151,21 +165,6 @@ class NeuralNet:
 
         self.w_hidden1 -= self.eta * delta_w_hidden1
         self.b_hidden1 -= self.eta * delta_b_hidden1
-
-    def setup_weights_biases(self):
-        """
-        Initializes the weights to random values and biases to a small value.
-        """
-        # Weights and biases in hidden layers
-        self.w_hidden1 = np.random.randn(self.n_features, self.n_hidden1)
-        self.b_hidden1 = np.zeros(self.n_hidden1) + 0.01
-
-        self.w_hidden2 = np.random.randn(self.n_hidden1, self.n_hidden2)
-        self.b_hidden2 = np.zeros(self.n_hidden2) + 0.01
-
-        # Weights and biases in output layer
-        self.w_output = np.random.randn(self.n_hidden2, 1)
-        self.b_output = 0.01
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
