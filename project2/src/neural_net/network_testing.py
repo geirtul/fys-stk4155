@@ -1,15 +1,16 @@
 import warnings
 import numpy as np
-from sklearn.neural_network import MLPRegressor
+from sklearn.neural_network import MLPClassifier
 from neural_net import NeuralNet
 
 X = np.array([[0.0], [1.0]])
 y = np.array([0, 2])
-mlp = MLPRegressor(solver='sgd',  # Stochastic gradient descent.
+mlp = MLPClassifier(solver='sgd',  # Stochastic gradient descent.
                    activation='logistic',  # Skl name for sigmoid.
                    alpha=0.0,  # No regularization for simplicity.
                    hidden_layer_sizes=(
-                   3, 3))  # Full network is of size (1,3,3,1).
+                   3, 3)
+                   )  # Full network is of size (1,3,3,1).
 
 # Force sklearn to set up all the necessary matrices by fitting a data set.
 # We dont care if it converges or not, so lets ignore raised warnings.
@@ -64,15 +65,15 @@ nn.b_output = mlp.intercepts_[2]
 
 # Call your own backpropagation function, and you're ready to compare with
 # the scikit-learn code.
-# a, b, c = nn.feed_forward(X)
-# nn.backwards_propagation(a, b, c)
-nn.train()
+a_h1, a_h2, a_o = nn.feed_forward(X)
+nn.backwards_propagation(a_h1, a_h2, a_o)
 
+#print(nn.a)
+#print(activations)
 for i, a in enumerate(nn.a):
-    print(a)
-    print(activations[i])
     assert np.allclose(a, activations[i])
-
+#print("nn bias\n", nn.derivative_biases)
+#print("Scikit bias\n", intercept_grads)
 for i, derivative_bias in enumerate(nn.derivative_biases):
     assert np.allclose(derivative_bias, intercept_grads[i])
 

@@ -99,9 +99,6 @@ class NeuralNet:
             # Save the accuracy for each epoch
             current_accuracy = self.accuracy()
             self.accuracies.append(current_accuracy)
-            print("Amax hidden1: ", np.amax(self.w_hidden1))
-            print("Amax hidden2: ", np.amax(self.w_hidden2))
-            print("bias output : ", self.b_output)
 
     def feed_forward(self, x=None):
         """
@@ -124,6 +121,7 @@ class NeuralNet:
         # Calculate activations in output layer
         z_output = np.matmul(a_hidden2, self.w_output) + self.b_output
         a_output = self.sigmoid(z_output)
+        self.a.append(self.x)
         self.a.append(a_hidden1)
         self.a.append(a_hidden2)
         self.a.append(a_output)
@@ -140,19 +138,29 @@ class NeuralNet:
         """
 
         # Errors
-        error_output = self.y_batch - a_o
+        try:
+            error_output = a_o - self.y_batch
+        except AttributeError:
+            error_output = a_o - self.y
+
+        try:
+            something = self.x_batch
+        except AttributeError:
+            self.x_batch = self.x
+
+
         error_hidden2 = np.matmul(error_output, self.w_output.T) * a_h2 * (1 - a_h2)
         error_hidden1 = np.matmul(error_hidden2, self.w_hidden2.T) * a_h1 * (1 - a_h1)
 
         # Gradients for the weights and biases
         delta_w_output = np.matmul(a_h2.T, error_output)
-        delta_b_output = np.sum(error_output)
+        delta_b_output = np.sum(error_output, axis=0)
 
         delta_w_hidden2 = np.matmul(a_h1.T, error_hidden2)
-        delta_b_hidden2 = np.sum(error_hidden2)
+        delta_b_hidden2 = np.sum(error_hidden2, axis=0)
 
         delta_w_hidden1 = np.matmul(self.x_batch.T, error_hidden1)
-        delta_b_hidden1 = np.sum(error_hidden1)
+        delta_b_hidden1 = np.sum(error_hidden1, axis=0)
 
         # Regularization
         if self.lmda > 0.0:
@@ -191,7 +199,6 @@ class NeuralNet:
         :param y: test / validation targets to check with
         :return: accuracy score
         """
-        # TODO: Check if ordered or disordered is class 0 in the data set.
 
         #if x is not None and y is not None:
         #    y = y.reshape((len(y), 1))
