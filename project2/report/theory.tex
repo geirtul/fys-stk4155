@@ -50,27 +50,34 @@ The problem can be recast on the form
 \end{equation}
 
 \subsection{Logistic regression and classification problems}
-Differently to linear regression, classificaltion problems 
-are concerned with outcomes taking the form of descrete variables. 
+Differently to linear regression, classification problems 
+are concerned with outcomes taking the form of discrete variables. 
 For a specific physical problem, we'd like to identify its state, say whether
 it is an ordered of disordered system. ~\cite{LectureNotes-FysStk}
 
 Logistic regression can be used to define the phases of the Ising
 model.~\cite{LectureNotes} 
 
-Configurations representing states below the critical temperature are calles 
+Configurations representing states below the critical temperature are called
 ordered states, while those above the critical temperature are called 
 disorderes states. ~\cite{Project2} 
 
 The theoretical critical temperature for a phase transition is 
 \(T_C \approx 2.269\). 
 
-\subsection{Accuracy score}
-
-\subsection{Gradient Decent solver}
+\subsection{Gradient Descent solver}
 
 \subsection{Cost functions} 
 
+\subsection{Accuracy score}
+To measure the accuracy of the network, an accuracy score is defined as:
+\begin{equation*}
+	\text{Accuracy} = \frac{\sum_{i=1}^{n} I(t_i = y_i)}{n}
+\end{equation*}
+which is simply the number of correctly labeled states divided by the
+total number of states. In the equation above, $I$ is the indicator function,
+1 if $t_i = y_i$ and 0 otherwise. $t_i$ is the known correct label and $y_i$ is the
+label output by the network.
 
 
 
