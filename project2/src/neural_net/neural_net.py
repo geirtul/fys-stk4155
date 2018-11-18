@@ -59,9 +59,6 @@ class NeuralNet:
 
         # Keep track of accuracy while training
         self.accuracies = []
-        self.derivative_biases = []
-        self.derivative_weights = []
-        self.a = []
 
     def setup_weights_biases(self):
         """
@@ -121,10 +118,6 @@ class NeuralNet:
         # Calculate activations in output layer
         z_output = np.matmul(a_hidden2, self.w_output) + self.b_output
         a_output = self.sigmoid(z_output)
-        self.a.append(self.x)
-        self.a.append(a_hidden1)
-        self.a.append(a_hidden2)
-        self.a.append(a_output)
         return a_hidden1, a_hidden2, a_output
 
     def backwards_propagation(self, a_h1, a_h2, a_o):
@@ -138,16 +131,7 @@ class NeuralNet:
         """
 
         # Errors
-        try:
-            error_output = a_o - self.y_batch
-        except AttributeError:
-            error_output = a_o - self.y
-
-        try:
-            something = self.x_batch
-        except AttributeError:
-            self.x_batch = self.x
-
+        error_output = a_o - self.y_batch
 
         error_hidden2 = np.matmul(error_output, self.w_output.T) * a_h2 * (1 - a_h2)
         error_hidden1 = np.matmul(error_hidden2, self.w_hidden2.T) * a_h1 * (1 - a_h1)
@@ -167,13 +151,6 @@ class NeuralNet:
             delta_w_output += self.lmda * self.w_output
             delta_w_hidden2 += self.lmda * self.w_hidden2
             delta_w_hidden1 += self.lmda * self.w_hidden1
-
-        self.derivative_biases.append(delta_b_hidden1)
-        self.derivative_biases.append(delta_b_hidden2)
-        self.derivative_biases.append(delta_b_output)
-        self.derivative_weights.append(delta_w_hidden1)
-        self.derivative_weights.append(delta_w_hidden2)
-        self.derivative_weights.append(delta_w_output)
 
         # Update weights and biases
         self.w_output -= self.eta * delta_w_output

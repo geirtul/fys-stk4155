@@ -75,7 +75,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 # print(X_critical.shape[0], 'critical samples')
 # print(X_test.shape[0], 'test samples')
 
-limit = int(len(X_train)*0.2)
+limit = int(len(X_train)*0.8)
 #n_hidden1 = 50
 #n_hidden2 = 50
 #epochs = 5
@@ -121,22 +121,14 @@ lmdas = np.logspace(-5, 0, 6)
 
 stored_models = np.zeros((len(etas), len(lmdas)), dtype=object)
 
-n_eta = len(etas)
-n_lmda = len(lmdas)
-n_iters = n_eta*n_lmda
 for i, eta in enumerate(etas):
     for j, lmda in enumerate(lmdas):
-        if j == 0:
-            t0 = time()
         net = NeuralNet(X_train, Y_train, X_test, Y_test,
                   n_hidden1, n_hidden2, epochs, eta, batch_size, lmda)
         net.train()
         stored_models[i, j] = net
-        if j == 0:
-            t1 = time()
-            print("Time for one iteration = {}s".format(t1-t0))
-            print("Estimated total time = {}m".format((t1-t0)*n_iters/60))
-        #print("Eta: {} | Lambda: {} | Accuracy: {}".format(eta, lmd, acc))
+        t1 = time()
+
 
 # Plotting the  grid search.
 
@@ -147,7 +139,7 @@ for i in range(len(etas)):
     for j in range(len(lmdas)):
         net = stored_models[i][j]
 
-        train_accuracy[i][j] = net.accuracies[-1]
+        train_accuracy[i][j] = net.accuracy(X_train, Y_train)
         test_accuracy[i][j] = net.accuracy(X_test, Y_test)
 
 fig, ax = plt.subplots(figsize=(10, 10))
