@@ -1,4 +1,5 @@
 import numpy as np
+from time import time
 from neural_net import NeuralNet
 import warnings
 import matplotlib.pyplot as plt
@@ -120,12 +121,21 @@ lmdas = np.logspace(-5, 0, 6)
 
 stored_models = np.zeros((len(etas), len(lmdas)), dtype=object)
 
+n_eta = len(etas)
+n_lmda = len(lmdas)
+n_iters = n_eta*n_lmda
 for i, eta in enumerate(etas):
     for j, lmda in enumerate(lmdas):
-        net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test,
+        if j == 0:
+            t0 = time()
+        net = NeuralNet(X_train, Y_train, X_test, Y_test,
                   n_hidden1, n_hidden2, epochs, eta, batch_size, lmda)
         net.train()
         stored_models[i, j] = net
+        if j == 0:
+            t1 = time()
+            print("Time for one iteration = {}s".format(t1-t0))
+            print("Estimated total time = {}m".format((t1-t0)*n_iters/60))
         #print("Eta: {} | Lambda: {} | Accuracy: {}".format(eta, lmd, acc))
 
 # Plotting the  grid search.
