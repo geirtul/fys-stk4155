@@ -102,7 +102,7 @@ class NeuralNet:
         Feeds the input forward through the network to generate an output.
         If x is not provided self.x is used.
         :param x: Input to be fed forward. Default: None.
-        :return: activations in hidden layer, and output.
+        :return: activations in hidden layers, and output.
         """
 
         # Calculate activations in hidden layers
@@ -132,7 +132,6 @@ class NeuralNet:
 
         # Errors
         error_output = a_o - self.y_batch
-
         error_hidden2 = np.matmul(error_output, self.w_output.T) * a_h2 * (1 - a_h2)
         error_hidden1 = np.matmul(error_hidden2, self.w_hidden2.T) * a_h1 * (1 - a_h1)
 
@@ -166,7 +165,7 @@ class NeuralNet:
         return 1 / (1 + np.exp(-x))
 
     def predict(self, x):
-        y_pred = self.feed_forward(x)
+        y_pred = self.feed_forward(x)[2]
         return y_pred
 
     def accuracy(self, x=None, y=None):
@@ -177,21 +176,21 @@ class NeuralNet:
         :return: accuracy score
         """
 
-        #if x is not None and y is not None:
-        #    y = y.reshape((len(y), 1))
-        #    output = self.feed_forward(x)[1]
-        #    score = np.sum(y == output) / len(y)
-        #else:
-        #    output = self.feed_forward(self.x_test)[1]
-        #    score = np.sum(self.y_test == output)/len(self.y_test)
-        
-        # Run with sklearn's accuracy score.
         if x is not None and y is not None:
-            y = y.reshape((len(y), 1))
-            output = np.round(self.feed_forward(x)[2])
-            score = accuracy_score(y, output)
+           y = y.reshape((len(y), 1))
+           output = self.predict(x)
+           score = np.sum(y == np.round(output)) / len(y)
         else:
-            output = np.round(self.feed_forward(self.x_test)[2])
-            score = accuracy_score(self.y_test, output)
+           output = self.predict(self.x_test)
+           score = np.sum(self.y_test == np.round(output))/len(self.y_test)
+        
+        # #Run with sklearn's accuracy score.
+        # if x is not None and y is not None:
+        #     y = y.reshape((len(y), 1))
+        #     output = np.round(self.feed_forward(x)[2])
+        #     score = accuracy_score(y, output)
+        # else:
+        #     output = np.round(self.feed_forward(self.x_test)[2])
+        #     score = accuracy_score(self.y_test, output)
 
         return score
