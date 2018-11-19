@@ -72,8 +72,6 @@ class NeuralNet:
         Initializes the weights to random values and biases to a small value.
         """
 
-        # + 1 is for the output layer
-
         for i in range(self.n_layers + 1):
             if i == 0:
                 self.weights[i] = np.random.randn(self.n_features, self.n_nodes[i])

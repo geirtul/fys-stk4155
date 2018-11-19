@@ -97,32 +97,35 @@ if sys.argv[1] == "regular":
     n_layers = 2
     n_nodes = (100, 50)
     n_classes = 1
-    epochs = 10
+    epochs = 3
     batch_size = 100
-    eta = 1e-2
-    lmda = 1e-4
-    #etas = [1e-3, 1e-2]  # Optimal params based on grid search
-    #lmdas = [1e-5, 1e-4] # ^
+    #eta = 1e-2
+    #lmda = 1e-4
+    etas = [1e-3, 1e-2]   # Optimal params based on grid search
+    lmdas = [1e-5, 1e-4]  # ^
 
-    # Run one net and print accuracies
-    net = NeuralNet(X_train, Y_train, X_test, Y_test,
-                    n_layers, n_nodes, n_classes, epochs, eta, batch_size, lmda)
-    net.train()
-    print("Accuracy on training set = ", net.accuracy(X_train, Y_train))
-    print("Accuracy on test set = ", net.accuracy(X_test, Y_test))
-    print("Accuracy on critical set = ", net.accuracy(X_critical, Y_critical))
+    # # Run one net and print accuracies
+    # net = NeuralNet(X_train, Y_train, X_test, Y_test,
+    #                 n_layers, n_nodes, n_classes, epochs, eta, batch_size, lmda)
+    # net.train()
+    # print("Accuracy on training set = ", net.accuracy(X_train, Y_train))
+    # print("Accuracy on test set = ", net.accuracy(X_test, Y_test))
+    # print("Accuracy on critical set = ", net.accuracy(X_critical, Y_critical))
 
 
-    # # Test accuracy for multiple paramteres.
-    # for eta in etas:
-    #     for lmda in lmdas:
-    #         print("Running network with eta = {} and lambda = {}".format(eta, lmda))
-    #         net = NeuralNet(X_train, Y_train, X_test, Y_test,
-    #                         n_layers, n_nodes, epochs, eta, batch_size, lmda)
-    #         net.train()
-    #         accuracies.append([net.accuracy(X_train, Y_train),
-    #                            net.accuracy(X_test, Y_test),
-    #                            net.accuracy(X_critical, Y_critical)])
+    # Test accuracy for multiple paramteres.
+    for eta in etas:
+        for lmda in lmdas:
+            print("Running network with eta = {} and lambda = {}".format(eta, lmda))
+            net = NeuralNet(X_train, Y_train, X_test, Y_test,
+                            n_layers, n_nodes, epochs, eta, batch_size, lmda)
+            net.train()
+            acc_train = net.accuracy(X_train, Y_train)
+            acc_test = net.accuracy(X_test, Y_test)
+            acc_crit = net.accuracy(X_critical, Y_critical)
+            print("Accuracy on training set = ", acc_train )
+            print("Accuracy on test set = ", acc_test)
+            print("Accuracy on critical set = ", acc_crit)
 
 # Grid search for optimal parameters
 # =====================================
