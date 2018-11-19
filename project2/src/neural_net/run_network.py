@@ -90,10 +90,11 @@ print(X_test.shape[0], 'test samples')
 # Running the network
 # ============================================================================
 # For faster testing runs, restrict training sets like X_train[:limit, :]
-limit = int(len(X_train) * 0.8)
+
 
 if sys.argv[1] == "regular":
     # Parameters
+    limit = int(len(X_train) * 0.1)
     n_layers = 2
     n_nodes = (100, 50)
     n_classes = 1
@@ -131,13 +132,14 @@ if sys.argv[1] == "regular":
 # =====================================
 if sys.argv[1] == "gridsearch":
     # Parameters
-    n_layers = 2
-    n_nodes = (100, 50)
+    limit = int(len(X_train) * 0.1)
+    n_layers = 1
+    n_nodes = (10,)
     n_classes = 1
     epochs = 10
     batch_size = 100
-    etas = np.logspace(-5, 0, 6)
-    lmdas = np.logspace(-5, 0, 6)
+    etas = np.logspace(-3, -1, 3)
+    lmdas = np.logspace(-3, 1, 5)
 
     stored_models = np.zeros((len(etas), len(lmdas)), dtype=object)
 
@@ -145,7 +147,7 @@ if sys.argv[1] == "gridsearch":
     for i, eta in enumerate(etas):
         print("Eta {} = {}".format(i, etas[i]))
         for j, lmda in tqdm(enumerate(lmdas)):
-            net = NeuralNet(X_train, Y_train, X_test, Y_test,
+            net = NeuralNet(X_train[:limit, :], Y_train[:limit], X_test, Y_test,
                             n_layers, n_nodes, n_classes, epochs,
                             eta, batch_size, lmda)
             net.train()
@@ -159,7 +161,6 @@ if sys.argv[1] == "gridsearch":
     critical_accuracy = np.zeros((len(etas), len(lmdas)))
 
     for i in range(len(etas)):
-        print("Running with eta = {}".format(etas[i]))
         for j in tqdm(range(len(lmdas))):
             net = stored_models[i][j]
 
@@ -172,6 +173,8 @@ if sys.argv[1] == "gridsearch":
     ax.set_title("Training Accuracy")
     ax.set_ylabel("$\eta$")
     ax.set_xlabel("$\lambda$")
+    ax.set_xticklabels(lmdas)
+    ax.set_yticklabels(etas)
     plt.show()
 
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -179,6 +182,8 @@ if sys.argv[1] == "gridsearch":
     ax.set_title("Test Accuracy")
     ax.set_ylabel("$\eta$")
     ax.set_xlabel("$\lambda$")
+    ax.set_xticklabels(lmdas)
+    ax.set_yticklabels(etas)
     plt.show()
 
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -186,4 +191,6 @@ if sys.argv[1] == "gridsearch":
     ax.set_title("Critical Accuracy")
     ax.set_ylabel("$\eta$")
     ax.set_xlabel("$\lambda$")
+    ax.set_xticklabels(lmdas)
+    ax.set_yticklabels(etas)
     plt.show()

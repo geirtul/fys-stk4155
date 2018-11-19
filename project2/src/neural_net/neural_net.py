@@ -140,7 +140,7 @@ class NeuralNet:
         """
         indices = np.arange(self.n_inputs)
 
-        for i in tqdm(range(self.epochs)):
+        for i in range(self.epochs):
             for j in range(self.n_iter):
                 chosen_indices = np.random.choice(
                     indices, size=self.batch_size, replace=False)
