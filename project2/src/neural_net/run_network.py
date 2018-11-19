@@ -89,48 +89,48 @@ print(X_test.shape[0], 'test samples')
 # ============================================================================
 # Running the network
 # ============================================================================
+# For faster testing runs, restrict training sets like X_train[:limit, :]
+limit = int(len(X_train) * 0.8)
 
-limit = int(len(X_train)*0.8)
-n_layers = 1
-n_nodes = (50,)
-epochs = 10
-batch_size = 100
-#eta = 0.01
-#lmda = 0.01
-etas = [1e-3, 1e-2]  # Optimal params based on grid search
-lmdas = [1e-5, 1e-4] # ^
-accuracies = []
+if sys.argv[1] == "regular":
+    # Parameters
+    n_layers = 2
+    n_nodes = (100, 50)
+    n_classes = 1
+    epochs = 10
+    batch_size = 100
+    eta = 1e-2
+    lmda = 1e-4
+    #etas = [1e-3, 1e-2]  # Optimal params based on grid search
+    #lmdas = [1e-5, 1e-4] # ^
 
-# # Run one net and plot how the test set accuracy varies with epochs.
-# net = NeuralNet(X_train, Y_train, X_test, Y_test,
-#                n_layers, n_nodes, epochs, eta, batch_size, lmda)
-# net.train()
-# print("Accuracy on critical set = ", net.accuracy(X_critical, Y_critical))
-# plotlabel = r'$\eta$ = {}'.format(eta)
-# plt.plot(range(epochs), net.accuracies, 'x-', label=plotlabel)
-# plt.title("Test set accuracy")
-# plt.xlabel("Epochs")
-# plt.ylabel("Accuracy score")
-# plt.legend()
-# plt.show()
+    # Run one net and print accuracies
+    net = NeuralNet(X_train, Y_train, X_test, Y_test,
+                    n_layers, n_nodes, n_classes, epochs, eta, batch_size, lmda)
+    net.train()
+    print("Accuracy on training set = ", net.accuracy(X_train, Y_train))
+    print("Accuracy on test set = ", net.accuracy(X_test, Y_test))
+    print("Accuracy on critical set = ", net.accuracy(X_critical, Y_critical))
 
-# Test accuracy for multiple paramteres.
-for eta in etas:
-    for lmda in lmdas:
-        print("Running network with eta = {} and lambda = {}".format(eta, lmda))
-        net = NeuralNet(X_train, Y_train, X_test, Y_test,
-                        n_layers, n_nodes, epochs, eta, batch_size, lmda)
-        net.train()
-        accuracies.append([net.accuracy(X_train, Y_train),
-                           net.accuracy(X_test, Y_test),
-                           net.accuracy(X_critical, Y_critical)])
+
+    # # Test accuracy for multiple paramteres.
+    # for eta in etas:
+    #     for lmda in lmdas:
+    #         print("Running network with eta = {} and lambda = {}".format(eta, lmda))
+    #         net = NeuralNet(X_train, Y_train, X_test, Y_test,
+    #                         n_layers, n_nodes, epochs, eta, batch_size, lmda)
+    #         net.train()
+    #         accuracies.append([net.accuracy(X_train, Y_train),
+    #                            net.accuracy(X_test, Y_test),
+    #                            net.accuracy(X_critical, Y_critical)])
 
 # Grid search for optimal parameters
 # =====================================
 if sys.argv[1] == "gridsearch":
     # Parameters
-    n_hidden1 = 100
-    n_hidden2 = 50
+    n_layers = 2
+    n_nodes = (100, 50)
+    n_classes = 1
     epochs = 10
     batch_size = 100
     etas = np.logspace(-5, 0, 6)
@@ -143,7 +143,8 @@ if sys.argv[1] == "gridsearch":
         print("Eta {} = {}".format(i, etas[i]))
         for j, lmda in tqdm(enumerate(lmdas)):
             net = NeuralNet(X_train, Y_train, X_test, Y_test,
-                      n_hidden1, n_hidden2, epochs, eta, batch_size, lmda)
+                            n_layers, n_nodes, n_classes, epochs,
+                            eta, batch_size, lmda)
             net.train()
             stored_models[i, j] = net
             t1 = time()
