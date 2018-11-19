@@ -156,28 +156,49 @@ class NeuralNet:
         Calculate error in output and backwards propagate to update weights and
         biases.
 
-        :param a_h1: Activations in hidden layer 1
-        :param a_h2: Activations in hidden layer 2
+        :param a_h: Activations in hidden layers
         :param a_o: Activations in the output layer (probability of class 0)
         """
 
-        # Errors
-        error_output = a_o - self.y_batch
-        error_hidden2 = np.matmul(error_output, self.w_output.T) * a_h2 * (1 - a_h2)
-        error_hidden1 = np.matmul(error_hidden2, self.w_hidden2.T) * a_h1 * (1 - a_h1)
+        # Storage arrays
+        error_hidden = np.zeros(self.n_layers)
+        delta_w_hidden = np.zeros(self.n_layers)
+        delta_b_hidden = np.zeros(self.n_layers)
 
-        # Gradients for the weights and biases
-        delta_w_output = np.matmul(a_h2.T, error_output)
+        # Calculate errors and changes in weights, handling output first.
+        error_output = a_o - self.y_batch
+        delta_w_output = np.matmul(a_h[-1].T, error_output)
         delta_b_output = np.sum(error_output, axis=0)
 
-        delta_w_hidden2 = np.matmul(a_h1.T, error_hidden2)
-        delta_b_hidden2 = np.sum(error_hidden2, axis=0)
+        for i in reversed(range(self.n_layers)):
+            if i == self.n_layers - 1:
+                error_hidden[i] = np.matmul(error_output, self.w_output.T)*a_h[i]*(1 - a_h[i])
+            else:
+                error_hidden[i] = np.matmul(error_hidden[i+1], self.w_hidden[i+1].T)*a_h[i]*(1 - a_h[i])
 
-        delta_w_hidden1 = np.matmul(self.x_batch.T, error_hidden1)
-        delta_b_hidden1 = np.sum(error_hidden1, axis=0)
+            if i > 0:
+                delta_w_hidden[i] = np.matmul(a_h[i-1].T, error_hidden[i])
+                delta_b_hidden[i] = np.sum(error_hidden[i], axis=0)
+            else:
+                delta_w_hidden[i] = np.matmul(self.x_batch.T, error_hidden[i])
+                delta_b_hidden[i] = np.sum(error_hidden[i], axis=0)
+
+        # error_hidden2 = np.matmul(error_output, self.w_output.T) * a_h2 * (1 - a_h2)
+        # error_hidden1 = np.matmul(error_hidden2, self.w_hidden2.T) * a_h1 * (1 - a_h1)
+        #
+        # # Gradients for the weights and biases
+        # delta_w_output = np.matmul(a_h2.T, error_output)
+        # delta_b_output = np.sum(error_output, axis=0)
+        #
+        # delta_w_hidden2 = np.matmul(a_h1.T, error_hidden2)
+        # delta_b_hidden2 = np.sum(error_hidden2, axis=0)
+        #
+        # delta_w_hidden1 = np.matmul(self.x_batch.T, error_hidden1)
+        # delta_b_hidden1 = np.sum(error_hidden1, axis=0)
 
         # Regularization
         if self.lmda > 0.0:
+            for i in range(self.n_layers):
             delta_w_output += self.lmda * self.w_output
             delta_w_hidden2 += self.lmda * self.w_hidden2
             delta_w_hidden1 += self.lmda * self.w_hidden1
