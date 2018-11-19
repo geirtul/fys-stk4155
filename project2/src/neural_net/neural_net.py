@@ -9,7 +9,6 @@ class NeuralNet:
     This implementation is currently spicific to binary classification, but
     can be expanded to generalize by passing a n_classes parameter and
     using for example the Softmax function.
-
     """
     def __init__(
             self,
@@ -17,12 +16,13 @@ class NeuralNet:
             y,
             x_test,
             y_test,
-            n_hidden1=40,
-            n_hidden2=20,
-            epochs=1,
+            n_layers=1,
+            n_nodes=(50,),
+            n_classes=1,
+            epochs=10,
             eta = 0.01,
             batch_size=100,
-            lmda=0.0
+            lmda=0.0,
     ):
         """
         Initialize the neural network
@@ -30,26 +30,30 @@ class NeuralNet:
         :param y: Targets for the training data
         :param x_test: Validation data
         :param y_test: Targets for validation data
-        :param n_hidden: Number of hidden nodes in the hidden layer, default 10
+        :param n_layers: How many hidden layers in the network.
+        :param n_nodes: tuple, length = n_layers. Number of nodes in the
+                            hidden layers
+        :param n_classes: int, number of output classes/categories
         :param epochs: Number of times the training algorithm feeds all training
-                        data through the network. Default 100
+                        data through the network. Default 10
         :param eta: Learning rate, default 0.01
         :param batch_size: Size of mini-batches for Gradient Descent.
         :param lmda: Lambda, regularization parameter.
         """
 
-        # Data. Reshaping targets to be (N, 1)
+        # Data
         self.x = x
-        self.y = y.reshape((len(y), 1))
+        self.y = y
         self.x_test = x_test
-        self.y_test = y_test.reshape((len(y_test), 1))
+        self.y_test = y_test
 
         # Variables
         self.n_inputs = self.x.shape[0]
         self.n_features = self.x.shape[1]
-        self.n_hidden1 = n_hidden1
-        self.n_hidden2 = n_hidden2
-        self.epochs = int(epochs)
+        self.n_layers = n_layers
+        self.hidden_nodes = n_nodes
+        self.n_classes = n_classes
+        self.epochs = int(epochs) # cast to int in case 1e1 etc.
         self.eta = eta
         self.batch_size = batch_size
         self.n_iter = self.n_inputs // self.batch_size
@@ -65,15 +69,27 @@ class NeuralNet:
         Initializes the weights to random values and biases to a small value.
         """
         # Weights and biases in hidden layers
-        self.w_hidden1 = np.random.randn(self.n_features, self.n_hidden1)
-        self.b_hidden1 = np.zeros(self.n_hidden1) + 0.01
+        self.w_hidden = np.zeros(self.n_layers)
+        self.b_hidden = np.zeros(self.n_layers)
+        for i in range(self.n_layers):
+            if i == 0:
+                self.w_hidden[i] = np.random.randn(self.n_features, self.hidden_nodes[0])
+            else:
+                self.w_hidden[i] = np.random.randn(self.hidden_nodes[i-1], self.hidden_nodes[i])
+            self.b_hidden[i] = np.zeros(self.hidden_nodes[i]) + 0.01
 
-        self.w_hidden2 = np.random.randn(self.n_hidden1, self.n_hidden2)
-        self.b_hidden2 = np.zeros(self.n_hidden2) + 0.01
+        self.w_output = np.random.randn(self.hidden_nodes[-1], self.n_classes)
+        self.b_output = np.zeros(self.n_classes) + 0.01
 
-        # Weights and biases in output layer
-        self.w_output = np.random.randn(self.n_hidden2, 1)
-        self.b_output = 0.01
+        # self.w_hidden1 = np.random.randn(self.n_features, self.n_hidden1)
+        # self.b_hidden1 = np.zeros(self.n_hidden1) + 0.01
+        #
+        # self.w_hidden2 = np.random.randn(self.n_hidden1, self.n_hidden2)
+        # self.b_hidden2 = np.zeros(self.n_hidden2) + 0.01
+        #
+        # # Weights and biases in output layer
+        # self.w_output = np.random.randn(self.n_hidden2, 1)
+        # self.b_output = 0.01
 
     def train(self):
         """
@@ -106,21 +122,36 @@ class NeuralNet:
         """
 
         # Calculate activations in hidden layers
-        if x is not None:
-            z_hidden1 = np.matmul(x, self.w_hidden1) + self.b_hidden1
-        else:
-            z_hidden1 = np.matmul(self.x_batch, self.w_hidden1) + self.b_hidden1
-
-        a_hidden1 = self.sigmoid(z_hidden1)
-        z_hidden2 = np.matmul(a_hidden1, self.w_hidden2) + self.b_hidden2
-        a_hidden2 = self.sigmoid(z_hidden2)
-
-        # Calculate activations in output layer
-        z_output = np.matmul(a_hidden2, self.w_output) + self.b_output
+        a_hidden = np.zeros(self.n_layers)
+        for i in range(self.n_layers):
+            if i == 0:
+                if x is not None:
+                    z = np.matmul(x, self.w_hidden[i]) + self.b_hidden[i]
+                else:
+                    z = np.matmul(self.x_batch, self.w_hidden[i]) + self.b_hidden[i]
+                a_hidden[i] = self.sigmoid(z)
+            else:
+                z = np.matmul(a_hidden[i-1], self.w_hidden[i]) + self.b_hidden[i]
+                a_hidden[i] = self.sigmoid(z)
+        z_output = np.matmul(a_hidden[-1], self.w_output) + self.b_output
         a_output = self.sigmoid(z_output)
-        return a_hidden1, a_hidden2, a_output
 
-    def backwards_propagation(self, a_h1, a_h2, a_o):
+        # if x is not None:
+        #     z_hidden1 = np.matmul(x, self.w_hidden1) + self.b_hidden1
+        # else:
+        #     z_hidden1 = np.matmul(self.x_batch, self.w_hidden1) + self.b_hidden1
+        #
+        # a_hidden1 = self.sigmoid(z_hidden1)
+        # z_hidden2 = np.matmul(a_hidden1, self.w_hidden2) + self.b_hidden2
+        # a_hidden2 = self.sigmoid(z_hidden2)
+        #
+        # # Calculate activations in output layer
+        # z_output = np.matmul(a_hidden2, self.w_output) + self.b_output
+        # a_output = self.sigmoid(z_output)
+        # return a_hidden1, a_hidden2, a_output
+        return a_hidden, a_output
+
+    def backwards_propagation(self, a_h, a_o):
         """
         Calculate error in output and backwards propagate to update weights and
         biases.
