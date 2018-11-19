@@ -78,8 +78,11 @@ The cost function used in this project is called the \textbf{cross-entropy}, or 
 	\mathcal{C}(\hat{\beta})=-\sum_{i=1}^n  \left(y_i(\beta_0+\beta_1x_i) -\log{(1+\exp{(\beta_0+\beta_1x_i)})}\right)
 \end{equation}
 
-\subsection{Gradient Descent solver}
-To minimize the cost function, one of the most widely used methods is Gradient Descent.
+\subsection{Gradient Descent}
+Minimizing the cost function is done using Gradient Descent.
+The jist of it is that in order to optimize the weights or coefficients, and biases
+to minimize the cost function, one can change their values to 
+
 
 
 \begin{equation}\label{eq:delta-c}
