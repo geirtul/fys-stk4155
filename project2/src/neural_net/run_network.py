@@ -136,12 +136,12 @@ if sys.argv[1] == "gridsearch":
     # Parameters
     limit = int(len(X_train) * 0.1)
     n_layers = 1
-    n_nodes = (10,)
+    n_nodes = (100,)
     n_classes = 1
     epochs = 10
     batch_size = 100
-    etas = np.logspace(-3, -1, 3)
-    lmdas = np.logspace(-3, 1, 5)
+    etas = np.logspace(-5, 1, 7)
+    lmdas = np.logspace(-5, 1, 7)
 
     stored_models = np.zeros((len(etas), len(lmdas)), dtype=object)
 
@@ -158,15 +158,16 @@ if sys.argv[1] == "gridsearch":
 
 
     # Plotting the  grid search.
+    print("Checking accuracy and plotting-..")
     train_accuracy = np.zeros((len(etas), len(lmdas)))
     test_accuracy = np.zeros((len(etas), len(lmdas)))
     critical_accuracy = np.zeros((len(etas), len(lmdas)))
 
     for i in range(len(etas)):
-        for j in tqdm(range(len(lmdas))):
+        for j in range(len(lmdas)):
             net = stored_models[i][j]
 
-            train_accuracy[i][j] = net.accuracy(X_train, Y_train)
+            train_accuracy[i][j] = net.accuracy(X_train[:limit, :], Y_train[:limit])
             test_accuracy[i][j] = net.accuracy(X_test, Y_test)
             critical_accuracy[i][j] = net.accuracy(X_critical, Y_critical)
 

@@ -42,7 +42,12 @@
 
 % Define new commands
 \newcommand{\expect}[1]{\langle #1 \rangle}
-
+\newenvironment{noverticalspace}
+ {%
+  \par % ensure we're in vertical mode
+  \offinterlineskip % don't do the baselineskip calculations
+ }
+ {\par}% be sure to finish up
 % Add bibliography
 \begin{document}
 
