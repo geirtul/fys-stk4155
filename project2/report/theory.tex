@@ -50,22 +50,54 @@ The problem can be recast on the form
 \end{equation}
 
 \subsection{Logistic regression and classification problems}
-Differently to linear regression, classificaltion problems 
-are concerned with outcomes taking the form of descrete variables. 
+Differently to linear regression, classification problems 
+are concerned with outcomes taking the form of discrete variables. 
 For a specific physical problem, we'd like to identify its state, say whether
 it is an ordered of disordered system. ~\cite{LectureNotes-FysStk}
 
-Configurations representing states below the critical temperature are calles 
+Logistic regression can be used to define the phases of the Ising
+model.~\cite{LectureNotes} 
+
+Configurations representing states below the critical temperature are called
 ordered states, while those above the critical temperature are called 
 disorderes states. ~\cite{Project2} 
 
-
-\subsection{Accuracy score}
-
-\subsection{Gradient Decent solver}
+The theoretical critical temperature for a phase transition is 
+\(T_C \approx 2.269\). 
 
 \subsection{Cost functions} 
+In order for the network and the logistic regressor to improve it needs a way to 
+track how it's performing. This is the purpose of a cost function. Essentially,
+the cost function says something about how wrong the model is in classifying the
+input. The ojective in machine learning, and logistic regression, is then to minimize
+this error.
 
+The cost function used in this project is called the \textbf{cross-entropy}, or the
+'negative log likelihood', and takes the form
+\begin{equation}\label{eq:cross-entropy}
+	\mathcal{C}(\hat{\beta})=-\sum_{i=1}^n  \left(y_i(\beta_0+\beta_1x_i) -\log{(1+\exp{(\beta_0+\beta_1x_i)})}\right)
+\end{equation}
+
+\subsection{Gradient Descent}
+Minimizing the cost function is done using Gradient Descent.
+The jist of it is that in order to optimize the weights or coefficients, and biases
+to minimize the cost function, one can change their values to 
+
+
+
+\begin{equation}\label{eq:delta-c}
+	\frac{\partial \mathcal{C}(\hat{\beta})}{\partial \hat{\beta}} = -\hat{X}^T\left(\hat{y}-\hat{p}\right)
+\end{equation}
+
+\subsection{Accuracy score}
+To measure the accuracy of the network, an accuracy score is defined as:
+\begin{equation*}
+	\text{Accuracy} = \frac{\sum_{i=1}^{n} I(t_i = y_i)}{n}
+\end{equation*}
+which is simply the number of correctly labeled states divided by the
+total number of states. In the equation above, $I$ is the indicator function,
+1 if $t_i = y_i$ and 0 otherwise. $t_i$ is the known correct label and $y_i$ is the
+label output by the network.
 
 
 

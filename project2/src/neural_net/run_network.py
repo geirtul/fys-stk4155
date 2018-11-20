@@ -1,6 +1,7 @@
 import numpy as np
 from time import time
 from tqdm import tqdm
+import sys
 from neural_net import NeuralNet
 import warnings
 import matplotlib.pyplot as plt
@@ -77,6 +78,7 @@ Y_critical = Y_critical.reshape((len(Y_critical), n_outputs))
 # Full data set
 # X = np.concatenate((X_critical,X))
 # Y = np.concatenate((Y_critical,Y))
+
 print('X_train shape:', X_train.shape)
 print('Y_train shape:', Y_train.shape)
 print('X_test shape:', X_test.shape)
