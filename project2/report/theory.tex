@@ -8,7 +8,7 @@ As the theory behond the three regression methods used as well as error
 estimates and the bootstrap method is covered in the previous 
 project, we will not restate it here.
 
-\subsection{The Ising model} 
+\subsection{The Ising model}\label{seq:isingtheory}
 The ising model is a simple binary value system where the variables
 in the model can take only two values. For examle \(\pm 1\) or \(0\) and \(1\). 
 ~\cite{Project2} 
@@ -66,10 +66,10 @@ The theoretical critical temperature for a phase transition is
 \(T_C \approx 2.269\). 
 
 \subsection{Cost functions} 
-In order for the network and the logistic regressor to improve it needs a way to 
+In order for a network and a logistic regressor to improve it needs a way to 
 track how it's performing. This is the purpose of a cost function. Essentially,
 the cost function says something about how wrong the model is in classifying the
-input. The ojective in machine learning, and logistic regression, is then to minimize
+input. The objective in machine learning, and logistic regression, is then to minimize
 this error.
 
 The cost function used in this project is called the \textbf{cross-entropy}, or the
@@ -82,8 +82,6 @@ The cost function used in this project is called the \textbf{cross-entropy}, or 
 Minimizing the cost function is done using Gradient Descent.
 The jist of it is that in order to optimize the weights or coefficients, and biases
 to minimize the cost function, one can change their values to 
-
-
 
 \begin{equation}\label{eq:delta-c}
 	\frac{\partial \mathcal{C}(\hat{\beta})}{\partial \hat{\beta}} = -\hat{X}^T\left(\hat{y}-\hat{p}\right)
