@@ -35,6 +35,7 @@ methods.
 To discuss the logistic regression model, 
 we look at figure \ref{fig:logistic-eta}. For some $\eta$ the model 
 quickly rises to an approximate highest value, but jumps back down to 
+<<<<<<< HEAD
 the equivalent of guessing from. 
 When approaching 30 epochs and more, this behaviour 
 diminishes somewhat, and overall the etas that produce the best results 
@@ -42,6 +43,19 @@ diminishes somewhat, and overall the etas that produce the best results
 From table \ref{tab:logistic-critical} we see that the accuracy is best
 for \(\eta = 10^{-3}\). At its best, the accuracy is still 
 way below 1.0, making this logistic model only marginally better than guessing. 
+Table ~\ref{tab:logistic-critical} can be compared to figure 
+~\ref{fig:logistic-article}. We see that our model is slightly 
+worse than the one described in the article, but that they 
+follow a similar trend.
+
+\begin{figure}[H]
+\includegraphics[width = 0.6\paperwidth]{figures/R2_article.png}
+\caption{Accuracy as a function of the regularization parameter
+\(\lambda\) in classifying the phases of the 2D Ising model on the
+training (blue), test (red), and critical (green) data. The solid
+and dashed lines compare the ’liblinear’ and ’SGD’ solvers, respectively..Figure 21 in ~\cite{HighBias}} 
+\label{fig:logistic-article}
+\end{figure}
 
 \subsection{Classifying with Neural Network}
 The neural network results in figure \ref{fig:nn-grids} show that the network
