@@ -136,7 +136,7 @@ if sys.argv[1] == "gridsearch":
     # Parameters
     limit = int(len(X_train) * 0.1)
     n_layers = 1
-    n_nodes = (100,)
+    n_nodes = (100, 50)
     n_classes = 1
     epochs = 10
     batch_size = 100
@@ -154,7 +154,6 @@ if sys.argv[1] == "gridsearch":
                             eta, batch_size, lmda)
             net.train()
             stored_models[i, j] = net
-            t1 = time()
 
 
     # Plotting the  grid search.

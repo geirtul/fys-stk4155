@@ -71,6 +71,39 @@ $1$    & $0.465$ & $0.446$ & $0.480$
 In table \ref{tab:logistic-critical} the accuracy on data containing critical states
 is included. Due to the varying nature our logistic model, a solution in which the weights
 producing the best fit on test data are stored was developed. The accuracies for the critical
-states are thus not necessarily produced with weights as they are after 30 epochs.
+states are thus not necessarily produced with weights as they are after 30 epochs. The reason for this descrepancy is yet to be found.
 
+\subsection{Classifying with Neural Network}
+\begin{figure}[H]
+    \centering
+    \subfloat{
+	\includegraphics[width=0.5\textwidth]{figures/net_critical_acc_10.pdf}
+	}
+    \subfloat{
+	\includegraphics[width=0.5\textwidth]{figures/net_test_acc.pdf}
+	}
+    \caption{
+	Neural network classification accuracies on the test set.
+	a) Network with one hidden layer containing 10 nodes. 
+	b) Network with two hidden layers of size 100 (first) and 50
+	(second).
+	}
+\label{fig:nn-test}
+\end{figure}
+\begin{figure}[H]
+    \subfloat{
+	\includegraphics[width=0.5\textwidth]{figures/net_critical_acc_10.pdf}
+	}
+    \subfloat{
+	\includegraphics[width=0.5\textwidth]{figures/net_critical_acc.pdf}
+	}
+    \centering
+    \caption{
+	Neural network classification accuracies on data in the
+	critical temperature region. a) Network with one hidden
+	layer containing 10 nodes. b) Network with two hidden layers
+	of size 100 (first) and 50 (second).
+	}
+\label{fig:nn-critical}
+\end{figure}
 

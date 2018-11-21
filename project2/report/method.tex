@@ -12,9 +12,30 @@ the Ising model and the recasting is described in ~\ref{seq:isingtheory}.
 
 \subsection{Estimating the coupling constant of the one-dimensional Ising model using linear regression}
 
+\subsection{Classifying with Neural Network}
+The codebase provided in (cite neural network lecture notes) was
+used as a base. However, the network was implemented using the sigmoid
+activation function in the output layer as well, making the network
+'tailored' to binary classification (only one output node). 
+(Further Improvements in conclusion, softmax and layer spec)
+The following code snippet is the bread and butter of the neural
+network. Weights are initialized to random values following a
+normal distribution (\lstinline{numpy.random.randn}), and biases
+to the low value of $0.01$.
+(Replace lstlistings with filenames and line-numbers.)
+\begin{lstlisting}
+def train(self):
+    indices = np.arange(self.n_inputs)
 
+    for i in range(self.epochs):
+	for j in range(self.n_iter):
+	    chosen_indices = np.random.choice(
+		indices, size=self.batch_size, replace=False)
 
+	    # Batch training data and targets
+	    self.x_batch = self.x[chosen_indices]
+	    self.y_batch = self.y[chosen_indices]
 
-
-
-
+	    activations = self.feed_forward(self.x_batch)
+	    self.backwards_propagation(activations)
+\end{lstlisting}
