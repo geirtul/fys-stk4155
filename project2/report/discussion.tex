@@ -36,11 +36,25 @@ to time. When approaching 30 epochs and more, this behaviour
 seems to diminish somewhat, and overall the etas that produce 
 the best results ($10^{-5} - 10^{-2}$) have most of their values
 in the higher points.
+
 Also table ~\ref{tab:logistic-critical} is connected 
 to the logistic method model. We see that the accuracy is best
 for \(\eta = 10^{-3}\). At its best, the accuracy is still 
-way below one. We therefore considers out logistic model be just 
-a bit better than guessing. Which is not very good. 
+way below one. 
+
+Table ~\ref{tab:logistic-critical} can be compared to figure 
+~\ref{fig:logistic-article}. We see that our model is slightly 
+worse than the one described in the article, but that they 
+follow the same tendencies. 
+
+\begin{figure}[H]
+\includegraphics[width = 0.6\paperwidth]{figures/R2_article.png}
+\caption{Accuracy as a function of the regularization parameter
+\(\lambda\) in classifying the phases of the 2D Ising model on the
+training (blue), test (red), and critical (green) data. The solid
+and dashed lines compare the ’liblinear’ and ’SGD’ solvers, respectively..Figure 21 in ~\cite{HighBias}} 
+\label{fig:logistic-article}
+\end{figure}
 
 
 
