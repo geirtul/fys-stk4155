@@ -38,7 +38,8 @@ shows performance of OLS, Ridge and LASSO regression
 on the Ising model as measured by the R2 coefficient of determination
 
 \begin{figure}[H]
-\includegraphics[width = 0.8\paperwidth]{figures/logistic_eta.pdf}
+    \centering
+\includegraphics[width = 0.8\textwidth]{figures/logistic_eta.pdf}
     \caption{Accuracies for a selection of learning rates $\eta$ as a function of epochs. 
     30 epochs, batch size $= 100$, and momentum parameter $\gamma = 0.01$. The accuracy
     values are measured on the test set.
@@ -74,26 +75,14 @@ producing the best fit on test data are stored was developed. The accuracies for
 states are thus not necessarily produced with weights as they are after 30 epochs. The reason for this descrepancy is yet to be found.
 
 \subsection{Classifying with Neural Network}
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \subfloat[]{
 	\includegraphics[width=0.55\textwidth]{figures/net_acc_test_1.pdf}
 	}
     \subfloat[]{
 	\includegraphics[width=0.55\textwidth]{figures/net_acc_test_2.pdf}
-	}
-    \caption{
-	Neural network classification accuracies for grid search across 
-	learning rates $\eta$ and regularization parameters $\lambda$ on 
-	the test set after 10 epochs.
-	a) Network with one hidden layer containing 10 nodes. 
-	b) Network with two hidden layers of size 100 (first) and 50
-	(second). 
-	}
-    \label{fig:nn-test}
-\end{figure}
-\begin{figure}[H]
-    \centering
+	}\\
     \subfloat[]{
 	\includegraphics[width=0.55\textwidth]{figures/net_acc_crit_1.pdf}
 	}
@@ -103,11 +92,23 @@ states are thus not necessarily produced with weights as they are after 30 epoch
     \caption{
 	Neural network classification accuracies for grid search across 
 	learning rates $\eta$ and regularization parameters $\lambda$ on 
-	the critical temperature set after 10 epochs.
-	a) Network with one hidden layer containing 10 nodes. 
-	b) Network with two hidden layers of size 100 (first) and 50
-	(second).
+	the test and critical set after 10 epochs.
+	a),c) show the network with one hidden layer, 10 nodes. 
+	b), d) show the network with two hidden layers of size 100 (first) and 50
+	(second). 
 	}
-    \label{fig:nn-critical}
+    \label{fig:nn-grids}
 \end{figure}
-
+Grid search across multiple orders of magnitude of learning rate and
+regularization parameter is shown in figure \ref{fig:nn-grids}. 
+Both network architectures were trained on 
+$10\%$ of the available samples from the ordered and disordered states.
+Comparing the values with those presented in table \ref{tab:logistic-critical},
+the network performs much better in classifying the states.
+The grid search shows that for the test set the larger architecture with two layers
+perform very well on the test set across multiple combinations of parameters,
+while the single-layer is more sensitive to the parameter choice.
+The performance on the test set is, however, not reflected in the two architectures'
+performance on the data from the critial temperature region, as seen in figure 
+\ref{fig:nn-grids} (c,d), where the single-layer network actually outperforms the
+multilayer network slightly.

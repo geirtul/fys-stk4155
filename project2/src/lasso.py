@@ -1,7 +1,8 @@
 from sklearn import linear_model
+from resampling import Resampling
 
 
-class LassoRegression:
+class LassoRegression(Resampling):
 
     def __init__(self, alpha = 1.0):
         """

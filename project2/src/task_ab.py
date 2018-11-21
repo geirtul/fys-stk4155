@@ -39,40 +39,12 @@ test_errors_ridge = []
 train_errors_lasso = []
 test_errors_lasso = []
 
-# homemade_train_errors_ols = []
-# homemade_test_errors_ols = []
-#
-# homemade_train_errors_ridge = []
-# homemade_test_errors_ridge = []
-#
-# homemade_train_errors_lasso = []
-# homemade_test_errors_lasso = []
-
 
 # Split into training and test data sets
 X_train, X_test, Y_train, Y_test = train_test_split(data[0],
                                                     data[1],
                                                     test_size=0.2)
 
-# Set up scikit regression
-# ols = linear_model.LinearRegression()
-# ols.fit(x_train, y_train)
-# scikit_r2_train = ols.score(x_train, y_train)
-# scikit_r2_test = ols.score(x_test, y_test)
-# print("Scikit results\nR2 train | R2 test")
-# print(scikit_r2_train," ", scikit_r2_test)
-
-# ridge = linear_model.Ridge()
-# lasso = linear_model.Lasso()
-
-# Set up homemade regression
-# homemade_ols = OrdinaryLeastSquares()
-# homemade_ols.fit_coefficients(x_train, y_train)
-# homemade_r2_train = homemade_ols.r2_score(x_train, y_train)
-# homemade_r2_test = homemade_ols.r2_score(x_test, y_test)
-# homemade_ols.bootstrap(100)
-# print("Homemade results\nR2 train | R2 test")
-# print(homemade_r2_train," ", homemade_r2_test)
 
 # Run through the calculations and plot same as Mehta et. al for comparison.
 
