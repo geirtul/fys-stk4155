@@ -121,7 +121,8 @@ if sys.argv[1] == "regular":
         for lmda in lmdas:
             print("Running network with eta = {} and lambda = {}".format(eta, lmda))
             net = NeuralNet(X_train, Y_train, X_test, Y_test,
-                            n_layers, n_nodes, epochs, eta, batch_size, lmda)
+                            n_layers, n_nodes, n_classes, epochs, 
+                            eta, batch_size, lmda)
             net.train()
             acc_train = net.accuracy(X_train, Y_train)
             acc_test = net.accuracy(X_test, Y_test)
@@ -135,7 +136,7 @@ if sys.argv[1] == "regular":
 if sys.argv[1] == "gridsearch":
     # Parameters
     limit = int(len(X_train) * 0.1)
-    n_layers = 1
+    n_layers = 2
     n_nodes = (100, 50)
     n_classes = 1
     epochs = 10
@@ -170,29 +171,35 @@ if sys.argv[1] == "gridsearch":
             test_accuracy[i][j] = net.accuracy(X_test, Y_test)
             critical_accuracy[i][j] = net.accuracy(X_critical, Y_critical)
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(6, 6))
     sns.heatmap(train_accuracy, annot=True, ax=ax, cmap="viridis")
     ax.set_title("Training Accuracy")
     ax.set_ylabel("$\eta$")
     ax.set_xlabel("$\lambda$")
     ax.set_xticklabels(lmdas)
     ax.set_yticklabels(etas)
-    plt.show()
+    figname = "net_acc_train_{}.pdf".format(n_layers)
+    plt.savefig(figname, format="pdf", pad_inches=0.0)
+    #plt.show()
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(6, 6))
     sns.heatmap(test_accuracy, annot=True, ax=ax, cmap="viridis")
     ax.set_title("Test Accuracy")
     ax.set_ylabel("$\eta$")
     ax.set_xlabel("$\lambda$")
     ax.set_xticklabels(lmdas)
     ax.set_yticklabels(etas)
-    plt.show()
+    figname = "net_acc_test_{}.pdf".format(n_layers)
+    plt.savefig(figname, format="pdf", pad_inches=0.0)
+    #plt.show()
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(6, 6))
     sns.heatmap(critical_accuracy, annot=True, ax=ax, cmap="viridis")
     ax.set_title("Critical Accuracy")
     ax.set_ylabel("$\eta$")
     ax.set_xlabel("$\lambda$")
     ax.set_xticklabels(lmdas)
     ax.set_yticklabels(etas)
-    plt.show()
+    figname = "net_acc_crit_{}.pdf".format(n_layers)
+    plt.savefig(figname, format="pdf", pad_inches=0.0)
+    #plt.show()

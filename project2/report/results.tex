@@ -76,34 +76,38 @@ states are thus not necessarily produced with weights as they are after 30 epoch
 \subsection{Classifying with Neural Network}
 \begin{figure}[H]
     \centering
-    \subfloat{
-	\includegraphics[width=0.5\textwidth]{figures/net_critical_acc_10.pdf}
+    \subfloat[]{
+	\includegraphics[width=0.55\textwidth]{figures/net_acc_test_1.pdf}
 	}
-    \subfloat{
-	\includegraphics[width=0.5\textwidth]{figures/net_test_acc.pdf}
+    \subfloat[]{
+	\includegraphics[width=0.55\textwidth]{figures/net_acc_test_2.pdf}
 	}
     \caption{
-	Neural network classification accuracies on the test set.
+	Neural network classification accuracies for grid search across 
+	learning rates $\eta$ and regularization parameters $\lambda$ on 
+	the test set after 10 epochs.
+	a) Network with one hidden layer containing 10 nodes. 
+	b) Network with two hidden layers of size 100 (first) and 50
+	(second). 
+	}
+    \label{fig:nn-test}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \subfloat[]{
+	\includegraphics[width=0.55\textwidth]{figures/net_acc_crit_1.pdf}
+	}
+    \subfloat[]{
+	\includegraphics[width=0.55\textwidth]{figures/net_acc_crit_2.pdf}
+	}
+    \caption{
+	Neural network classification accuracies for grid search across 
+	learning rates $\eta$ and regularization parameters $\lambda$ on 
+	the critical temperature set after 10 epochs.
 	a) Network with one hidden layer containing 10 nodes. 
 	b) Network with two hidden layers of size 100 (first) and 50
 	(second).
 	}
-\label{fig:nn-test}
-\end{figure}
-\begin{figure}[H]
-    \subfloat{
-	\includegraphics[width=0.5\textwidth]{figures/net_critical_acc_10.pdf}
-	}
-    \subfloat{
-	\includegraphics[width=0.5\textwidth]{figures/net_critical_acc.pdf}
-	}
-    \centering
-    \caption{
-	Neural network classification accuracies on data in the
-	critical temperature region. a) Network with one hidden
-	layer containing 10 nodes. b) Network with two hidden layers
-	of size 100 (first) and 50 (second).
-	}
-\label{fig:nn-critical}
+    \label{fig:nn-critical}
 \end{figure}
 

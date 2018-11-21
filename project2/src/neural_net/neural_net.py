@@ -96,7 +96,6 @@ class NeuralNet:
                 z = np.matmul(
                     activations[i - 1], self.weights[i]) + self.bias[i]
                 activations[i] = self.sigmoid(z)
-
         return activations
 
     def backwards_propagation(self, a):
