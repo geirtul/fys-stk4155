@@ -1,8 +1,11 @@
 \section{Results}
+\subsection{Linear Regression}
 \begin{figure}[H]
     \centering
 \includegraphics[width = 0.7\paperwidth]{figures/regression_mehtastyle.pdf} 
-\caption{Ising model plots for selected regularization parameters $\lambda$, generated based on our regression models.
+    \caption{Learned interaction matrix $J_{i,j}$ for the Ising model, for select 
+    regularization strengths $\lambda$, generated based on our regression models.
+    OLS is not dependent on $ĺambda$, but shown for comparison.
 	 } 
 \label{fig:regression-mehta}
 \end{figure}
@@ -25,6 +28,7 @@ follow eachother closely.
 Figure \ref{fig:regression-r2-article} is from article ~\cite{HighBias} and 
 shows performance of OLS, Ridge and LASSO regression
 on the Ising model as measured by the R2 score.
+\subsection{Classifying with Logistic Regression}
 
 \begin{figure}[H]
     \centering
