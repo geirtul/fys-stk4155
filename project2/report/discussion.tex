@@ -14,6 +14,15 @@ data and the test data in the article.
 In the articles figure, the difference seems to be biggest for Ridge and 
 OLS. As for our plot, it seems like Ridge has a bit bigger difference 
 between the R2 score for training and test data than for the two other 
-methods. 
+methods.
+
+To discuss the logistic regression model, 
+we look at figure \ref{fig:logistic-eta}. For some $\eta$ the model 
+quickly rises to an approximate highest value, but jumps back down to 
+the equivalent of guessing from time
+to time. When approaching 30 epochs and more, this behaviour 
+seems to diminish somewhat, and overall the etas that produce 
+the best results ($10^{-5} - 10^{-2}$) have most of their values
+in the higher points.
 
 
