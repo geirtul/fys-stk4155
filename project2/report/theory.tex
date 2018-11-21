@@ -80,12 +80,21 @@ The cost function used in this project is called the \textbf{cross-entropy}, or 
 
 \subsection{Gradient Descent}\label{seq:gradient}
 Minimizing the cost function is done using Gradient Descent.
-The jist of it is that in order to optimize the weights or coefficients, and biases
-to minimize the cost function, one can change their values to 
+The jist of it is that in order to optimize the weights or coefficients, 
+and biases to minimize the cost function, one can change their values to 
 
 \begin{equation}\label{eq:delta-c}
 	\frac{\partial \mathcal{C}(\hat{\beta})}{\partial \hat{\beta}} = -\hat{X}^T\left(\hat{y}-\hat{p}\right)
 \end{equation}
+
+\subsubsection{Stochastic gradient decent} 
+The stochastic gradient decent method address some of the shortcomings 
+of the normal gradient decent method. The gradient decent method is 
+for instance sensitive to the choise of learning rate ~\cite{LectureNotes-FysStk}.
+
+The underlying idea of stochastic gradient decent comes form observing
+that the cost function we want to minimize, almost always can be written as 
+a sum over \(n\) data points. ~\cite{LectureNotes-FysStk} 
 
 \subsection{Accuracy score}\label{seq:accuracy} 
 To measure the accuracy of the network, an accuracy score is defined as:
