@@ -1,5 +1,6 @@
 \section{Results}
 \begin{figure}[H]
+    \centering
 \includegraphics[width = 0.7\paperwidth]{figures/regression_mehtastyle.pdf} 
 \caption{Ising model plots for selected regularization parameters $\lambda$, generated based on our regression models.
 	 } 
@@ -7,13 +8,14 @@
 \end{figure}
 
 \begin{figure}[H]
+\centering
 \includegraphics[width = 0.8\paperwidth]{figures/regression_r2.pdf}
     \caption{R2 score performance of the linear regression models as a function of
 	     regression parameter $\lambda$.}
 \label{fig:regression-r2}
 \end{figure}
 
-Figure \ref{fig:regression-r2} show how the R2 score varies between models. 
+Figure \ref{fig:regression-r2} shows how the R2 score varies bestween models. 
 It's important to note that the $\lambda$ for Ridge regression, and $\alpha$ 
 for Lasso regression have the same value, but they affect the models on 
 different orders of magnitude, and must be treated somewhat separately. 
@@ -22,7 +24,7 @@ follow eachother closely.
 
 Figure \ref{fig:regression-r2-article} is from article ~\cite{HighBias} and 
 shows performance of OLS, Ridge and LASSO regression
-on the Ising model as measured by the R2 coefficient of determination
+on the Ising model as measured by the R2 score.
 
 \begin{figure}[H]
     \centering
@@ -35,7 +37,7 @@ on the Ising model as measured by the R2 coefficient of determination
 \end{figure}
 
 \begin{table}[H]
-\center
+\centering
 \begin{tabular}{l|c|c|c}
 $\eta$ & Training & Test & Critical  \\
 \hline
@@ -77,7 +79,7 @@ descrepancy is yet to be found.
 	Neural network classification accuracies for grid search across 
 	learning rates $\eta$ and regularization parameters $\lambda$ on 
 	the test and critical set after 10 epochs.
-	a),c) show the network with one hidden layer, 10 nodes. 
+	a), c) show the network with one hidden layer, 10 nodes. 
 	b), d) show the network with two hidden layers of size 100 (first) and 50
 	(second). 
 	}
