@@ -28,7 +28,8 @@ class LassoRegression(Resampling):
         :param x: input values that generated the dataset y
         :param y: the dataset corresponding to input values x
         """
-
+    
+        self.x = x
         self.y = y
 
         # Regression
