@@ -94,7 +94,20 @@ for instance sensitive to the choise of learning rate ~\cite{LectureNotes-FysStk
 
 The underlying idea of stochastic gradient decent comes form observing
 that the cost function we want to minimize, almost always can be written as 
-a sum over \(n\) data points. ~\cite{LectureNotes-FysStk} 
+a sum over \(n\) data points. ~\cite{LectureNotes-FysStk}. Which gives
+
+\begin{equation}
+	C(\beta) = \sum\limits_{i=1}^n c_i (\mathbf{x}_i\beta)
+\end{equation} ~\cite{LectureNotes-FysStk}
+
+This means that we also can find the gradient as a sum over i gradients
+as follows: 
+
+\begin{equation}
+	\Delta_{\beta} C(\beta) = \sum\limits_{i}^n \Delta_{\beta}c_i (\mathbf{x}_i\beta)
+\end{equation} ~\cite{LectureNotes-FysStk}
+
+Randomness is included by only taking the gradient on a subset of data. 
 
 \subsection{Accuracy score}\label{seq:accuracy} 
 To measure the accuracy of the network, an accuracy score is defined as:
