@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[12pt, notitlepage]{article}
 %\usepackage[backend=biber]{biblatex}
 \usepackage{amsmath}
 \usepackage{listings}
@@ -28,6 +28,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{enumerate}
+\usepackage{titling}
 
 % Parameters for displaying code.
 \lstset{language=python}
@@ -42,21 +43,29 @@
 
 % Define new commands
 \newcommand{\expect}[1]{\langle #1 \rangle}
-\newenvironment{noverticalspace}
- {%
-  \par % ensure we're in vertical mode
-  \offinterlineskip % don't do the baselineskip calculations
- }
- {\par}% be sure to finish up
 % Add bibliography
 \begin{document}
 
 
 \title{FYS-STK4155 - Project 2}
 \author{Geir Tore Ulvik, Idun Kløvstad}
-\maketitle
+\begin{titlingpage}
+    \maketitle
+    \begin{abstract}
+    In this project we explore classification and regression applied to
+    the well-known Ising model. We show that the Ising model can be well
+    represented by linear regression methods like ordinary least squares,
+    Ridge, and LASSO (R2 score of 1.0 for all methods). 
+    Moving on the the two-dimensional Ising model, we show that
+    in classifying the states as either ordered or disordered, the logistic
+    regressor is mediocre at best (under 65\% correctly classified states).
 
-\include{abstract}
+    Classifcation with both single- and multilayer perceptron is show to be very
+    successful in labling the input states, even for states in the critical
+    temperature region (up to 97\%)). Moreover, the neural network needs far 
+    less data for training than the logistic regressor for fitting.
+    \end{abstract}
+\end{titlingpage}
 \include{introduction}
 \include{theory}
 \include{method}

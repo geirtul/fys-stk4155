@@ -46,7 +46,9 @@ X_train, X_test, Y_train, Y_test = train_test_split(data[0],
                                                     data[1],
                                                     test_size=0.2)
 
-
+print(X_train.shape)
+X_train = X_train[:400, :]
+Y_train = Y_train[:400]
 # Run through the calculations and plot same as Mehta et. al for comparison.
 
 # Set regularization strength values

@@ -1,14 +1,15 @@
 \section{Method}
 
-\subsection{Producing data and recast problem}
-To generate the training data, we used the code given in 
-project2. 
-The code a system with size \(L=40\) and \(1000\) different 
+\subsection{Producing data and recasting problem}
+To generate the training data, we used the code given in lecture notes,
+same as the notebooks from Mehta et al.
+The code generates a system with size \(L=40\) and \(10000\) different 
 ising states and returns the Ising-energies. 
 
-Then the problem was recasted as a linear regression model, using 
+Then the problem was recast as a linear regression model, using 
 the regression methods from project1. The theory behind 
 the Ising model and the recasting is described in ~\ref{seq:isingtheory}.
+
 
 \subsection{Determining the phase of the 2D Ising model}
 To determine the phase of the two dimensional Ising model we use 
@@ -32,25 +33,20 @@ The codebase provided in (cite neural network lecture notes) was
 used as a base. However, the network was implemented using the sigmoid
 activation function in the output layer as well, making the network
 'tailored' to binary classification (only one output node). 
-(Further Improvements in conclusion, softmax and layer spec)
 The following code snippet is the bread and butter of the neural
 network. Weights are initialized to random values following a
 normal distribution (\lstinline{numpy.random.randn}), and biases
 to the low value of $0.01$.
-(Replace lstlistings with filenames and line-numbers.)
 \begin{lstlisting}
 def train(self):
     indices = np.arange(self.n_inputs)
-
     for i in range(self.epochs):
 	for j in range(self.n_iter):
 	    chosen_indices = np.random.choice(
 		indices, size=self.batch_size, replace=False)
-
 	    # Batch training data and targets
 	    self.x_batch = self.x[chosen_indices]
 	    self.y_batch = self.y[chosen_indices]
-
 	    activations = self.feed_forward(self.x_batch)
 	    self.backwards_propagation(activations)
 \end{lstlisting}

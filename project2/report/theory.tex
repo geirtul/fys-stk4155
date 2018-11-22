@@ -1,12 +1,9 @@
 \section{Theory}
 
-%Consider putting in: general on ML 
-
-%Consider adding theory from project1? 
-%Until then: 
 As the theory behond the three regression methods used as well as error 
 estimates and the bootstrap method is covered in the previous 
 project, we will not restate it here.
+Alternatively, see \cite{HighBias} and/or \cite{LectureNotes-FysStk}.
 
 \subsection{The Ising model}\label{seq:isingtheory}
 The ising model is a simple binary value system where the variables
@@ -119,7 +116,30 @@ total number of states. In the equation above, $I$ is the indicator function,
 1 if $t_i = y_i$ and 0 otherwise. $t_i$ is the known correct label and $y_i$ is the
 label output by the network.
 
+\subsection{Neural Network}
+The concept of a neural network is essentially to mimick how neurons in the
+brain are connected and learn. The network consists of interconnected layers
+of neurons, or 'nodes'. In the type of network used in this project, a
+Feed Forward Neural Network (FFNN), each node in a layer has a connection to
+every single node in the previous layer. As an input signal is 'fed' forward
+through the network, each node in each layer will 'fire' or 'activate'
+based on the sum of the signals from the nodes in the preceding layer, until
+the signal reaches the output layer which, in this project, outputs a
+probability that the original input is in one of two classes.
+In short, the FFNN is a binary classifier which takes an input and outputs
+the likelihood of that input belonging to one of the classes.
 
+The network doesn't know how to do this without first being trained.
+Training the network involves analyzing the error the network makes in
+classifying an input, and propagating this error backwards through the network
+such that the next time an input of that class is seen, the network will be
+better at classifying it.
+An example of this type of binary classification could be to say whether or
+not there is a cat in a picture.
 
+Numerous articles and books are available on the subject of neural networks,
+so for an in-depth explanation of the concepts involved (especially the
+backpropagation of error), we recommend seeking out these texts.
+Examples are the online book \href{http://neuralnetworksanddeeplearning.com/}{Nielsen's}, or the article by Mehta et al (\cite{HighBias}).
 
 

@@ -1,1 +1,22 @@
 \section{Conclusion}
+In this project we have explored classification and regression applied to
+the well-known Ising model. We showed that the ising model can be well
+represented by linear regression methods like ordinary least squares,
+Ridge, and LASSO. Moving on the the two-dimensional Ising model, we show that
+in classifying the states as either ordered or disordered, the logistic
+regressor is mediocre at best. However, the logistic regressor in this project 
+does not utilize a regularization term (rather a momentum parameter).
+Implementing that may change the outcome somewhat, but overfitting of the data
+does not seem to be the issue.
+
+Classifcation with both single- and multilayer perceptron is show to be very
+successful in labling the input states, even for states in the critical
+temperature region. Moreover, the neural network needs far less data for
+training than the logistic regressor for fitting.
+
+As a binary classifier, the current implementation is fine, but it can be 
+expanded to function well for classifying data with more than two classes,
+for example by applying the softmax function in the output layer, using
+one node for each class. 
+Then again, with packages like AutoKeras around, it is more suitable as
+a learning exercise than for actual production use.
