@@ -77,7 +77,6 @@ def cumulative_gain_chart(targets, probabilities, desired_class = 1):
 
 
 
-
 cumulative_gain_chart(y_test, predicted_probabilities)
-#skplt.metrics.plot_confusion_matrix(y_test, predicted_probabilities)
-#plt.show()
+skplt.metrics.plot_roc(y_test, predicted_probabilities)
+plt.show()
