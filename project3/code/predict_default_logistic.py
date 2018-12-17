@@ -38,13 +38,12 @@ limit = int(len(x_train)*1.0)
 # Run regression analysis
 logistic = LogisticRegression(max_iter=100)
 logistic.fit(x_train[:limit,:], y_train[:limit])
-results = logistic.score(x_test, y_test)
-print("R2 score: ", results)
-predicted_probabilities = logistic.predict(x_test)
+print("R2 score: ", logistic.score(x_test, y_test))
+predicted_probabilities = logistic.predict_proba(x_test)
 
 # Plot cumulative gain for comparison
 def cumulative_gain_chart(targets, probabilities):
-    #probs = np.array([row[i] for row, i in zip(probabilities, targets)])
+    probabilities = np.array([row[i] for row, i in zip(probabilities, targets)])
     vals = np.stack((targets, probabilities), axis=-1)
     n_defaults = len(targets[np.where(targets==1)])
     # Sort the stacked array and give reversed indices so it's in descending
@@ -63,5 +62,5 @@ def cumulative_gain_chart(targets, probabilities):
 
 
 cumulative_gain_chart(y_test, predicted_probabilities)
-#skplt.metrics.plot_cumulative_gain(y_test, predicted_probabilities)
+#skplt.metrics.plot_confusion_matrix(y_test, predicted_probabilities)
 #plt.show()
