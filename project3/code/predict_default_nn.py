@@ -20,7 +20,6 @@ for col in dataset.columns:
     dataset[col] = pd.to_numeric(dataset[col])
 
 # Split data into features and targets
-print(dataset.columns[1:])
 x_full = dataset[dataset.columns[1:]].values
 y_full = dataset[dataset.columns[-1]].values
 # Split into training and test sets

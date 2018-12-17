@@ -20,8 +20,8 @@ for col in dataset.columns:
     dataset[col] = pd.to_numeric(dataset[col])
 
 # Split data into features and targets
-print(dataset.columns[1:])
-x_full = dataset[dataset.columns[1:]].values
+print(dataset.columns[1:-1])
+x_full = dataset[dataset.columns[1:-1]].values
 y_full = dataset[dataset.columns[-1]].values
 # Split into training and test sets
 test_size = 0.1
@@ -34,3 +34,7 @@ print("Dataset, x, y, shapes are: {}, {}, {}".format(
 forest = RandomForestClassifier(n_estimators=100, max_depth=2)
 forest.fit(x_train, y_train)
 print(forest.score(x_test, y_test))
+
+# Print feature importances
+for i in range(len(dataset.columns[1:-1])):
+    print("{} -> {}".format(forest.feature_importances_[i], labels[i+1]))
