@@ -42,20 +42,37 @@ print("R2 score: ", logistic.score(x_test, y_test))
 predicted_probabilities = logistic.predict_proba(x_test)
 
 # Plot cumulative gain for comparison
-def cumulative_gain_chart(targets, probabilities):
-    probabilities = np.array([row[i] for row, i in zip(probabilities, targets)])
-    vals = np.stack((targets, probabilities), axis=-1)
-    n_defaults = len(targets[np.where(targets==1)])
-    # Sort the stacked array and give reversed indices so it's in descending
-    # order.
-    vals_sorted = vals[vals[:,1].argsort()[::-1]]
+def cumulative_gain_chart(targets, probabilities, desired_class = 1):
+    # Start by stacking the targets and probabilities
+    vals = np.stack((targets, probabilities[:,0]), axis=-1)
+    for i in range(1, probabilities.shape[1]):
+        vals = np.c_[vals, probabilities[:,i]]
+
+    # Then sort the values such that the probabilities of desired_class
+    # are in descending order. desired_class+1 since col 0 is targets.
+    vals_sorted = vals[vals[:,desired_class+1].argsort()[::-1]]
+    # Cumulative sum arrays
     cumulative_sums = np.cumsum(vals_sorted[:,0])
-    events = np.zeros(len(vals_sorted))
+    events = np.zeros(vals_sorted.shape[0])
+
+    # Get the amount of targets that are in the desired class, and make
+    # array for ideal case (cumulative_ideal)
+    n_defaults = len(targets[np.where(targets==desired_class)])
     events[:n_defaults] += 1
-    cumulative_events = np.cumsum(events)
+    cumulative_ideal = np.cumsum(events)
+
+    # Randomized case for comparison
+    cumulative_random = np.cumsum(np.random.choice(targets,
+                                                   size=len(targets),
+                                                   replace=False))
+    # Also print the ratio of desired class to total samples.
+    print("Ratio desired_class to total targets = ", 1 - n_defaults/len(targets))
     plt.plot(range(len(vals_sorted)), cumulative_sums, label='Model')
-    plt.plot(range(len(vals_sorted)), cumulative_events, label='Theory')
-    print("Ratio non-defaults default 1 - d/total = ", 1 - n_defaults/len(targets))
+    plt.plot(range(len(vals_sorted)), cumulative_ideal, label='Theory')
+    plt.plot(range(len(vals_sorted)), cumulative_random, label='Random')
+    plt.legend()
+    plt.xlabel("Total samples")
+    plt.ylabel("Cumulative sum of responses")
     plt.show()
 
 
