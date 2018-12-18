@@ -39,15 +39,24 @@ x_train, x_test, y_train, y_test = train_test_split(
      x_full, y_full, test_size=test_size)
 print("Dataset, x, y, shape: {}, {}, {}".format(
     dataset.shape, x_full.shape, y_full.shape))
+n_class0 = len(y_test[np.where(y_test==0)])
+n_class1 = len(y_test[np.where(y_test==1)])
+
 
 # Limit number of training samples for speedy testing.
 limit = int(len(x_train)*1.0)
 # Run regression analysis
 logistic = LogisticRegression(max_iter=100)
-logistic.fit(x_train[:limit,:], y_train[:limit])
-print("R2 score: ", logistic.score(x_test, y_test))
+logistic.fit(x_train, y_train)
 predicted_probabilities = logistic.predict_proba(x_test)
-prediction = logistic.predict(x_test)
+predictions = logistic.predict(x_test)
+
+# Some checks on performance
+pred_class0 = len(predictions[np.where(predictions==0)])
+pred_class1 = len(predictions[np.where(predictions==1)])
+print("R2 score: ", logistic.score(x_test, y_test))
+print("Number of class 0 in predictions:", pred_class0)
+print("Number of class 1 in predictions:", pred_class1)
 
 # Plot cumulative gain for comparison
 def cumulative_gain_chart(targets, probabilities, desired_class = 1):
@@ -73,10 +82,10 @@ def cumulative_gain_chart(targets, probabilities, desired_class = 1):
     cumulative_random = np.cumsum(np.random.choice(targets,
                                                    size=len(targets),
                                                    replace=False))
-    # Also print the ratio of desired class to total samples.
-    print("Ratio desired_class to total targets = ", 1 - n_defaults/len(targets))
+
+    # Plotting
     plt.plot(range(len(vals_sorted)), cumulative_sums, label='Model')
-    plt.plot(range(len(vals_sorted)), cumulative_ideal, label='Theory')
+    plt.plot(range(len(vals_sorted)), cumulative_ideal, label='Ideal classifier')
     plt.plot(range(len(vals_sorted)), cumulative_random, label='Random')
     plt.legend()
     plt.xlabel("Total samples")
