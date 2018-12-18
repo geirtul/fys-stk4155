@@ -1,10 +1,13 @@
 import numpy as np
 import pandas as pd
+import sys
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scikitplot as skplt
+from plotting_methods import cumulative_gain_chart
 
 
 # Analysis of credit card data using logistic regression.
@@ -29,66 +32,53 @@ for col in dataset.columns:
 x_full = dataset[dataset.columns[1:]].values
 y_full = dataset[dataset.columns[-1]].values
 
+# Get resampling type
+# none -> The data is analysed as-is.
+# random_oversampling ->
+sampling_types = ["none", "random_oversampling", "adasyn", "smote"]
+if len(sys.argv) > 1 and sys.argv[1] in sampling_types:
+    sampling_type = sys.argv[1]
+else:
+    print("Please provide one of the following resampling methods:")
+    for s in sampling_types:
+        print(s)
+
+# Resample data according to given sampling type
+if sampling_type == "random_oversampling":
+    x, y = RandomOverSampler().fit_resample(x_full, y_full)
+elif sampling_type == "adasyn":
+    x, y = ADASYN().fit_resample(x_full, y_full)
+elif sampling_type == "smote":
+    x, y = SMOTE().fit_resample(x_full, y_full)
+else:
+    x, y = x_full, y_full
+
 
 # Split into training and test sets
 test_size = 0.1
 x_train, x_test, y_train, y_test = train_test_split(
-     x_full, y_full, test_size=test_size)
+     x, y, test_size=test_size)
 print("Dataset, x, y, shape: {}, {}, {}".format(
-    dataset.shape, x_full.shape, y_full.shape))
+    dataset.shape, x.shape, y.shape))
 
 # Run regression analysis
-# Solver is set to liblinear to suppress warnings. liblinear is the default.
-balanced = True # weight the class labels to reduce impact of imbalance
-if balanced:
+# Solver is set to liblinear (default for sklearn) to suppress warnings.
+# If balanced is given as arg, the regressor will weight the inputs based on
+# the ratio of class presence in the dataset.
+balanced = False
+if len(sys.argv) > 2 and sys.argv[2] == "balanced":
     logistic = LogisticRegression(solver="liblinear", class_weight="balanced")
+    balanced = True
 else:
     logistic = LogisticRegression(solver="liblinear")
 logistic.fit(x_train, y_train)
 predicted_probabilities = logistic.predict_proba(x_test)
 predictions = logistic.predict(x_test)
 
-# Some checks on performance
 print("R2 score: ", logistic.score(x_test, y_test))
 
-# Plot cumulative gain for comparison
-def cumulative_gain_chart(targets, probabilities,filename, desired_class = 1):
-    # Start by stacking the targets and probabilities
-    vals = np.stack((targets, probabilities[:,0]), axis=-1)
-    for i in range(1, probabilities.shape[1]):
-        vals = np.c_[vals, probabilities[:,i]]
-
-    # Then sort the values such that the probabilities of desired_class
-    # are in descending order. desired_class+1 since col 0 is targets.
-    vals_sorted = vals[vals[:,desired_class+1].argsort()[::-1]]
-    # Cumulative sum arrays
-    cumulative_sums = np.cumsum(vals_sorted[:,0])
-    events = np.zeros(vals_sorted.shape[0])
-
-    # Get the amount of targets that are in the desired class, and make
-    # array for ideal case (cumulative_ideal)
-    n_defaults = len(targets[np.where(targets==desired_class)])
-    events[:n_defaults] += 1
-    cumulative_ideal = np.cumsum(events)
-
-    # Randomized case for comparison
-    cumulative_random = np.cumsum(np.random.choice(targets,
-                                                   size=len(targets),
-                                                   replace=False))
-
-    # Plotting
-    plt.plot(range(len(vals_sorted)), cumulative_sums, label='Model')
-    plt.plot(range(len(vals_sorted)), cumulative_ideal, label='Ideal classifier')
-    plt.plot(range(len(vals_sorted)), cumulative_random, label='Random')
-    plt.legend()
-    plt.xlabel("Total samples")
-    plt.ylabel("Cumulative sum of responses")
-    plt.tight_layout()
-    plt.savefig(filename + "_cumul.pdf", format="pdf")
-    #plt.show()
-
-
 filename = "../report/figures/logistic"
+filename += "_" + sampling_type
 if balanced:
     filename += "_balanced"
 
