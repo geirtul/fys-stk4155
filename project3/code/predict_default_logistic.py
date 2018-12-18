@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from imblearn.over_sampling import RandomOverSampler
 import matplotlib.pyplot as plt
 import scikitplot as skplt
 
@@ -24,10 +25,16 @@ for col in dataset.columns:
     dataset[col] = pd.to_numeric(dataset[col])
 
 # Split data into features and targets
-x_full = dataset[dataset.columns[1:]].values
-y_full = dataset[dataset.columns[-1]].values
+X = dataset[dataset.columns[1:]].values
+Y = dataset[dataset.columns[-1]].values
+
+# Use imalanced-learn's random oversampler to balance the dataset.
+# https://imbalanced-learn.org/en/stable/over_sampling.html
+ros = RandomOverSampler()
+x_full, y_full = ros.fit_resample(X, Y)
+
 # Split into training and test sets
-test_size = 0.1
+test_size = 0.2
 x_train, x_test, y_train, y_test = train_test_split(
      x_full, y_full, test_size=test_size)
 print("Dataset, x, y, shape: {}, {}, {}".format(
@@ -40,6 +47,7 @@ logistic = LogisticRegression(max_iter=100)
 logistic.fit(x_train[:limit,:], y_train[:limit])
 print("R2 score: ", logistic.score(x_test, y_test))
 predicted_probabilities = logistic.predict_proba(x_test)
+prediction = logistic.predict(x_test)
 
 # Plot cumulative gain for comparison
 def cumulative_gain_chart(targets, probabilities, desired_class = 1):
@@ -77,6 +85,8 @@ def cumulative_gain_chart(targets, probabilities, desired_class = 1):
 
 
 
-cumulative_gain_chart(y_test, predicted_probabilities)
-skplt.metrics.plot_roc(y_test, predicted_probabilities)
-plt.show()
+#cumulative_gain_chart(y_test, predicted_probabilities)
+#skplt.metrics.plot_roc(y_test, predicted_probabilities)
+#plt.show()
+#skplt.metrics.plot_confusion_matrix(y_test, prediction)
+#plt.show()
