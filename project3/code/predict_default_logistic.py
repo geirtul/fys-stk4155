@@ -32,8 +32,8 @@ x_train, x_test, y_train, y_test = train_test_split(
      x_full, y_full, test_size=test_size)
 print("Dataset, x, y, shape: {}, {}, {}".format(
     dataset.shape, x_full.shape, y_full.shape))
-n_class0 = len(targets[np.where(targets==0)])
-n_class1 = len(targets[np.where(targets==1)])
+n_class0 = len(y_test[np.where(y_test==0)])
+n_class1 = len(y_test[np.where(y_test==1)])
 
 
 # Limit number of training samples for speedy testing.
