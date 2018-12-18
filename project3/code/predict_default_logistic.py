@@ -2,9 +2,10 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from imblearn.over_sampling import RandomOverSampler
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import scikitplot as skplt
+
 
 # Analysis of credit card data using logistic regression.
 
@@ -25,41 +26,34 @@ for col in dataset.columns:
     dataset[col] = pd.to_numeric(dataset[col])
 
 # Split data into features and targets
-X = dataset[dataset.columns[1:]].values
-Y = dataset[dataset.columns[-1]].values
+x_full = dataset[dataset.columns[1:]].values
+y_full = dataset[dataset.columns[-1]].values
 
-# Use imalanced-learn's random oversampler to balance the dataset.
-# https://imbalanced-learn.org/en/stable/over_sampling.html
-ros = RandomOverSampler()
-x_full, y_full = ros.fit_resample(X, Y)
 
 # Split into training and test sets
-test_size = 0.2
+test_size = 0.1
 x_train, x_test, y_train, y_test = train_test_split(
      x_full, y_full, test_size=test_size)
 print("Dataset, x, y, shape: {}, {}, {}".format(
     dataset.shape, x_full.shape, y_full.shape))
-n_class0 = len(y_test[np.where(y_test==0)])
-n_class1 = len(y_test[np.where(y_test==1)])
-
 
 # Limit number of training samples for speedy testing.
 limit = int(len(x_train)*1.0)
 # Run regression analysis
-logistic = LogisticRegression(max_iter=100)
+balanced = True # weight the class labels to reduce impact of imbalance
+if balanced:
+    logistic = LogisticRegression(class_weight="balanced")
+else:
+    logistic = LogisticRegression()
 logistic.fit(x_train, y_train)
 predicted_probabilities = logistic.predict_proba(x_test)
 predictions = logistic.predict(x_test)
 
 # Some checks on performance
-pred_class0 = len(predictions[np.where(predictions==0)])
-pred_class1 = len(predictions[np.where(predictions==1)])
 print("R2 score: ", logistic.score(x_test, y_test))
-print("Number of class 0 in predictions:", pred_class0)
-print("Number of class 1 in predictions:", pred_class1)
 
 # Plot cumulative gain for comparison
-def cumulative_gain_chart(targets, probabilities, desired_class = 1):
+def cumulative_gain_chart(targets, probabilities,filename, desired_class = 1):
     # Start by stacking the targets and probabilities
     vals = np.stack((targets, probabilities[:,0]), axis=-1)
     for i in range(1, probabilities.shape[1]):
@@ -90,12 +84,28 @@ def cumulative_gain_chart(targets, probabilities, desired_class = 1):
     plt.legend()
     plt.xlabel("Total samples")
     plt.ylabel("Cumulative sum of responses")
-    plt.show()
+    plt.tight_layout()
+    plt.savefig(filename + "_cumul.pdf", format="pdf")
+    #plt.show()
 
 
+filename = "../report/figures/logistic"
+if balanced:
+    filename += "_balanced"
 
-#cumulative_gain_chart(y_test, predicted_probabilities)
-#skplt.metrics.plot_roc(y_test, predicted_probabilities)
-#plt.show()
-#skplt.metrics.plot_confusion_matrix(y_test, prediction)
-#plt.show()
+# Set figsize for cumulative chart and confusion matrix and plot them
+mpl.rcParams['figure.figsize'] = [4.0, 3.0]
+cumulative_gain_chart(y_test, predicted_probabilities, filename)
+plt.clf()
+
+skplt.metrics.plot_confusion_matrix(y_test, predictions)
+plt.tight_layout()
+plt.savefig(filename + "_confmat.pdf", format="pdf")
+plt.clf()
+
+# Set figsize for roc curve and plot it
+mpl.rcParams['figure.figsize'] = [5.0, 4.0]
+skplt.metrics.plot_roc(y_test, predicted_probabilities)
+plt.tight_layout()
+plt.savefig(filename + "_roc.pdf", format="pdf")
+plt.clf()
