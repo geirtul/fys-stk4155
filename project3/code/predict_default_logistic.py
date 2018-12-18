@@ -42,6 +42,7 @@ else:
     print("Please provide one of the following resampling methods:")
     for s in sampling_types:
         print(s)
+    exit(0)
 
 # Resample data according to given sampling type
 if sampling_type == "random_oversampling":
