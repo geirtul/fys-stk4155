@@ -32,6 +32,9 @@ x_train, x_test, y_train, y_test = train_test_split(
      x_full, y_full, test_size=test_size)
 print("Dataset, x, y, shape: {}, {}, {}".format(
     dataset.shape, x_full.shape, y_full.shape))
+n_class0 = len(targets[np.where(targets==0)])
+n_class1 = len(targets[np.where(targets==1)])
+
 
 # Limit number of training samples for speedy testing.
 limit = int(len(x_train)*1.0)
@@ -42,9 +45,11 @@ predicted_probabilities = logistic.predict_proba(x_test)
 predictions = logistic.predict(x_test)
 
 # Some checks on performance
+pred_class0 = len(predictions[np.where(predictions==0)])
+pred_class1 = len(predictions[np.where(predictions==1)])
 print("R2 score: ", logistic.score(x_test, y_test))
-print("Number of class 0 in predictions:", len(predictions[np.where(predictions==0)]))
-print("Number of class 1 in predictions:", len(predictions[np.where(predictions==1)]))
+print("Number of class 0 in predictions:", pred_class0)
+print("Number of class 1 in predictions:", pred_class1)
 
 # Plot cumulative gain for comparison
 def cumulative_gain_chart(targets, probabilities, desired_class = 1):
