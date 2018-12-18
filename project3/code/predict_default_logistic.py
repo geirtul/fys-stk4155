@@ -37,9 +37,12 @@ print("Dataset, x, y, shape: {}, {}, {}".format(
 limit = int(len(x_train)*1.0)
 # Run regression analysis
 logistic = LogisticRegression(max_iter=100)
-logistic.fit(x_train[:limit,:], y_train[:limit])
+logistic.fit(x_train, y_train)
 print("R2 score: ", logistic.score(x_test, y_test))
 predicted_probabilities = logistic.predict_proba(x_test)
+predictions = logistic.predict(x_train)
+print("Number of class 0 in predictions:", len(predictions[np.where(predictions==0)]))
+print("Number of class 1 in predictions:", len(predictions[np.where(predictions==1)]))
 
 # Plot cumulative gain for comparison
 def cumulative_gain_chart(targets, probabilities, desired_class = 1):
