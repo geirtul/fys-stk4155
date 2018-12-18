@@ -37,14 +37,13 @@ x_train, x_test, y_train, y_test = train_test_split(
 print("Dataset, x, y, shape: {}, {}, {}".format(
     dataset.shape, x_full.shape, y_full.shape))
 
-# Limit number of training samples for speedy testing.
-limit = int(len(x_train)*1.0)
 # Run regression analysis
+# Solver is set to liblinear to suppress warnings. liblinear is the default.
 balanced = True # weight the class labels to reduce impact of imbalance
 if balanced:
-    logistic = LogisticRegression(class_weight="balanced")
+    logistic = LogisticRegression(solver="liblinear", class_weight="balanced")
 else:
-    logistic = LogisticRegression()
+    logistic = LogisticRegression(solver="liblinear")
 logistic.fit(x_train, y_train)
 predicted_probabilities = logistic.predict_proba(x_test)
 predictions = logistic.predict(x_test)
