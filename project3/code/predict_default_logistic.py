@@ -38,9 +38,11 @@ limit = int(len(x_train)*1.0)
 # Run regression analysis
 logistic = LogisticRegression(max_iter=100)
 logistic.fit(x_train, y_train)
-print("R2 score: ", logistic.score(x_test, y_test))
 predicted_probabilities = logistic.predict_proba(x_test)
-predictions = logistic.predict(x_train)
+predictions = logistic.predict(x_test)
+
+# Some checks on performance
+print("R2 score: ", logistic.score(x_test, y_test))
 print("Number of class 0 in predictions:", len(predictions[np.where(predictions==0)]))
 print("Number of class 1 in predictions:", len(predictions[np.where(predictions==1)]))
 
@@ -68,8 +70,8 @@ def cumulative_gain_chart(targets, probabilities, desired_class = 1):
     cumulative_random = np.cumsum(np.random.choice(targets,
                                                    size=len(targets),
                                                    replace=False))
-    # Also print the ratio of desired class to total samples.
-    print("Ratio desired_class to total targets = ", 1 - n_defaults/len(targets))
+
+    # Plotting
     plt.plot(range(len(vals_sorted)), cumulative_sums, label='Model')
     plt.plot(range(len(vals_sorted)), cumulative_ideal, label='Theory')
     plt.plot(range(len(vals_sorted)), cumulative_random, label='Random')
