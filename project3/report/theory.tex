@@ -32,8 +32,11 @@ instead of sampling with replacement. This is done by taking each minority
 class sample and introducing synthetic examples along the line segments joining 
 any/all of the k minority class nearest neighbors. Depending upon the amount of 
 over-sampling required, neighbors from the k nearest neighbors are randomly
-chosen. See \cite{smote-article} for a more detailed explanation of the methods
+chosen. The result of synthesizing rather than choosing with replacement is
+that the decision region is forced to become more general.
+See \cite{smote-article} for a more detailed explanation of the methods
 involved.
 
 \subsubsection{ADASYN}
+
 
