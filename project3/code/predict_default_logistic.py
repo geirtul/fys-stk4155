@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import sys
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
 from imblearn.over_sampling import ADASYN, SMOTE, RandomOverSampler
 import matplotlib.pyplot as plt

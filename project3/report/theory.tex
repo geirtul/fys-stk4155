@@ -25,4 +25,15 @@ A very straightforward way to balance a dataset, is to choose random samples
 from the minority class, with replacement, until there is roughly equal
 amounts of samples belonging to each class.
 
-\subsubsection{}
+\subsubsection{SMOTE}
+SMOTE - Synthetic Minority Over-sampling Technique, as the name suggests will
+actually synthesize samples from the minority class in order to over-sample,
+instead of sampling with replacement. This is done by taking each minority 
+class sample and introducing synthetic examples along the line segments joining 
+any/all of the k minority class nearest neighbors. Depending upon the amount of 
+over-sampling required, neighbors from the k nearest neighbors are randomly
+chosen. See \cite{smote-article} for a more detailed explanation of the methods
+involved.
+
+\subsubsection{ADASYN}
+
