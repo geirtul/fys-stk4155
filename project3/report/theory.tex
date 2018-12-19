@@ -1,1 +1,28 @@
 \section{Theory}
+\subsection{Imbalanced Data in Classification}
+A common challenge in classification is imbalanced data, in which a large
+amount of the labeled data belongs to just one or a few of the classes.
+For binary classification, if 90\% of the data belongs to one of the classes,
+then the classifier is likely to end up placing every single
+input in that class, as it will bring its accuracy to 90\%. Techincally, this
+accuracy is correct, but it's not very useful since the decision isn't at all
+affected by the features of the input. Accuracy alone isn't a good enough
+measure of performance to reveal this.
+
+Fortunately, since this is common, a number of methods have been developed
+to combat the issue, some of which are described below.
+
+\subsection{Resampling and Weighting}
+In resampling there are essentially two main categories: Under-sampling
+over-sampling. The difference between them is that over-sampling works with
+somehow generating more samples of the minority class, while under-sampling
+uses a reduced amount of samples from the majority class.
+Weighting the samples is a differente approach in which the samples labeled
+as the minority class are weighted higher than the others during training.
+
+\subsubsection{Naive Random Over-sampling}
+A very straightforward way to balance a dataset, is to choose random samples 
+from the minority class, with replacement, until there is roughly equal
+amounts of samples belonging to each class.
+
+\subsubsection{}
