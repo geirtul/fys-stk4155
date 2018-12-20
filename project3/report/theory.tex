@@ -38,6 +38,20 @@ See \cite{smote-article} for a more detailed explanation of the methods
 involved.
 
 \subsubsection{ADASYN}
+Like SMOTE, ADASYN (Adaptive Synthetic Sampling) generates synthetic samples
+in order to balance the number of samples in each class. The difference is
+mainly that ADASYN uses a density distribution as a criterion to automatically 
+decide the number of synthetic samples for each sample in the minority class.
+The density distribution is a measurement of the distribution of weight for 
+different minority class examples according to their level of difficulty in
+learning. This way, ADASYN effectively forces the learning algorithm to 
+focus more on examples that are difficult to learn.
+
 \subsubsection{Balanced Weighting}
+Scikit-learn's logistic regressor comes with it's own form of handling of
+imbalanced data - weighting. It is a streightforward approach in which 
+the values of targets are used to to automatically adjust weights inversely 
+proportional to class frequencies in the input data as 
+$$\frac{samples}{classes \cdot np.bincount(targets)}$$
 
 
