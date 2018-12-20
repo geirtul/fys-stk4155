@@ -1,5 +1,5 @@
-\section{Results}
-\begin{figure}%[!hbt]
+\section{Results}\label{fig:logistic1}
+\begin{figure}[H]
 \begin{center}
     \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_cumul}} 
     \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_confmat}} \\
@@ -7,7 +7,7 @@
 \end{center}
 \caption[caption]{Performance analysis for basic logistic regression.}
 \end{figure}
-\begin{figure}%[!hbt]
+\begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_confmat}} 
     \subfloat[ADASYN]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_adasyn_confmat}} \\
@@ -16,7 +16,7 @@
 \end{center}
 \caption[caption]{Confusion matrices for the logistic regression model using different resampling methods to balance the data set.}
 \end{figure}
-\begin{figure}%[!hbt]
+\begin{figure}[H]\label{fig:logistic3}<++>
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_cumul}} 
     \subfloat[ADASYN]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_adasyn_cumul}} \\
@@ -25,7 +25,7 @@
 \end{center}
 \caption[caption]{Cumulative gain chart for the logistic regression model using different resampling methods to balance the data set.}
 \end{figure}
-\begin{figure}%[!hbt]
+\begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_roc}} 
     \subfloat[ADASYN]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_adasyn_roc}} \\
