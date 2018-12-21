@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-import matplotlib as mpl 
-#import scikitplot as skplt
+import matplotlib.pyplot as mpl 
+import scikitplot as skplt
 from plotting_methods import cumulative_gain_chart
 
 
@@ -44,14 +44,14 @@ print(forest.score(x_test, y_test))
 predicted_probabilities = forest.predict_proba(x_test)
 
 filename = "../report/figures/forest"
-filename += "_" + sampling_type
-if balanced:
-    filename += "_balanced"
+#filename += "_" + sampling_type
+#if balanced:
+#    filename += "_balanced"
 
 # Set figsize for cumulative chart and confusion matrix and plot them
 mpl.rcParams['figure.figsize'] = [4.0, 3.0]
 cumulative_gain_chart(y_test, predicted_probabilities, filename)
-plt.clf()
+mpl.clf()
 
 # Print feature importances
 #for i in range(len(dataset.columns[1:-1])):
@@ -59,6 +59,6 @@ plt.clf()
 
 mpl.rcParams['figure.figsize'] = [5.0, 4.0]
 skplt.metrics.plot_roc(y_test, predicted_probabilities)
-plt.tight_layout()
-plt.savefig(filename + "_roc.pdf", format="pdf")
-plt.clf()
+mpl.tight_layout()
+mpl.savefig(filename + "_roc.pdf", format="pdf")
+mpl.clf()
