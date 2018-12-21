@@ -10,7 +10,7 @@ cross-validation accuracies were also calculated, and are presented in table
 \ref{tab:crossval-logistic}.
 All the sampling methods were able to produce perfomances rivaling that of
 balanced weighting, but with less stability. The mean accuracy varied between
-$~0.60$ to $~0.999$, and the cross-validation reflect the lower average score. 
+$~0.60$ to $~0.999$, which is also reflected in the cross-validation scores. 
 
 \begin{figure}[H]
 \begin{center}
@@ -59,16 +59,17 @@ $~0.60$ to $~0.999$, and the cross-validation reflect the lower average score.
 \begin{table}[h]
     \centering
     \caption{Cross-validation accuracies for the different sampling methods
-                used with logistic regression.}
+                used with both logistic regression and random forest
+                classifier.}
     \label{tab:crossval-logistic}
-    \begin{tabular}{l|r}
-        Sampling method & accuracy \\
+    \begin{tabular}{l|r|r}
+        Sampling method & Logistic & Random Forest \\
         \hline
-        Basic & $0.78 \pm 0.00$ \\
-        Random oversampling & $0.85 \pm 0.35$ \\
-        SMOTE & $0.84 \pm 0.29$ \\
-        ADASYN & $0.95 \pm 0.12$ \\
-        Balanced weighting & $1.00 \pm 0.00$\\
+        None & $0.78 \pm 0.00$ & $0.82 \pm 0.02$ \\
+        Random oversampling & $0.85 \pm 0.35$ & $0.94 \pm 0.03$ \\
+        SMOTE & $0.84 \pm 0.29$ & $0.84 \pm 0.14$ \\
+        ADASYN & $0.95 \pm 0.12$ & $0.82 \pm 0.12$ \\
+        Balanced weighting & $1.00 \pm 0.00$ & - \\
     \end{tabular}
 \end{table}
 
@@ -83,7 +84,7 @@ Results from neural network is included in figure:
 \label{fig:nn-performance}
 \end{figure}
 
-Results from random forest is given below
+Results from random forest is given below.
 \begin{figure}[H]
 \begin{center}
     \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_cumul}} 

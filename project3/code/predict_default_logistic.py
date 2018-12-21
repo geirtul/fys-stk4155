@@ -68,37 +68,43 @@ print("Dataset, x, y, shape: {}, {}, {}".format(
 # the ratio of class presence in the dataset.
 balanced = False
 if len(sys.argv) > 2 and sys.argv[2] == "balanced":
+    crossval_model = LogisticRegression(solver="liblinear", class_weight="balanced")
     logistic = LogisticRegression(solver="liblinear", class_weight="balanced")
     balanced = True
 else:
+    crossval_model = LogisticRegression(solver="liblinear")
     logistic = LogisticRegression(solver="liblinear")
 logistic.fit(x_train, y_train)
 predicted_probabilities = logistic.predict_proba(x_test)
 predictions = logistic.predict(x_test)
 
-print("R2 score: ", logistic.score(x_test, y_test))
+print("Mean accuracy: ", logistic.score(x_test, y_test))
 
 filename = "../report/figures/logistic"
 filename += "_" + sampling_type
 if balanced:
     filename += "_balanced"
 
+# Cross-validate the accuracy scores due to seeing varying results.
+scores = cross_val_score(crossval_model, x, y, cv=5)
+print("Cross validation accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+
 # Set figsize for cumulative chart and confusion matrix and plot them
-mpl.rcParams['figure.figsize'] = [4.0, 3.0]
-cumulative_gain_chart(y_test, predicted_probabilities, filename)
-plt.clf()
-
-skplt.metrics.plot_confusion_matrix(y_test, predictions)
-plt.tight_layout()
-plt.savefig(filename + "_confmat.pdf", format="pdf")
-plt.clf()
-
-# Set figsize for roc curve and plot it
-mpl.rcParams['figure.figsize'] = [5.0, 4.0]
-skplt.metrics.plot_roc(y_test,
-                       predicted_probabilities,
-                       plot_micro=False,
-                       plot_macro=False)
-plt.tight_layout()
-plt.savefig(filename + "_roc.pdf", format="pdf")
-plt.clf()
+# mpl.rcParams['figure.figsize'] = [4.0, 3.0]
+# cumulative_gain_chart(y_test, predicted_probabilities, filename)
+# plt.clf()
+#
+# skplt.metrics.plot_confusion_matrix(y_test, predictions)
+# plt.tight_layout()
+# plt.savefig(filename + "_confmat.pdf", format="pdf")
+# plt.clf()
+#
+# # Set figsize for roc curve and plot it
+# mpl.rcParams['figure.figsize'] = [5.0, 4.0]
+# skplt.metrics.plot_roc(y_test,
+#                        predicted_probabilities,
+#                        plot_micro=False,
+#                        plot_macro=False)
+# plt.tight_layout()
+# plt.savefig(filename + "_roc.pdf", format="pdf")
+# plt.clf()
