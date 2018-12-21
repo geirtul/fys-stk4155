@@ -12,6 +12,11 @@ All the sampling methods were able to produce perfomances rivaling that of
 balanced weighting, but with less stability. The mean accuracy varied between
 $~0.60$ to $~0.999$, which is also reflected in the cross-validation scores. 
 
+Figure \ref{fig:forest-performance} shows the analysis results for the random
+forest classifier. 
+Note that the plots are generated from single runs of the code, not averaged
+over several.
+
 \begin{figure}[H]
 \begin{center}
     \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_cumul}} 
@@ -61,7 +66,7 @@ $~0.60$ to $~0.999$, which is also reflected in the cross-validation scores.
     \caption{Cross-validation accuracies for the different sampling methods
                 used with both logistic regression and random forest
                 classifier.}
-    \label{tab:crossval-logistic}
+    \label{tab:crossvals}
     \begin{tabular}{l|r|r}
         Sampling method & Logistic & Random Forest \\
         \hline
@@ -73,25 +78,14 @@ $~0.60$ to $~0.999$, which is also reflected in the cross-validation scores.
     \end{tabular}
 \end{table}
 
-Results from neural network is included in figure: 
 \begin{figure}[H]
 \begin{center}
-    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/net_cumul}} 
-    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/net_confmat}} \\
-    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/net_roc}}
+    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_random_oversampling_cumul}} 
+    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_random_oversampling_confmat}} \\
+    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/forest_random_oversampling_roc}}
 \end{center}
-\caption[caption]{Performance analysis for neural network classification.}
-\label{fig:nn-performance}
-\end{figure}
-
-Results from random forest is given below.
-\begin{figure}[H]
-\begin{center}
-    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_cumul}} 
-    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_confmat}} \\
-    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/forest_roc}}
-\end{center}
-\caption[caption]{Performance analysis for random forest classification.}
+\caption[caption]{Performance analysis for random forest classification. Only theresults obtained using random over-sampling are included as they provided the
+best cross-validation accuracy scores (table \ref{tab:crossvals}).}
 \label{fig:forest-performance}
 \end{figure}
 
