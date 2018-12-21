@@ -95,7 +95,10 @@ plt.clf()
 
 # Set figsize for roc curve and plot it
 mpl.rcParams['figure.figsize'] = [5.0, 4.0]
-skplt.metrics.plot_roc(y_test, predicted_probabilities)
+skplt.metrics.plot_roc(y_test,
+                       predicted_probabilities,
+                       plot_micro=False,
+                       plot_macro=False)
 plt.tight_layout()
 plt.savefig(filename + "_roc.pdf", format="pdf")
 plt.clf()
