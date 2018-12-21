@@ -54,4 +54,43 @@ the values of targets are used to to automatically adjust weights inversely
 proportional to class frequencies in the input data as 
 $$\frac{samples}{classes \cdot np.bincount(targets)}$$
 
+\subsection{Assessing the Performance of Models}
+If classification accuracy is not enough to gauge whether a model is
+performing well, or well in the desired way, alternative way to measure
+performance must be explored. For cases of imbalanced data there are a few
+widely used methods that reveal information about the model that the simple
+accuracy metric can't.
+
+\subsubsection{Confusion Matrix}
+A confusion matrix is an n by n matrix containing correct classifications
+on the diagonal, and false positives and negatives in the off-diagonal elements.
+An example of such a matrix could be the following table:
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c|c|c|c}
+     & True Cat & True Dog & True Rabbit \\
+    \hline
+    Predicted Cat & \textbf{5} & 2 & 0 \\
+    \hline
+    Predicted Dog & 3 & \textbf{3} & 2 \\
+    \hline
+    Predicted Rabbit & 0 & 1 & \textbf{11} \\
+\end{tabular}
+\caption{Confusion matrix for an example classification where the classes
+         are Cat, Dog and Rabbit. Correct classifications in bold.}
+\label{tab:confmat-example}
+\end{table}
+In the table above (\ref{tab:confmat-example}), the diagonal elements
+$i = j$ are the correct classifications, while the other elements correspond
+to cases where the model predicted class $i$ but should've predicted class $j$.
+The confusion matrix thus gives information about false positives and false 
+negatives, in addition to classification accuracy. This is very useful
+in cases where for example false positives can be readily ignored or filtere
+later, but false negatives may have severe consequences. An example of this
+could be detection of cancer, in which a false positive can be ruled out
+from further testing, while a false negative may lead to a patient being sent
+home when actually needing help. For a more in-depth look at confusion matrices
+see \cite{roc-article}.
+\subsubsection{Cumulative Gains Chart}
+
 
