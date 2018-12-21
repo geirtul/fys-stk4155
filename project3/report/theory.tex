@@ -92,5 +92,22 @@ from further testing, while a false negative may lead to a patient being sent
 home when actually needing help. For a more in-depth look at confusion matrices
 see \cite{roc-article}.
 \subsubsection{Cumulative Gains Chart}
-
+Cumulative Gains Charts, often referred to as 'Lift Charts' (actually different
+ways to represent the same concept), can be used to gain a different insight.
+The chart lets us compare a binary classifier to both an ideal case and a
+'random choice' case at the same time. The ideal classifier will predict an
+input's category with 100\% confidence, so the probability will be 1.0 for
+the correct class and 0 for the wrong class. Sorting the predicted
+probabilities for the desired class (usually class 1) in descending order,
+will for the ideal case leave all members for class 1 on top, and plotting
+them in the order of appearance will give a steep curve. Random choice is
+used as a baseline for the chart, and plotting the model's curve should
+place it in between the random choice and ideal case. An example is shown in
+figure \ref{fig:cumul-example}.
+\begin{figure}[h]
+    \includegraphics[width=0.7\textwidth]{figures/gain-chart}
+    \caption{Example of a cumulative gain chart. Image borrowed from
+    \cite{gains-example-image}.}
+    \label{fig:cumul-example}
+\end{figure}
 

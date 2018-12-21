@@ -1,10 +1,10 @@
 \section{Results}
 Results from the logistic regression are included in figures 
-\ref{fig:logistic1}, \ref{fig:logistic2}, \ref{fig:logistic3}, 
+\ref{fig:logistic-basic}, \ref{fig:logistic-confmat}, \ref{fig:logistic-cumul}, 
 \ref{fig:logistic-roc}.
 
 
-\section{Results}\label{fig:logistic1}
+\section{Results}
 \begin{figure}[H]
 \begin{center}
     \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_cumul}} 
@@ -12,6 +12,7 @@ Results from the logistic regression are included in figures
     \subfloat[]{\includegraphics[width=0.5\textwidth]{figures/logistic_none_roc}}
 \end{center}
 \caption[caption]{Performance analysis for basic logistic regression.}
+\label{fig:logistic-basic}
 \end{figure}
 \begin{figure}[H]
 \begin{center}
@@ -21,8 +22,9 @@ Results from the logistic regression are included in figures
     \subfloat[Balanced weighting]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_balanced_confmat}}
 \end{center}
 \caption[caption]{Confusion matrices for the logistic regression model using different resampling methods to balance the data set.}
+\label{fig:logistic-confmat}
 \end{figure}
-\begin{figure}[H]\label{fig:logistic3}
+\begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_cumul}} 
     \subfloat[ADASYN]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_adasyn_cumul}} \\
@@ -30,8 +32,9 @@ Results from the logistic regression are included in figures
     \subfloat[Balanced weighting]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_balanced_cumul}}
 \end{center}
 \caption[caption]{Cumulative gain chart for the logistic regression model using different resampling methods to balance the data set.}
+\label{fig:logistic-cumul}
 \end{figure}
-\begin{figure}[H]\label{fig:logistic-roc}
+\begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_roc}} 
     \subfloat[ADASYN]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_adasyn_roc}} \\
@@ -39,4 +42,5 @@ Results from the logistic regression are included in figures
     \subfloat[Balanced weighting]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_balanced_roc}}
 \end{center}
 \caption[caption]{ROC curves for the logistic regression model using different resampling methods to balance the data set.}
+\label{fig:logistic-roc}
 \end{figure}
