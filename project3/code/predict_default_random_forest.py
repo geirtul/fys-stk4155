@@ -62,8 +62,15 @@ x_train, x_test, y_train, y_test = train_test_split(
 print("Dataset, x, y, shapes are: {}, {}, {}".format(
     dataset.shape, x.shape, y.shape))
 
+balanced = False
+if len(sys.argv) > 2 and sys.argv[2] == "balanced":
+    crossval_model = RandomForestClassifier(n_estimators=100, class_weight='balanced')
+    forest = RandomForestClassifier(n_estimators=100, class_weight='balanced')
+    balanced = True
+else:
+    crossval_model = forest = RandomForestClassifier(n_estimators=100)
+    forest = forest = RandomForestClassifier(n_estimators=100)
 
-forest = RandomForestClassifier(n_estimators=100)
 forest.fit(x_train, y_train)
 print("Mean accuracy = ", forest.score(x_test, y_test))
 
@@ -72,32 +79,33 @@ predictions = forest.predict(x_test)
 
 
 # Perform cross-validation
-crossval_model = RandomForestClassifier(n_estimators=100)
 scores = cross_val_score(crossval_model, x, y, cv=5)
 print("Cross validation accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 filename = "../report/figures/forest"
 filename += "_" + sampling_type
+if balanced:
+    filename += "_balanced"
 
-# Set figsize for cumulative chart and confusion matrix and plot them
-mpl.rcParams['figure.figsize'] = [4.0, 3.0]
-cumulative_gain_chart(y_test, predicted_probabilities, filename)
-plt.clf()
-
-# Print feature importances
-#for i in range(len(dataset.columns[1:-1])):
-#    print("{} -> {}".format(forest.feature_importances_[i], labels[i+1]))
-
-skplt.metrics.plot_confusion_matrix(y_test, predictions)
-plt.tight_layout()
-plt.savefig(filename + "_confmat.pdf", format="pdf")
-plt.clf()
-
-mpl.rcParams['figure.figsize'] = [5.0, 4.0]
-skplt.metrics.plot_roc(y_test,
-                       predicted_probabilities,
-                       plot_micro=False,
-                       plot_macro=False)
-plt.tight_layout()
-plt.savefig(filename + "_roc.pdf", format="pdf")
-plt.clf()
+# # Set figsize for cumulative chart and confusion matrix and plot them
+# mpl.rcParams['figure.figsize'] = [4.0, 3.0]
+# cumulative_gain_chart(y_test, predicted_probabilities, filename)
+# plt.clf()
+#
+# # Print feature importances
+# #for i in range(len(dataset.columns[1:-1])):
+# #    print("{} -> {}".format(forest.feature_importances_[i], labels[i+1]))
+#
+# skplt.metrics.plot_confusion_matrix(y_test, predictions)
+# plt.tight_layout()
+# plt.savefig(filename + "_confmat.pdf", format="pdf")
+# plt.clf()
+#
+# mpl.rcParams['figure.figsize'] = [5.0, 4.0]
+# skplt.metrics.plot_roc(y_test,
+#                        predicted_probabilities,
+#                        plot_micro=False,
+#                        plot_macro=False)
+# plt.tight_layout()
+# plt.savefig(filename + "_roc.pdf", format="pdf")
+# plt.clf()
