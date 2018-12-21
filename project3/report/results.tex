@@ -5,18 +5,24 @@ Results from the logistic regression are included in figures
 \ref{fig:logistic-roc}. Figure \ref{fig:logistic-basic} shows the performance of
 the logistic regressor without any added sampling techniques, and serves as
 a baseline for comparison.
+Due to observing varying mean accuracy for the different methods,
+cross-validation accuracies were also calculated, and are presented in table
+\ref{tab:crossval-logistic}.
+All the sampling methods were able to produce perfomances rivaling that of
+balanced weighting, but with less stability. The mean accuracy varied between
+$~0.60$ to $~0.999$, and the cross-validation reflect the lower average score. 
 
-
-\section{Results}
 \begin{figure}[H]
 \begin{center}
     \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_cumul}} 
     \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_none_confmat}} \\
     \subfloat[]{\includegraphics[width=0.5\textwidth]{figures/logistic_none_roc}}
 \end{center}
-\caption[caption]{Performance analysis for basic logistic regression.}
+\caption[caption]{Performance analysis for basic logistic regression with no
+                    added sampling for balancing.}
 \label{fig:logistic-basic}
 \end{figure}
+
 \begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_confmat}} 
@@ -27,6 +33,7 @@ a baseline for comparison.
 \caption[caption]{Confusion matrices for the logistic regression model using different resampling methods to balance the data set.}
 \label{fig:logistic-confmat}
 \end{figure}
+
 \begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_cumul}} 
@@ -37,6 +44,7 @@ a baseline for comparison.
 \caption[caption]{Cumulative gain chart for the logistic regression model using different resampling methods to balance the data set.}
 \label{fig:logistic-cumul}
 \end{figure}
+
 \begin{figure}[H]
 \begin{center}
     \subfloat[Random oversampling]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/logistic_random_oversampling_roc}} 
@@ -48,24 +56,42 @@ a baseline for comparison.
 \label{fig:logistic-roc}
 \end{figure}
 
+\begin{table}[h]
+    \centering
+    \caption{Cross-validation accuracies for the different sampling methods
+                used with logistic regression.}
+    \label{tab:crossval-logistic}
+    \begin{tabular}{l|r}
+        Sampling method & accuracy \\
+        \hline
+        Basic & $0.78 \pm 0.00$ \\
+        Random oversampling & $0.85 \pm 0.35$ \\
+        SMOTE & $0.84 \pm 0.29$ \\
+        ADASYN & $0.95 \pm 0.12$ \\
+        Balanced weighting & $1.00 \pm 0.00$\\
+    \end{tabular}
+\end{table}
+
 Results from neural network is included in figure: 
 \begin{figure}[H]
 \begin{center}
-    \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/net_cumul}} 
-    \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/net_confmat}} \\
-    \subfloat[]{\includegraphics[width=0.5\textwidth]{figures/net_roc}}
+    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/net_cumul}} 
+    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/net_confmat}} \\
+    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/net_roc}}
 \end{center}
 \caption[caption]{Performance analysis for neural network classification.}
+\label{fig:nn-performance}
 \end{figure}
 
 Results from random forest is given below
 \begin{figure}[H]
 \begin{center}
-    \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_cumul}} 
-    \subfloat[]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_confmat}} \\
-    \subfloat[]{\includegraphics[width=0.5\textwidth]{figures/forest_roc}}
+    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_cumul}} 
+    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_confmat}} \\
+    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/forest_roc}}
 \end{center}
 \caption[caption]{Performance analysis for random forest classification.}
+\label{fig:forest-performance}
 \end{figure}
 
 
