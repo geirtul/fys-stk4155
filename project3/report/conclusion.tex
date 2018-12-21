@@ -1,1 +1,23 @@
 \section{Conclusion}
+In this work four methods to sample or manipulate input data to learning
+algorithms are explored: Random over-sampling, SMOTE, ADASYN, and balanced
+weighting.
+Using Cumulative Gain Charts, Confusion Matrices and
+ROC curves, and cross-validation, the performance of a logistic regression 
+algorithm, and a random forest classifier is evaluated based on how they 
+perform on a binary classification problem. 
+The data set chosen is payment data from an important bank in Taiwan,
+where the data describes credit card holders, and the goal is predicting
+whether a customer will default the next payment or not. This allowed for
+comparisons with \cite{ComparisonData}. The results presented show that
+logistic regression can classify the credit card data perfectly by applying
+a balanced weighting of the inputs. Random forests reached an accuracy of
+~$95\%$ (cross-validation score). A possible explanation for the success of
+weighting the inputs compared to the other sampling methods is presented. 
+Specifically, some features in the data set may be far more crucial in
+determining the class than others, and weighting is the most efficient way of
+emphasizing these features through the learning process.
+This works only for the logistic model, however. For random forests, the
+most improvement was found when using random over-sampling.
+
+
