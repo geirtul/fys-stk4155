@@ -50,9 +50,27 @@
 \title{FYS-STK4155 - Project 2}
 \author{Geir Tore Ulvik, Idun Kløvstad}
 \begin{titlingpage}
-    \maketitle
-    \begin{abstract}
-    \end{abstract}
+\maketitle
+\begin{abstract}
+In this work four methods to sample or manipulate input data to learning
+algorithms are explored: Random over-sampling, SMOTE, ADASYN, and balanced
+weighting.
+Several way to measure classifier performance are used, and the performance 
+of logistic regression and a random forest classifier is evaluated based 
+on how they perform on a binary classification problem. 
+The data set chosen is payment data from an important bank in Taiwan,
+where the data describes credit card holders, and the goal is predicting
+whether a customer will default the next payment or not. 
+The results presented show that logistic regression can classify the credit 
+card data perfectly by applying a balanced weighting of the inputs. 
+Random forests reached an accuracy of ~$95\%$ (cross-validation score). 
+A possible explanation for the success of weighting the inputs compared 
+to the other sampling methods is that some features in the data set may be 
+far more crucial in determining the class than others, 
+and weighting is the most efficient way of emphasizing these features through 
+the learning process. Random forests do not gain similar improvement with
+the same weighting, showing most improvement when using random over-sampling.
+\end{abstract}
 \end{titlingpage}
 \include{introduction}
 \include{theory}
@@ -63,5 +81,4 @@
 \appendix
 \bibliographystyle{unsrt}
 \bibliography{bibliography}
-
 \end{document}
