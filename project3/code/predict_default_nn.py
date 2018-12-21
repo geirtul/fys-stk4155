@@ -74,21 +74,21 @@ print("Cross validation accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.st
 filename = "../report/figures/net"
 filename += "_" + sampling_type
 
-# # Set figsize for cumulative chart and confusion matrix and plot them
-# mpl.rcParams['figure.figsize'] = [4.0, 3.0]
-# cumulative_gain_chart(y_test, predicted_probabilities, filename)
-# plt.clf()
-#
-# skplt.metrics.plot_confusion_matrix(y_test, predictions)
-# plt.tight_layout()
-# plt.savefig(filename + "_confmat.pdf", format="pdf")
-# plt.clf()
-#
-# mpl.rcParams['figure.figsize'] = [5.0, 4.0]
-# skplt.metrics.plot_roc(y_test,
-#                        predicted_probabilities,
-#                        plot_micro=False,
-#                        plot_macro=False)
-# plt.tight_layout()
-# plt.savefig(filename + "_roc.pdf", format="pdf")
-# plt.clf()
+# Set figsize for cumulative chart and confusion matrix and plot them
+mpl.rcParams['figure.figsize'] = [4.0, 3.0]
+cumulative_gain_chart(y_test, predicted_probabilities, filename)
+plt.clf()
+
+skplt.metrics.plot_confusion_matrix(y_test, predictions)
+plt.tight_layout()
+plt.savefig(filename + "_confmat.pdf", format="pdf")
+plt.clf()
+
+mpl.rcParams['figure.figsize'] = [5.0, 4.0]
+skplt.metrics.plot_roc(y_test,
+                       predicted_probabilities,
+                       plot_micro=False,
+                       plot_macro=False)
+plt.tight_layout()
+plt.savefig(filename + "_roc.pdf", format="pdf")
+plt.clf()

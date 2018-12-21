@@ -13,7 +13,9 @@ balanced weighting, but with less stability. The mean accuracy varied between
 $~0.60$ to $~0.999$, which is also reflected in the cross-validation scores. 
 
 Figure \ref{fig:forest-performance} shows the analysis results for the random
-forest classifier. 
+forest classifier. Based on the cross-validation accuracy scores included
+in table \ref{tab:crossvals}, only results obtained when applying random
+over-sampling were used for plotting.
 Note that the plots are generated from single runs of the code, not averaged
 over several.
 
@@ -61,6 +63,17 @@ over several.
 \label{fig:logistic-roc}
 \end{figure}
 
+\begin{figure}[H]
+\begin{center}
+    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_random_oversampling_cumul}} 
+    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_random_oversampling_confmat}} \\
+    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/forest_random_oversampling_roc}}
+\end{center}
+\caption[caption]{Performance analysis for random forest classification. Only theresults obtained using random over-sampling are included as they provided the
+best cross-validation accuracy scores (table \ref{tab:crossvals}).}
+\label{fig:forest-performance}
+\end{figure}
+
 \begin{table}[h]
     \centering
     \caption{Cross-validation accuracies for the different sampling methods
@@ -77,16 +90,4 @@ over several.
         Balanced weighting & $1.00 \pm 0.00$ & - \\
     \end{tabular}
 \end{table}
-
-\begin{figure}[H]
-\begin{center}
-    \subfloat[Cumulative Gain Chart]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_random_oversampling_cumul}} 
-    \subfloat[Confusion Matrix]{\includegraphics[width=0.4\textwidth, height=0.25\textheight]{figures/forest_random_oversampling_confmat}} \\
-    \subfloat[ROC]{\includegraphics[width=0.5\textwidth]{figures/forest_random_oversampling_roc}}
-\end{center}
-\caption[caption]{Performance analysis for random forest classification. Only theresults obtained using random over-sampling are included as they provided the
-best cross-validation accuracy scores (table \ref{tab:crossvals}).}
-\label{fig:forest-performance}
-\end{figure}
-
 
