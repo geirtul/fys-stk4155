@@ -4,20 +4,31 @@ classifiers without hyperparameter tuning - Logistic regression and
 Random forests. The methods used are of the over-sampling type and are as
 follows: Random over-sampling, SMOTE, ADASYN, and balanced weighting of
 inputs.
-
-The data set chosen as input, is payment data The data set chosen is payment
-data from an important bank in Taiwan, where the data describes credit card 
-holders, and the goal is predicting whether a customer will default the 
-next payment or not.
+The data set chosen is payment data from an important bank in Taiwan, 
+where the data describes credit card holders, and the goal is predicting 
+whether a customer will default the next payment or not.
 
 The data set is provided by UCI and has also been the subject of study by \cite{ComparisonData}): 
 \href{https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients}{Credit Card Data}
+Some of our figures are compared to thos of the article, as it is a nice
+reference point for logistic regression, but doesn't consider random forests
+(only classification trees).
 
-The report gives a brief introduction to the classifiers, and the methods
-used to measure their performance.
+The report assumes the reader is familiar with logistic regression and
+random forests. If not, a great introduction to both topics (and many others)
+have been written by Mehta et. al (\cite{mehta-article}).
+A brief introduction to the sampling and manipulation methods, and methods
+used to measure classifier performance is included in the theory section.
 
-We will compare some of our figures to those from the article, because it is
-a nice reference point. 
+Most of the analysis and models are implemented using existing frameworks:
+\begin{itemize}
+\item \href{https://scikit-learn.org/}{Scikit-Learn}
+\item \href{https://pypi.org/project/scikit-plot/0.3.7/}{Scikit-Plot}
+\item \href{https://imbalanced-learn.org/en/stable/}{Imbalanced-Learn}
+\end{itemize}
+The package 'Imbalanced-Learn' was used to perform the Random Over-Sampling,
+SMOTE, and ADASYN algorithms. Apart from the cumulative gain chart, 
+plots were generated using the scikit-plot package.
 
 Code, data and figures are available at the following GitHub address:
 \href{https://github.com/geirtul/fys-stk4155/tree/master/project3}{GitHub repository}
