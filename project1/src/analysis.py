@@ -39,30 +39,19 @@ class Analysis:
         r2score = 1 - upper_sum / lower_sum
         return r2score
 
-    def bootstrap(self):
+    def statistics(testdata, predicted_data):
         """
-        Perform the chosen regression using bootstrap algorithm.
+        Calculates useful statistics.
+
+        :param testdata: Data to compare the fitted data with
+        :param predicted_data: Data predicted by the model
+        :return: mean square error, bias, variance
         """
+        mse = np.mean(np.mean(np.square(testdata - predicted_data)))
+        bias = np.mean(np.square(testdata - np.mean(predicted_data)))
+        variance = np.mean(np.var(predicted_data))
+        return mse, bias, variance
 
-        def statistics(testdata, predicted_data):
-            """
-            Calculates useful statistics.
-
-            :param testdata: Data to compare the fitted data with
-            :param predicted_data: Data predicted by the model
-            :return: mean square error, bias, variance
-            """
-            mse = np.mean(np.mean(np.square(testdata - predicted_data)))
-            bias = np.mean(np.square(testdata - np.mean(predicted_data)))
-            variance = np.mean(np.var(predicted_data))
-            return mse, bias, variance
-
-        n_bootstraps = 100
-
-        # Split into training and test sets
-        x_train, x_test, data_train, data_test = train_test_split(self.predictors,
-                                                                  self.outcome,
-                                                                  test_size=0.2)
 
         y_fits = np.empty((n_bootstraps, len(data_test.ravel())))
         for i in range(n_bootstraps):
