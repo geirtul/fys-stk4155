@@ -43,34 +43,55 @@ def determine_best_mse(data, headers, type):
 # Plotting functions
 
 
-def plot_mse_vs_complexity(data, headers, type):
+def plot_mse_vs_complexity(data, headers, model):
     """
     :param data: data as imported from csv files
     :param headers: headers provided with data
-    :param type: string, type of regression. 'ols', 'ridge', or 'lasso'.
+    :param model: string, type of regression. 'ols', 'ridge', or 'lasso'.
     :return: Nothing. Outputs plots and .tex to file.
     """
 
-    # Get columns for mse and degrees
+    # Get columns for mse, degrees, and noise
     mse_index = headers.index("mse")
     degree_index = headers.index("degree")
+    noise_index = headers.index("noise")
 
     mse_vals = data[:, mse_index]
     degree_vals = data[:, degree_index]
-    if type == 'ridge':
+    noise_vals = data[:, noise_index]
+
+    # Ridge plots
+    if model == 'ridge':
         param_index = headers.index('lambda')
-        label = type + ", lambda = {}".format(data[0, param_index])
-        plt.plot(degree_vals, mse_vals, 'o-', label=label)
-    elif type == 'lasso':
+        label = model + ", lambda = {}".format(data[0, param_index])
+        noise_levels = np.unique(data[:, noise_index])
+        for noise in noise_levels:
+            n_idx = np.where(data[:,noise_index] == noise)[0]
+            for 
+            plt.plot(degree_vals[n_idx], mse_vals[n_idx], 'o-', label=label)
+
+    # Lasso plots
+    elif model == 'lasso':
         param_index = headers.index('alpha')
-        label = type + ", alpha = {}".format(data[0, param_index])
-        plt.plot(degree_vals, mse_vals, 'o-', label=label)
+        label = model + ", alpha = {}".format(data[0, param_index])
+        noise_levels = np.unique(data[:, noise_index])
+        for noise in noise_levels:
+            n_idx = np.where(data[:,noise_index] == noise)[0]
+            plt.plot(degree_vals[n_idx], mse_vals[n_idx], 'o-', label=label)
+
+    # OLS plots
     else:
-        plt.plot(degree_vals, mse_vals, 'o-', label=type)
+        noise_levels = np.unique(data[:, noise_index])
+        for noise in noise_levels:
+            label = r'$\eta=$'+str(noise)
+            n_idx = np.where(data[:,noise_index] == noise)[0]
+            plt.plot(degree_vals[n_idx], mse_vals[n_idx], 'o-', label=label)
+
+
+
+
 
 # Various plotting.
-
-
 if len(sys.argv) > 0:
     for arg in sys.argv[1:]:
         with open("regression_data/{}.csv".format(arg)) as infile:
@@ -104,6 +125,6 @@ if len(sys.argv) > 0:
     plt.xlabel('Degree of fitted polynomial')
     plt.ylabel('Mean squared error')
     plt.legend()
-    figname = "../report/figures/mse_vs_complexity_{}.pdf".format(sys.argv[1])
+    figname = "mse_vs_complexity_{}.pdf".format(sys.argv[1])
     plt.savefig(figname, format='pdf')
     plt.show()
