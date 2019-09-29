@@ -20,45 +20,38 @@ if sys.argv[1] == "a":
     z = FrankeFunction(x, y).ravel()
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
+
     # Run the regression with varying degrees of stochastic noise added
     degrees = [1, 2, 3, 4, 5]
     noise_levels = [0, 0.1, 0.5, 1.0]
-    collected_data = []
-    bootstraps = []
+
+    bootstrap_data = {}
     for degree in degrees:
         x = PolynomialFeatures(degree).fit_transform(predictors_input)
+        bootstrap_data[degree] = []
         for noise_level in noise_levels:
+            # Add noise
             noise = noise_level*np.random.normal(0, 1, z.shape)
             tmp_z = z + noise
+
+            # Init OLS
             ols = OrdinaryLeastSquares()
-            ols.fit_coefficients(x, tmp_z)
-            bootstraps.append([degree, noise] + ols.bootstrap(num_bootstraps=10000))
-            collected_data.append(
-                    [degree,
-                    noise_level,
-                    ols.mean_squared_error(x, tmp_z), 
-                    ols.r2_score(x, tmp_z)]
-                    )
+            ols.x = x
+            ols.y = tmp_z
+
+            # Run bootstrap and store data
+            bootstrap_data[degree].append(
+                    [noise_level] + ols.bootstrap(num_bootstraps=1000))
 
 
-    # Output data to file as csv to be handled in plot/analysis script.
-    with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
-        outfile.write("degree,noise,mse,r2\n")
-        for val in collected_data:
-            outfile.write("{},{},{},{}\n".format(val[0], val[1], val[2], val[3]))
-        outfile.close()
-    with open("regression_data/{}_bs.csv".format(sys.argv[1]), 'w') as outfile:
-        outfile.write("degree,noise,error,bias,variance,coeeff_variance\n")
-        for val in bootstraps:
-            outfile.write("{},{},{},{},{},{}\n".format(
-                val[0], val[1], val[2], val[3], val[4], val[5]))
-        outfile.close()
+    # Output data to npy files
+    # Bootstrap file contains: noise_level, error, bias, variance, coeff, coeff_variance
+    OUT_PATH = "regression_data/"
+    for degree in degrees:
+        # Save regression results for each degree
+        filename_bootstrap = "a_bootstrap_d{}.npy".format(degree)
+        np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
 
-    """
-    print("{:12s} | {:12s} | {:12s}".format("Degree", "MSE", "R2 Score"))
-    for val in collected_data:
-        print("{:12} | {:12f} | {:12f}".format(val[0], val[1], val[2]))
-    """
 # ============================================================================
 
 # Part b)

@@ -67,7 +67,6 @@ def plot_mse_vs_complexity(data, headers, model):
         noise_levels = np.unique(data[:, noise_index])
         for noise in noise_levels:
             n_idx = np.where(data[:,noise_index] == noise)[0]
-            for 
             plt.plot(degree_vals[n_idx], mse_vals[n_idx], 'o-', label=label)
 
     # Lasso plots
@@ -88,21 +87,64 @@ def plot_mse_vs_complexity(data, headers, model):
             plt.plot(degree_vals[n_idx], mse_vals[n_idx], 'o-', label=label)
 
 
+def plot_coeffs_ols(task, degree):
+    """ Plot the coefficients with confidence interval based on
+    variances from bootstrap resampling.
 
+    :param task: which subtask of project.
+    :param degree: degree of polynomial that was fit.
+    """
+
+
+    # Bootstrap file contains: noise_level, error, bias, variance, coeffs, var_coeff
+
+    fname = "regression_data/{}_bootstrap_d{}.npy".format(task, degree)
+
+    data = np.load(fname)
+    print(data.shape)
+    num_coeff = int(len(data[0,4:])/2)
+
+    coeff = data[0, 4:4+num_coeff]
+    var_coeff = data[0, 4+num_coeff:]
+    ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
+    label = "noise = {}".format(data[0,0])
+    plt.errorbar(
+            np.arange(num_coeff),
+            y=coeff, 
+            yerr=ci_coeff, 
+            label=label)
+    plt.legend()
+    plt.show()
+
+    #for i in range(data.shape[0]):
+    #    coeff = data[i, 4:4+num_coeff]
+    #    var_coeff = data[i, 4+num_coeff:]
+    #    ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
+    #    label = "noise = {}".format(data[i,0])
+    #    plt.errorbar(
+    #            np.arange(num_coeff),
+    #            y=coeff, 
+    #            yerr=ci_coeff, 
+    #            label=label)
+
+    #plt.show()
+
+
+
+
+
+        
 
 
 # Various plotting.
 if len(sys.argv) > 0:
     for arg in sys.argv[1:]:
-        with open("regression_data/{}.csv".format(arg)) as infile:
-            headers = infile.readline().strip("\n\r").split(',')
-            infile.close()
-        data = np.loadtxt("regression_data/{}.csv".format(arg),
-                          delimiter=',',
-                          skiprows=1)
-
         if arg == "a":
-            plot_mse_vs_complexity(data, headers, 'ols')
+            plot_coeffs_ols(arg, 1)
+            plot_coeffs_ols(arg, 2)
+            plot_coeffs_ols(arg, 3)
+            plot_coeffs_ols(arg, 4)
+            plot_coeffs_ols(arg, 5)
 
         elif arg == "b":
             newdata = determine_best_mse(data, headers, 'ridge')
@@ -121,10 +163,10 @@ if len(sys.argv) > 0:
             plot_mse_vs_complexity(newdata, headers, 'lasso')
 
 
-    plt.title('Mean Squared Error vs. Complexity of model')
-    plt.xlabel('Degree of fitted polynomial')
-    plt.ylabel('Mean squared error')
-    plt.legend()
-    figname = "mse_vs_complexity_{}.pdf".format(sys.argv[1])
-    plt.savefig(figname, format='pdf')
-    plt.show()
+    #plt.title('Mean Squared Error vs. Complexity of model')
+    #plt.xlabel('Degree of fitted polynomial')
+    #plt.ylabel('Mean squared error')
+    #plt.legend()
+    #figname = "mse_vs_complexity_{}.pdf".format(sys.argv[1])
+    #plt.savefig(figname, format='pdf')
+    #plt.show()

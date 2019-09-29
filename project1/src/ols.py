@@ -1,5 +1,6 @@
 import numpy as np
 from resampling import Resampling
+from time import time
 
 
 class OrdinaryLeastSquares(Resampling):
