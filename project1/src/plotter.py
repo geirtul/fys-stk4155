@@ -108,29 +108,22 @@ def plot_coeffs_ols(task, degree):
     var_coeff = data[0, 4+num_coeff:]
     ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
     label = "noise = {}".format(data[0,0])
+
+    # Generate x-axis ticks
+    x_ticks = [r'$\beta_{%d}$'%i for i in range(num_coeff)]
+
     plt.errorbar(
             np.arange(num_coeff),
             y=coeff, 
-            yerr=ci_coeff, 
-            label=label)
+            yerr=ci_coeff,
+            label=label,
+            uplims=True,
+            lolims=True)
+    plt.xlabel("Coefficient")
+    plt.ylabel("Value of Coefficient")
+    plt.xticks(np.arange(num_coeff), x_ticks)
     plt.legend()
     plt.show()
-
-    #for i in range(data.shape[0]):
-    #    coeff = data[i, 4:4+num_coeff]
-    #    var_coeff = data[i, 4+num_coeff:]
-    #    ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
-    #    label = "noise = {}".format(data[i,0])
-    #    plt.errorbar(
-    #            np.arange(num_coeff),
-    #            y=coeff, 
-    #            yerr=ci_coeff, 
-    #            label=label)
-
-    #plt.show()
-
-
-
 
 
         
