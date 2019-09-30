@@ -21,9 +21,11 @@ if sys.argv[1] == "a":
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
 
-    # Run the regression with varying degrees of stochastic noise added
+    # Run the regression with polynomials of several degrees, and several
+    # levels of added stochastic noise
     degrees = [1, 2, 3, 4, 5]
-    noise_levels = [0, 0.1, 0.5, 1.0]
+    noise_levels = [0, 0.1, 0.2, 0.5, 1.0]
+    k_bootstraps = int(1E5)
 
     bootstrap_data = {}
     for degree in degrees:
@@ -41,7 +43,7 @@ if sys.argv[1] == "a":
 
             # Run bootstrap and store data
             bootstrap_data[degree].append(
-                    [noise_level] + ols.bootstrap(num_bootstraps=1000))
+                    [noise_level] + ols.bootstrap(num_bootstraps=k_bootstraps))
 
 
     # Output data to npy files
