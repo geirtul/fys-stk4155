@@ -157,23 +157,67 @@ def plot_bias_variance(task, degree):
             tmp_data = data[np.where(data[:,0] == noise_levels[j])]
             if noise_levels[j] not in plot_data.keys():
                 plot_data[noise_levels[j]] = {}
-                plot_data[noise_levels[j]][degree[i]] = tmp_data[:,2:4]
+                plot_data[noise_levels[j]][degree[i]] = tmp_data[0,2:4]
             else:
-                plot_data[noise_levels[j]][degree[i]] = tmp_data[:,2:4]
+                plot_data[noise_levels[j]][degree[i]] = tmp_data[0,2:4]
 
     for noise_level in plot_data.keys():
         fig, ax = plt.subplots(1,2)
         bias = []
         variance = []
         for degree in plot_data[noise_level].keys():
-            bias.append(plot_data[noise_level][degree][0][0])
-            variance.append(plot_data[noise_level][degree][0][1])
+            bias.append(plot_data[noise_level][degree][0])
+            variance.append(plot_data[noise_level][degree][1])
+            print(noise_level, degree, plot_data[noise_level][degree])
         ax[0].plot(np.arange(len(bias)), bias, label="bias")
         ax[1].plot(np.arange(len(variance)), variance, label="variance")
-        plt.show()
+        #plt.show()
 
 
+def plot_mse(task, degree):
+    """ Plot the MSE results from bootstrapping
+    as a function of polynomial degree and added noise.
 
+    :param task: which subtask of project.
+    :param degree: list of degrees
+    """
+
+
+    DATA_PATH="regression_data/"
+    # Regression file contains: noise_level, error, bias, variance, coeffs, var_coeff
+
+    plot_data = {}
+
+    # Extract data from the files and store them sorted by noise_level
+    for i in range(len(degree)):
+        fname = "{}_bootstrap_d{}.npy".format(task, degree[i])
+        data = np.load(DATA_PATH+fname)
+        noise_levels = np.unique(data[:,0])
+        for j in range(len(noise_levels)):
+            tmp_data = data[np.where(data[:,0] == noise_levels[j])]
+            if noise_levels[j] not in plot_data.keys():
+                plot_data[noise_levels[j]] = np.zeros(len(degree))
+                plot_data[noise_levels[j]][i] = tmp_data[0, 1]
+            else:
+                plot_data[noise_levels[j]][i] = tmp_data[0, 1]
+
+    fig, ax = plt.subplots(len(plot_data.keys()), 1, figsize=(12,12), sharex=True)
+    noise_levels = sorted(plot_data.keys())
+    for i, key in enumerate(sorted(plot_data.keys())):
+        label = "noise = {}".format(key)
+        ax[i].plot(
+                np.arange(len(degree)), 
+                plot_data[key],
+                'o--',
+                label=label,
+                )
+        ax[i].set_xticks(range(5))
+        ax[i].set_xticklabels(range(1, 6, 1))
+        ax[i].set_ylabel("MSE")
+        ax[i].legend()
+    plt.xlabel("Degree of fitted polynomial")
+    plt.show()
+            
 
 # Output plots for each subtask in the project
 if len(sys.argv) > 0:
@@ -182,5 +226,6 @@ if len(sys.argv) > 0:
             plot_coeffs_nonoise(arg, [1,2,3,4,5])
             plot_coeffs_noise(arg, 3)
         if arg == "test":
-            plot_bias_variance("a", [1,2,3,4,5])
+            #plot_bias_variance("a", [1,2,3,4,5])
+            plot_mse("a", [1,2,3,4,5])
 
