@@ -137,6 +137,8 @@ def plot_bias_variance(task, degree):
     """ Plot the bias and variance results from bootstrapping
     as a function of polynomial degree.
 
+    TODO: Implement two y-axes from
+    https://matplotlib.org/gallery/api/two_scales.html
     :param task: which subtask of project.
     :param degree: list of degrees
     """
@@ -161,17 +163,53 @@ def plot_bias_variance(task, degree):
             else:
                 plot_data[noise_levels[j]][degree[i]] = tmp_data[0,2:4]
 
-    for noise_level in plot_data.keys():
-        fig, ax = plt.subplots(1,2)
+    for i, noise_level in enumerate(sorted(plot_data.keys())):
+        fig, ax = plt.subplots()
         bias = []
         variance = []
-        for degree in plot_data[noise_level].keys():
-            bias.append(plot_data[noise_level][degree][0])
-            variance.append(plot_data[noise_level][degree][1])
-            print(noise_level, degree, plot_data[noise_level][degree])
-        ax[0].plot(np.arange(len(bias)), bias, label="bias")
-        ax[1].plot(np.arange(len(variance)), variance, label="variance")
-        #plt.show()
+        for deg in sorted(plot_data[noise_level].keys()):
+            bias.append(plot_data[noise_level][deg][0])
+            variance.append(plot_data[noise_level][deg][1])
+
+        color = 'tab:red'
+        #ax[i].set_xlabel('Degree of polynomial')
+        #ax[i].set_ylabel('Bias', color=color)
+        #ax[i].plot(
+        #        np.arange(len(bias)), 
+        #        bias, 
+        #        label="bias", 
+        #        color=color)
+        #ax[i].tick_params(axis='y', labelcolor=color)
+
+        ## instantiate a second axes that shares the same x-axis
+        #ax2 = ax[i].twinx()          
+        
+        ax.set_xlabel('Degree of polynomial')
+        ax.set_ylabel('Bias', color=color)
+        ax.plot(
+                np.arange(len(bias)), 
+                bias, 
+                label="bias", 
+                color=color)
+        ax.tick_params(axis='y', labelcolor=color)
+        ax.set_xticks(np.arange(len(degree)))
+        ax.set_xticklabels(np.arange(1,len(degree)+1))
+
+        # instantiate a second axes that shares the same x-axis
+        ax2 = ax.twinx()          
+        color = 'tab:blue'
+        # we already handled the x-label with ax1
+        ax2.set_ylabel('Variance', color=color)          
+        ax2.plot(
+                np.arange(len(variance)), 
+                variance, 
+                label="variance", 
+                color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
+
+        fig.tight_layout()  # otherwise the right y-label is slightly clipped
+        plt.title("Noise level = " + str(noise_level))
+        plt.show()
 
 
 def plot_mse(task, degree):
@@ -226,6 +264,6 @@ if len(sys.argv) > 0:
             plot_coeffs_nonoise(arg, [1,2,3,4,5])
             plot_coeffs_noise(arg, 3)
         if arg == "test":
-            #plot_bias_variance("a", [1,2,3,4,5])
-            plot_mse("a", [1,2,3,4,5])
+            plot_bias_variance("a", [1,2,3,4,5])
+            #plot_mse("a", [1,2,3,4,5])
 
