@@ -51,7 +51,7 @@ if sys.argv[1] == "a":
     OUT_PATH = "regression_data/"
     for degree in degrees:
         # Save regression results for each degree
-        filename_bootstrap = "a_bootstrap_d{}.npy".format(degree)
+        filename_bootstrap = "a_bootstrap_d{}_test.npy".format(degree)
         np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
 
 # ============================================================================

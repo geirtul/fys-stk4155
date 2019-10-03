@@ -36,8 +36,8 @@ class Resampling:
                                                             test_size=test_size)
 
         y_pred = np.empty((y_test.shape[0], num_bootstraps))
-        print("Bootstrapping...")
         coeffs = np.zeros((num_bootstraps, x_train.shape[1]))
+        r2_scores = np.zeros(num_bootstraps)
         for i in tqdm(range(num_bootstraps)):
             x_re, y_re = resample(x_train, y_train)
 
@@ -47,17 +47,38 @@ class Resampling:
             # Store coefficients
             coeffs[i] = self.coeff
 
+            # Store r2 score
+            r2_scores[i] = self.r2_score(x_test, y_test)
+
+        
+        # Fit on training set to generate in-sample error for e_in e_out comparison
+        self.coeff = None
+        self.fit_coefficients(x_train, y_train)
+        y_pred_train = self.make_prediction(x_train)
+        error_in = np.mean(np.mean((y_train[:, None] - y_pred_train) ** 2,
+                                axis=1, keepdims=True))
+
+        # Get r2-score on test data when fit with full training data
+        # And calculate variance
+        r2_score = self.r2_score(x_test, y_test)
+        var_r2_score = np.var(r2_scores)
+
         # Analysis
         # Need y_test[:, None] for proper broadcasting of arrays.
-        error = np.mean(np.mean((y_test[:, None] - y_pred) ** 2,
+        error_out = np.mean(np.mean((y_test[:, None] - y_pred) ** 2,
+                                axis=1, keepdims=True))
+        var_error_out = np.var(np.mean((y_test[:, None] - y_pred) ** 2,
                                 axis=1, keepdims=True))
         bias = np.mean((y_test - np.mean(y_pred, axis=1, keepdims=True)) ** 2)
         variance = np.mean(np.var(y_pred, axis=1, keepdims=True))
 
-        # Estimate the variance in the parameters beta
+        # Estimate the variance in the coefficients
         coeff_variance = np.var(coeffs, axis=0)
         coeff_mean = np.mean(coeffs, axis=0)
         
-        output = [error, bias, variance] + coeff_mean.tolist() + coeff_variance.tolist()
+        output = [error_in, error_out, var_error_out, r2_score, var_r2_score, bias, variance] 
+        output += coeff_mean.tolist() 
+        output += coeff_variance.tolist()
 
         return output
+    

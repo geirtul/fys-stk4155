@@ -24,9 +24,9 @@ def plot_coeffs_nonoise(task, degree):
             fname = "{}_bootstrap_d{}.npy".format(task, degree[i])
             data = np.load(DATA_PATH+fname)
             
-            num_coeff = int(len(data[0,4:])/2)
-            coeff = data[0, 4:4+num_coeff]
-            var_coeff = data[0, 4+num_coeff:]
+            num_coeff = int(len(data[0,5:])/2)
+            coeff = data[0, 5:5+num_coeff]
+            var_coeff = data[0, 5+num_coeff:]
             ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
             label = "deg(P) = {}".format(degree[i])
 
@@ -56,10 +56,10 @@ def plot_coeffs_nonoise(task, degree):
         fname = "regression_data/{}_bootstrap_d{}.npy".format(task, degree)
 
         data = np.load(fname)
-        num_coeff = int(len(data[0,4:])/2)
+        num_coeff = int(len(data[0,5:])/2)
 
-        coeff = data[0, 4:4+num_coeff]
-        var_coeff = data[0, 4+num_coeff:]
+        coeff = data[0, 5:5+num_coeff]
+        var_coeff = data[0, 5+num_coeff:]
         ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
         label = "deg(P) = {}".format(degree)
 
@@ -104,10 +104,10 @@ def plot_coeffs_noise(task, degree):
     fig, ax = plt.subplots(len(noise_levels), 1, figsize=(12,12))
     for i in range(len(noise_levels)):
         tmp_data = data[np.where(data[:,0] == noise_levels[i])]
-        num_coeff = int(len(tmp_data[0,4:])/2)
+        num_coeff = int(len(tmp_data[0,5:])/2)
 
-        coeff = tmp_data[0, 4:4+num_coeff]
-        var_coeff = tmp_data[0, 4+num_coeff:]
+        coeff = tmp_data[0, 5:5+num_coeff]
+        var_coeff = tmp_data[0, 5+num_coeff:]
         ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
         label = "noise = {}".format(noise_levels[i])
 
@@ -133,8 +133,8 @@ def plot_coeffs_noise(task, degree):
     plt.xlabel("Coefficient")
     plt.show()
 
-def plot_bias_variance(task, degree):
-    """ Plot the bias and variance results from bootstrapping
+def plot_errors(task, degree):
+    """ Plot e_in and e_out results from bootstrapping
     as a function of polynomial degree.
 
     TODO: Implement two y-axes from
@@ -159,17 +159,17 @@ def plot_bias_variance(task, degree):
             tmp_data = data[np.where(data[:,0] == noise_levels[j])]
             if noise_levels[j] not in plot_data.keys():
                 plot_data[noise_levels[j]] = {}
-                plot_data[noise_levels[j]][degree[i]] = tmp_data[0,2:4]
+                plot_data[noise_levels[j]][degree[i]] = tmp_data[0,1:3]
             else:
-                plot_data[noise_levels[j]][degree[i]] = tmp_data[0,2:4]
+                plot_data[noise_levels[j]][degree[i]] = tmp_data[0,1:3]
 
     for i, noise_level in enumerate(sorted(plot_data.keys())):
         fig, ax = plt.subplots()
-        bias = []
-        variance = []
+        e_in = []
+        e_out = []
         for deg in sorted(plot_data[noise_level].keys()):
-            bias.append(plot_data[noise_level][deg][0])
-            variance.append(plot_data[noise_level][deg][1])
+            e_in.append(plot_data[noise_level][deg][0])
+            e_out.append(plot_data[noise_level][deg][1])
 
         color = 'tab:red'
         #ax[i].set_xlabel('Degree of polynomial')
@@ -185,12 +185,14 @@ def plot_bias_variance(task, degree):
         #ax2 = ax[i].twinx()          
         
         ax.set_xlabel('Degree of polynomial')
-        ax.set_ylabel('Bias', color=color)
+        ax.set_ylabel('e_in', color=color)
         ax.plot(
-                np.arange(len(bias)), 
-                bias, 
-                label="bias", 
-                color=color)
+                np.arange(len(e_in)), 
+                e_in, 
+                'o--',
+                label="e_in", 
+                color=color,
+                )
         ax.tick_params(axis='y', labelcolor=color)
         ax.set_xticks(np.arange(len(degree)))
         ax.set_xticklabels(np.arange(1,len(degree)+1))
@@ -199,11 +201,12 @@ def plot_bias_variance(task, degree):
         ax2 = ax.twinx()          
         color = 'tab:blue'
         # we already handled the x-label with ax1
-        ax2.set_ylabel('Variance', color=color)          
+        ax2.set_ylabel('e_out', color=color)          
         ax2.plot(
-                np.arange(len(variance)), 
-                variance, 
-                label="variance", 
+                np.arange(len(e_out)), 
+                e_out, 
+                'o--',
+                label="e_out", 
                 color=color)
         ax2.tick_params(axis='y', labelcolor=color)
 
@@ -264,6 +267,6 @@ if len(sys.argv) > 0:
             plot_coeffs_nonoise(arg, [1,2,3,4,5])
             plot_coeffs_noise(arg, 3)
         if arg == "test":
-            plot_bias_variance("a", [1,2,3,4,5])
+            plot_errors("a", [1,2,3,4,5])
             #plot_mse("a", [1,2,3,4,5])
 
