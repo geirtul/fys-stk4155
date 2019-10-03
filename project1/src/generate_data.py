@@ -51,19 +51,9 @@ if sys.argv[1] == "a":
     # Output data to files
     OUT_PATH = "regression_data/"
     for degree in degrees:
-
-        # Set headers, and generate headers for each coeff and its variance
         #headers = ["noise_level", "e_in", "e_out", "var_e_out", "r2", "var_r2", "bias", "variance"]
-        #num_coeff = int(len(bootstrap_data[degree][0,8:])/2)
-        #for i in range(num_coeff):
-        #    headers.append("b{}".format(i))
-        #for i in range(num_coeff):
-        #    headers.append("var{}".format(i))
-
         # Save regression results for each degree
-        #df = pd.DataFrame(data=np.array(bootstrap_data[degree]), columns=headers)
         filename_bootstrap = "a_bootstrap_d{}.npy".format(degree)
-        #df.to_csv(OUT_PATH+filename_bootstrap)
         np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
 
 # ============================================================================

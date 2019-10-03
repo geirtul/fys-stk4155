@@ -3,17 +3,13 @@ All code can be found on github, using the following link:\\
 https://github.com/geirtul/fys-stk4155/tree/master/project1/src\\
 
 There is one class for each regression method, with corresponding 
-filenames.
-All the error estimations are done in analysis.py
+filenames. Mean Squared Error and R2 Scored are implemented as class methods.
 
 In all the methods, Franke's function is defined for 
 \(x,y \ \epsilon \ [0,1]\).
 
-We have not written unittests for the code. We are very aware that 
-that would have been a good idea. 
-
 \subsection{Ordinary Least Squares}
-The class ols.py i made to make a prediction of Franke's function
+The class ols.py is made to make a prediction of Franke's function
 based on the OLS method. 
 It makes \(x, y\) as arrays with uniformly distributed random numbers 
 between \(0\) and \(1\). 
@@ -54,14 +50,7 @@ and the predicted function like this
 
 \lstinputlisting[firstline=63,lastline=65]{../src/lasso.py}.
 
-\subsection{Analysis} 
-The analysis class contains all of the error calculations as well 
-as the bootstrap method and a method for making plots.
-
-As the error calculation is straight forward math, we do not 
-show the implementation in the report. 
-
-\subsubsection{Bootstrap} 
+\subsection{Bootstrapping} 
 We chose to use bootstrap because of a number of advantages listed in the 
 lecture notes. ~\cite{LectureNotes-FysStk}
 
@@ -69,7 +58,7 @@ The data is first split into training and test sets.
 Then the bootstrap method described in ~\ref{seq:bootstrap} is 
 implemented as follows
 
-\lstinputlisting[firstline=68,lastline=73]{../src/analysis.py}.
+\lstinputlisting[firstline=68,lastline=73]{../src/resampling.py}.
 ~\cite{BiasAndVariance}
 
 
