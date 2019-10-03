@@ -24,9 +24,9 @@ def plot_coeffs_nonoise(task, degree):
             fname = "{}_bootstrap_d{}.npy".format(task, degree[i])
             data = np.load(DATA_PATH+fname)
             
-            num_coeff = int(len(data[0,5:])/2)
-            coeff = data[0, 5:5+num_coeff]
-            var_coeff = data[0, 5+num_coeff:]
+            num_coeff = int(len(data[0,8:])/2)
+            coeff = data[0, 8:8+num_coeff]
+            var_coeff = data[0, 8+num_coeff:]
             ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
             label = "deg(P) = {}".format(degree[i])
 
@@ -49,6 +49,7 @@ def plot_coeffs_nonoise(task, degree):
             ax[i].legend()
 
         fig.suptitle(r'Coefficients $\beta$ for deg(P) $\in$ {1,2,3,4,5}')
+        fig.text(0.06, 0.5, 'Coefficient value', ha='center', va='center', rotation='vertical')
         plt.xlabel("Coefficient")
         plt.show()
 
@@ -56,10 +57,10 @@ def plot_coeffs_nonoise(task, degree):
         fname = "regression_data/{}_bootstrap_d{}.npy".format(task, degree)
 
         data = np.load(fname)
-        num_coeff = int(len(data[0,5:])/2)
+        num_coeff = int(len(data[0,8:])/2)
 
-        coeff = data[0, 5:5+num_coeff]
-        var_coeff = data[0, 5+num_coeff:]
+        coeff = data[0, 8:8+num_coeff]
+        var_coeff = data[0, 8+num_coeff:]
         ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
         label = "deg(P) = {}".format(degree)
 
@@ -104,10 +105,10 @@ def plot_coeffs_noise(task, degree):
     fig, ax = plt.subplots(len(noise_levels), 1, figsize=(12,12))
     for i in range(len(noise_levels)):
         tmp_data = data[np.where(data[:,0] == noise_levels[i])]
-        num_coeff = int(len(tmp_data[0,5:])/2)
+        num_coeff = int(len(tmp_data[0,8:])/2)
 
-        coeff = tmp_data[0, 5:5+num_coeff]
-        var_coeff = tmp_data[0, 5+num_coeff:]
+        coeff = tmp_data[0, 8:8+num_coeff]
+        var_coeff = tmp_data[0, 8+num_coeff:]
         ci_coeff = np.sqrt(var_coeff)*1.96 # 95% Confidence Interval
         label = "noise = {}".format(noise_levels[i])
 
@@ -130,6 +131,7 @@ def plot_coeffs_noise(task, degree):
         ax[i].legend()
 
     fig.suptitle(r'Coefficients $\beta$ for deg(P) = {}, with noise'.format(degree))
+    fig.text(0.06, 0.5, 'Coefficient value', ha='center', va='center', rotation='vertical')
     plt.xlabel("Coefficient")
     plt.show()
 
@@ -237,28 +239,90 @@ def plot_mse(task, degree):
         for j in range(len(noise_levels)):
             tmp_data = data[np.where(data[:,0] == noise_levels[j])]
             if noise_levels[j] not in plot_data.keys():
-                plot_data[noise_levels[j]] = np.zeros(len(degree))
-                plot_data[noise_levels[j]][i] = tmp_data[0, 1]
+                plot_data[noise_levels[j]] = np.zeros((len(degree),2))
+                plot_data[noise_levels[j]][i] = tmp_data[0, 2:4]
             else:
-                plot_data[noise_levels[j]][i] = tmp_data[0, 1]
+                plot_data[noise_levels[j]][i] = tmp_data[0, 2:4]
 
     fig, ax = plt.subplots(len(plot_data.keys()), 1, figsize=(12,12), sharex=True)
     noise_levels = sorted(plot_data.keys())
     for i, key in enumerate(sorted(plot_data.keys())):
         label = "noise = {}".format(key)
-        ax[i].plot(
+        var_error=plot_data[key][:,1]
+        ci_error = np.sqrt(var_error)*1.96 # 95% Confidence Interval
+        ax[i].errorbar(
                 np.arange(len(degree)), 
-                plot_data[key],
-                'o--',
+                plot_data[key][:,0],
+                yerr=ci_error,
                 label=label,
+                fmt='o',
+                markersize=4,
+                linewidth=1,
+                capsize=5,
+                capthick=1,
+                ecolor="black",
                 )
         ax[i].set_xticks(range(5))
         ax[i].set_xticklabels(range(1, 6, 1))
-        ax[i].set_ylabel("MSE")
         ax[i].legend()
+    fig.suptitle("Mean squared error as a function of model complexity")
+    fig.text(0.06, 0.5, 'Mean Squared Error', ha='center', va='center', rotation='vertical')
     plt.xlabel("Degree of fitted polynomial")
     plt.show()
-            
+
+
+def plot_r2(task, degree):
+    """ Plot the MSE results from bootstrapping
+    as a function of polynomial degree and added noise.
+
+    :param task: which subtask of project.
+    :param degree: list of degrees
+    """
+
+
+    DATA_PATH="regression_data/"
+    # Regression file contains: noise_level, error, bias, variance, coeffs, var_coeff
+
+    plot_data = {}
+
+    # Extract data from the files and store them sorted by noise_level
+    for i in range(len(degree)):
+        fname = "{}_bootstrap_d{}.npy".format(task, degree[i])
+        data = np.load(DATA_PATH+fname)
+        noise_levels = np.unique(data[:,0])
+        for j in range(len(noise_levels)):
+            tmp_data = data[np.where(data[:,0] == noise_levels[j])]
+            if noise_levels[j] not in plot_data.keys():
+                plot_data[noise_levels[j]] = np.zeros((len(degree),2))
+                plot_data[noise_levels[j]][i] = tmp_data[0, 4:6]
+            else:
+                plot_data[noise_levels[j]][i] = tmp_data[0, 4:6]
+
+    fig, ax = plt.subplots(len(plot_data.keys()), 1, figsize=(12,12), sharex=True)
+    noise_levels = sorted(plot_data.keys())
+    for i, key in enumerate(sorted(plot_data.keys())):
+        label = "R2, noise = {}".format(key)
+        var_r2 = plot_data[key][:,1]
+        ci_r2 = np.sqrt(var_r2)*1.96 # 95% Confidence Interval
+        ax[i].errorbar(
+                np.arange(len(degree)), 
+                plot_data[key][:,0],
+                yerr=ci_r2,
+                label=label,
+                fmt='o',
+                markersize=4,
+                linewidth=1,
+                capsize=5,
+                capthick=1,
+                ecolor="black",
+                )
+        ax[i].set_xticks(range(5))
+        ax[i].set_xticklabels(range(1, 6, 1))
+        ax[i].legend()
+    fig.suptitle("R2 Score as a function of model complexity")
+    fig.text(0.06, 0.5, 'R2 Score', ha='center', va='center', rotation='vertical')
+    plt.xlabel("Degree of fitted polynomial")
+    plt.show()
 
 # Output plots for each subtask in the project
 if len(sys.argv) > 0:
@@ -267,6 +331,7 @@ if len(sys.argv) > 0:
             plot_coeffs_nonoise(arg, [1,2,3,4,5])
             plot_coeffs_noise(arg, 3)
         if arg == "test":
-            plot_errors("a", [1,2,3,4,5])
-            #plot_mse("a", [1,2,3,4,5])
+            #plot_errors("a", [1,2,3,4,5])
+            plot_mse("a", [1,2,3,4,5])
+            plot_r2("a", [1,2,3,4,5])
 

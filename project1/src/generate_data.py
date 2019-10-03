@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import sys
 from imageio import imread
 from lasso import LassoRegression
@@ -32,6 +33,7 @@ if sys.argv[1] == "a":
         x = PolynomialFeatures(degree).fit_transform(predictors_input)
         bootstrap_data[degree] = []
         for noise_level in noise_levels:
+            print("Bootstrapping: deg(P) = {}, noise = {}".format(degree, noise_level))
             # Add noise
             noise = noise_level*np.random.normal(0, 1, z.shape)
             tmp_z = z + noise
@@ -46,12 +48,22 @@ if sys.argv[1] == "a":
                     [noise_level] + ols.bootstrap(num_bootstraps=k_bootstraps))
 
 
-    # Output data to npy files
-    # Bootstrap file contains: noise_level, error, bias, variance, coeff, coeff_variance
+    # Output data to files
     OUT_PATH = "regression_data/"
     for degree in degrees:
+
+        # Set headers, and generate headers for each coeff and its variance
+        #headers = ["noise_level", "e_in", "e_out", "var_e_out", "r2", "var_r2", "bias", "variance"]
+        #num_coeff = int(len(bootstrap_data[degree][0,8:])/2)
+        #for i in range(num_coeff):
+        #    headers.append("b{}".format(i))
+        #for i in range(num_coeff):
+        #    headers.append("var{}".format(i))
+
         # Save regression results for each degree
-        filename_bootstrap = "a_bootstrap_d{}_test.npy".format(degree)
+        #df = pd.DataFrame(data=np.array(bootstrap_data[degree]), columns=headers)
+        filename_bootstrap = "a_bootstrap_d{}.npy".format(degree)
+        #df.to_csv(OUT_PATH+filename_bootstrap)
         np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
 
 # ============================================================================

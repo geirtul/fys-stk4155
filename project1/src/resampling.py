@@ -38,7 +38,7 @@ class Resampling:
         y_pred = np.empty((y_test.shape[0], num_bootstraps))
         coeffs = np.zeros((num_bootstraps, x_train.shape[1]))
         r2_scores = np.zeros(num_bootstraps)
-        for i in tqdm(range(num_bootstraps)):
+        for i in range(num_bootstraps):
             x_re, y_re = resample(x_train, y_train)
 
             self.fit_coefficients(x_re, y_re)
@@ -62,6 +62,8 @@ class Resampling:
         # And calculate variance
         r2_score = self.r2_score(x_test, y_test)
         var_r2_score = np.var(r2_scores)
+        if var_r2_score < 0:
+            print("NEGATIVE VARIANCE WTF", var_r2_score)
 
         # Analysis
         # Need y_test[:, None] for proper broadcasting of arrays.
