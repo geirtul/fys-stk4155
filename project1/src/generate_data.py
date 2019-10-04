@@ -10,7 +10,7 @@ from franke_function import FrankeFunction
 
 # Part a)
 # ============================================================================
-if sys.argv[1] == "a":
+if sys.argv[1] == "ols_bootstrap":
 
     # Set up coordinates and data for regression.
     x = np.arange(0, 1, 0.05)
@@ -53,14 +53,14 @@ if sys.argv[1] == "a":
     for degree in degrees:
         #headers = ["noise_level", "e_in", "e_out", "var_e_out", "r2", "var_r2", "bias", "variance"]
         # Save regression results for each degree
-        filename_bootstrap = "a_bootstrap_d{}.npy".format(degree)
+        filename_bootstrap = "ols_bootstrap_d{}.npy".format(degree)
         np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
 
 # ============================================================================
 
 # Part b)
 # ============================================================================
-if sys.argv[1] == "b":
+if sys.argv[1] == "ridge_bootstrap":
 
     # Set up coordinates and data for regression.
     x = np.arange(0, 1, 0.05)
@@ -74,44 +74,39 @@ if sys.argv[1] == "b":
     degrees = [1, 2, 3, 4, 5]
     noise_levels = [0, 0.1, 0.5, 1.0]
     lmb_values = [0, 1e-4, 1e-3, 1e-2, 1e-1, 1]
-    collected_data = []
+    k_bootstraps = int(1E5)
+    bootstrap_data = {}
     for degree in degrees:
         x = PolynomialFeatures(degree).fit_transform(predictors_input)
+        bootstrap_data[degree] = []
         for noise_level in noise_levels:
             noise = noise_level*np.random.normal(0, 1, z.shape)
             tmp_z = z + noise
             for lmb in lmb_values:
+                print("Bootstrapping: deg(P) = {}, noise = {}, lambda = {}".format(degree, noise_level, lmb))
                 ridge = RidgeRegression(lmb)
-                ridge.fit_coefficients(x, tmp_z)
-                collected_data.append([degree,
-                                       lmb,
-                                       noise_level,
-                                       ridge.mean_squared_error(x, tmp_z),
-                                       ridge.r2_score(x, tmp_z)])
+                # Init OLS
+                ridge.x = x
+                ridge.y = tmp_z
 
-    # Output data to file as csv to be handled in plot/analysis script.
-    with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
-        outfile.write("degree,lambda,noise,mse,r2\n")
-        for val in collected_data:
-            outfile.write("{},{},{},{},{}\n".format(val[0], val[1], val[2], val[3], val[4]))
-        outfile.close()
+                # Run bootstrap and store data. We swap noise level for lambda in the output to not screw with
+                # plotting functions for now.
+                bootstrap_data[degree].append(
+                        [lmb] + ridge.bootstrap(num_bootstraps=k_bootstraps))
 
-    """
-    print("{:12s} | {:12s} | {:12s} | {:12s}".format("Degree",
-                                                     "Lambda",
-                                                     "MSE",
-                                                     "R2 Score"))
-    for val in collected_data:
-        print("{:12} | {:12} | {:12f} | {:12f}".format(val[0],
-                                                       val[1],
-                                                       val[2],
-                                                       val[3]))                                              
-    """
+     # Output data to files
+    OUT_PATH = "regression_data/"
+    for degree in degrees:
+        #headers = ["noise_level", "e_in", "e_out", "var_e_out", "r2", "var_r2", "bias", "variance"]
+        # Save regression results for each degree
+        filename_bootstrap = "ridge_bootstrap_d{}.npy".format(degree)
+        np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
+
 # ============================================================================
 
 # Part c)
 # ============================================================================
-if sys.argv[1] == "c":
+if sys.argv[1] == "lasso_bootstrap":
 
     # Set up coordinates and data for regression.
     x = np.arange(0, 1, 0.05)
@@ -123,36 +118,33 @@ if sys.argv[1] == "c":
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
     degrees = [1, 2, 3, 4, 5]
+    noise_levels = [0, 0.1, 0.5, 1.0]
     alpha_values = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0]
-    collected_data = []
+    k_bootstraps = int(1E5)
+    bootstrap_data = {}
     for degree in degrees:
-        for alpha in alpha_values:
-            lasso = LassoRegression()
-            lasso.fit_coefficients(predictors_input, z, degree, alpha=alpha)
-            lasso.predict(predictors_input, z)
-            collected_data.append([degree,
-                                   alpha,
-                                   lasso.mean_squared_error(),
-                                   lasso.r2_score()])
+        x = PolynomialFeatures(degree).fit_transform(predictors_input)
+        bootstrap_data[degree] = []
+        for noise_level in noise_levels:
+            noise = noise_level*np.random.normal(0, 1, z.shape)
+            tmp_z = z + noise
+            for alpha in alpha_values:
+                lasso = LassoRegression(alpha)
+                lasso.x = x
+                lasso.y = tmp_z
+                # Run bootstrap and store data. We swap noise level for lambda in the output to not screw with
+                # plotting functions for now.
+                bootstrap_data[degree].append(
+                        [alpha] + ridge.bootstrap(num_bootstraps=k_bootstraps))
 
-    # Output data to file as csv to be handled in plot/analysis script.
-    with open("regression_data/{}.csv".format(sys.argv[1]), 'w') as outfile:
-        outfile.write("degree,alpha,mse,r2\n")
-        for val in collected_data:
-            outfile.write("{},{},{},{}\n".format(val[0], val[1], val[2], val[3]))
-        outfile.close()
 
-    """
-    print("{:12s} | {:12s} | {:12s} | {:12s}".format("Degree",
-                                                     "Alpha",
-                                                     "MSE",
-                                                     "R2 Score"))
-    for val in collected_data:
-        print("{:12} | {:12} | {:12f} | {:12f}".format(val[0],
-                                                       val[1],
-                                                       val[2],
-                                                       val[3]))
-    """
+     # Output data to files
+    OUT_PATH = "regression_data/"
+    for degree in degrees:
+        #headers = ["noise_level", "e_in", "e_out", "var_e_out", "r2", "var_r2", "bias", "variance"]
+        # Save regression results for each degree
+        filename_bootstrap = "lasso_bootstrap_d{}.npy".format(degree)
+        np.save(OUT_PATH+filename_bootstrap, np.array(bootstrap_data[degree]))
 # ============================================================================
 
 

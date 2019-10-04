@@ -334,10 +334,25 @@ def plot_r2(task, degree):
 # Output plots for each subtask in the project
 if len(sys.argv) > 0:
     for arg in sys.argv[1:]:
-        if arg == "a":
+        if arg == "ols":
             plot_r2(arg, [1,2,3,4,5])
             plot_mse(arg, [1,2,3,4,5])
             plot_errors(arg, [1,2,3,4,5])
             plot_coeffs_nonoise(arg, [1,2,3,4,5])
             plot_coeffs_noise(arg, 5)
 
+        # Noise column is substituted for lambda and alpha for ridge and lasso
+        # For each value of lmb/alpha there are four rows of data, corresponding to noise level
+        if arg == "ridge":
+            plot_r2(arg, [1,2,3,4,5])
+            plot_mse(arg, [1,2,3,4,5])
+            plot_errors(arg, [1,2,3,4,5])
+            plot_coeffs_nonoise(arg, [1,2,3,4,5])
+            plot_coeffs_noise(arg, 5)
+        
+        if arg == "lasso":
+            plot_r2(arg, [1,2,3,4,5])
+            plot_mse(arg, [1,2,3,4,5])
+            plot_errors(arg, [1,2,3,4,5])
+            plot_coeffs_nonoise(arg, [1,2,3,4,5])
+            plot_coeffs_noise(arg, 5)
