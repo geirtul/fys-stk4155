@@ -1,9 +1,11 @@
 \section{Results}
+We present the results from OLS regression with four figures (\ref{fig:ols-mse-complexity},
+\ref{})
 \subsection{Ordinary Least Squares Regression on Franke Function data}
 \begin{figure}[h]
     %\centering
     %\hspace{-2.8cm}
-    \includegraphics[width = 0.8\paperwidth]{figures/mse_vs_complexity_a.pdf}
+    \includegraphics[width = 0.8\paperwidth]{figures/mse_vs_complexity_ols.pdf}
     \caption{Plot of Mean Squared Error as a function of model complexity (degree of the
 	    fitted polynomial) when fitting with Ordinary Least Squares regression. Each plot
 	    from top to bottom shows results for a different degree of stochastic noise added
@@ -14,7 +16,7 @@
 \begin{figure}[h]
     %\centering
     %\hspace{-2.8cm}
-    \includegraphics[width = 0.8\paperwidth]{figures/r2_vs_complexity_a.pdf}
+    \includegraphics[width = 0.8\paperwidth]{figures/r2_vs_complexity_ols.pdf}
     \caption{Plot of R2 score as a function of model complexity (degree of the
 	    fitted polynomial) when fitting with Ordinary Least Squares regression. Each plot
 	    from top to bottom shows results for a different degree of stochastic noise added
@@ -25,7 +27,7 @@
 \begin{figure}[h]
     %\centering
     %\hspace{-2.8cm}
-    \includegraphics[width = 0.8\paperwidth]{figures/coeffs_vs_complexity_a.pdf}
+    \includegraphics[width = 0.8\paperwidth]{figures/coeffs_vs_complexity_ols.pdf}
     \caption{Coefficients for each individual term of the fitted polynomial, after regression. Each
 	coefficient is shown with it's confidence interval (95\%), calculated from the variance obtained
 	through bootstrapping.}
@@ -35,7 +37,7 @@
 \begin{figure}[h]
     %\centering
     %\hspace{-2.8cm}
-    \includegraphics[width = 0.8\paperwidth]{figures/best_coeff_vs_noise_a.pdf}
+    \includegraphics[width = 0.8\paperwidth]{figures/best_coeff_vs_noise_ols.pdf}
     \caption{Coefficients for the best polynomial fit based on MSE values. Each plot from top to bottom
 	shows the coefficients with their confidence interval (95\%), calculated from the variance obtained
 	through bootstrapping, for varying degrees of stochastic noise added to the training data.}

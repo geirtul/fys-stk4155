@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import sys
 from imageio import imread
 from lasso import LassoRegression
@@ -72,7 +71,7 @@ if sys.argv[1] == "ridge_bootstrap":
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
     degrees = [1, 2, 3, 4, 5]
-    noise_levels = [0, 0.1, 0.5, 1.0]
+    noise_levels = [0, 0.1, 0.2, 0.5, 1.0]
     lmb_values = [0, 1e-4, 1e-3, 1e-2, 1e-1, 1]
     k_bootstraps = int(1E5)
     bootstrap_data = {}
@@ -118,7 +117,7 @@ if sys.argv[1] == "lasso_bootstrap":
     predictors_input = np.c_[x.ravel(), y.ravel()]
 
     degrees = [1, 2, 3, 4, 5]
-    noise_levels = [0, 0.1, 0.5, 1.0]
+    noise_levels = [0, 0.1, 0.2, 0.5, 1.0]
     alpha_values = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0]
     k_bootstraps = int(1E5)
     bootstrap_data = {}
@@ -129,13 +128,14 @@ if sys.argv[1] == "lasso_bootstrap":
             noise = noise_level*np.random.normal(0, 1, z.shape)
             tmp_z = z + noise
             for alpha in alpha_values:
+                print("Bootstrapping: deg(P) = {}, noise = {}, alpha = {}".format(degree, noise_level, alpha))
                 lasso = LassoRegression(alpha)
                 lasso.x = x
                 lasso.y = tmp_z
                 # Run bootstrap and store data. We swap noise level for lambda in the output to not screw with
                 # plotting functions for now.
                 bootstrap_data[degree].append(
-                        [alpha] + ridge.bootstrap(num_bootstraps=k_bootstraps))
+                        [alpha] + lasso.bootstrap(num_bootstraps=k_bootstraps))
 
 
      # Output data to files
